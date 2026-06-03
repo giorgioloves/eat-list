@@ -21,7 +21,7 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import { createClient } from '@/lib/supabase/client'
 import { TIERS, TIER_COLORS, TIER_BG_COLORS, STATUS_LABELS } from '@/types'
-import { GripVertical, RotateCcw } from 'lucide-react'
+import { RotateCcw } from 'lucide-react'
 import { PipRating } from '@/components/ui/pip-rating'
 import type { Restaurant, Tier } from '@/types'
 
@@ -128,7 +128,7 @@ export function TierBoard({ restaurants }: TierBoardProps) {
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className="space-y-3">
+      <div className="space-y-3 select-none">
         {TIERS.map((tier) => (
           <TierRow
             key={tier}
@@ -222,20 +222,14 @@ function RestaurantDragCard({
     <div
       ref={setNodeRef}
       style={style}
-      className={`flex items-center gap-2 p-2.5 bg-espresso-800 border rounded-lg transition-all ${
+      {...attributes}
+      {...listeners}
+      className={`select-none touch-none flex items-center gap-2 p-2.5 bg-espresso-800 border rounded-lg transition-all cursor-grab active:cursor-grabbing ${
         isDragging
           ? 'border-gold-500/50 shadow-lg shadow-black/30 rotate-1'
           : 'border-espresso-700 hover:border-espresso-600'
       } ${isSaving ? 'opacity-60' : ''}`}
     >
-      <button
-        {...attributes}
-        {...listeners}
-        className="text-espresso-500 hover:text-espresso-300 transition-colors cursor-grab active:cursor-grabbing"
-      >
-        <GripVertical className="w-4 h-4" />
-      </button>
-
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-espresso-50 truncate">{restaurant.name}</p>
         <div className="flex items-center gap-2 mt-0.5">
