@@ -125,6 +125,7 @@ export function MapView({ restaurants }: MapViewProps) {
           mapTypeControl: false,
           fullscreenControl: false,
           clickableIcons: false,
+          gestureHandling: 'greedy',
         }}
         onLoad={(map) => { mapRef.current = map }}
         onClick={() => setSelected(null)}
@@ -152,14 +153,14 @@ export function MapView({ restaurants }: MapViewProps) {
         ))}
       </GoogleMap>
 
-{/* Selected restaurant panel — top right */}
+{/* Selected restaurant panel — bottom on mobile, top-right on desktop */}
       {selected && (
-        <div className="absolute top-3 right-3 w-72 sm:w-80 bg-espresso-900/97 backdrop-blur border border-espresso-600 rounded-2xl z-[1000] shadow-2xl flex flex-col max-h-[calc(100%-1.5rem)] overflow-hidden">
+        <div className="absolute bottom-20 left-2 right-2 sm:bottom-auto sm:top-3 sm:left-auto sm:right-3 sm:w-80 bg-espresso-900/97 backdrop-blur border border-espresso-600 rounded-2xl z-[1000] shadow-2xl flex flex-col max-h-[48vh] sm:max-h-[calc(100%-1.5rem)] overflow-hidden">
           {/* Header */}
           <div className="p-4 pb-3 flex-shrink-0">
             <button
               onClick={() => setSelected(null)}
-              className="absolute top-3 right-3 text-espresso-400 hover:text-espresso-200 transition-colors text-xl leading-none"
+              className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center text-espresso-400 hover:text-espresso-200 transition-colors text-xl leading-none rounded-lg hover:bg-espresso-700"
             >
               ×
             </button>

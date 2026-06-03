@@ -1,4 +1,4 @@
-﻿import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 
@@ -12,6 +12,12 @@ export const metadata: Metadata = {
   description: 'Track, rate, and discover restaurants with your partner.',
 }
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+}
+
 export default function RootLayout({
   children,
 }: {
@@ -19,7 +25,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en-AU" className="dark" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased bg-espresso-900 text-espresso-50 min-h-screen`}>
+      <body className={`${inter.variable} font-sans antialiased bg-espresso-900 text-espresso-50 min-h-[100dvh]`}>
         {children}
       </body>
     </html>

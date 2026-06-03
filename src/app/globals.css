@@ -3,6 +3,24 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    /* Remove blue flash on tap in Safari/iOS */
+    -webkit-tap-highlight-color: transparent;
+    /* Prevent font size adjustment after orientation change */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  /* Prevent iOS Safari from zooming on input focus (requires >= 16px) */
+  input, textarea, select {
+    font-size: max(16px, 1em);
+  }
+
+  /* Remove double-tap zoom delay on interactive elements */
+  button, a, [role="button"], label {
+    touch-action: manipulation;
+  }
+
   :root {
     --bg: 248 244 237;
     --bg-secondary: 240 234 224;
@@ -127,6 +145,11 @@
   z-index: 2;
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25));
   pointer-events: none;
+}
+
+/* Safe-area bottom padding (used by bottom nav) */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* Scrollbar styling */
