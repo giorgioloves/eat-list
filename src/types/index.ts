@@ -170,6 +170,9 @@ export const CUISINE_EMOJI: Record<string, string> = {
   'Cafe':              '☕',
   'Bakery':            '🥐',
   'Dessert':           '🍰',
+  'Sandwiches':        '🥪',
+  'Portuguese':        '🇵🇹',
+  'Malaysian/Indonesian': '🌴',
   'BBQ':               '🍖',
   'Turkish':           '🇹🇷',
   'Lebanese':          '🇱🇧',
@@ -186,7 +189,8 @@ export const CUISINES = [
   'Mexican', 'French', 'Mediterranean', 'American', 'Korean', 'Vietnamese',
   'Greek', 'Spanish', 'Middle Eastern', 'Seafood', 'Steakhouse', 'Pizza',
   'Sushi', 'Ramen', 'Tapas', 'Dumplings', 'Burgers', 'Cafe', 'Bakery',
-  'Dessert', 'BBQ', 'Turkish', 'Lebanese', 'Ethiopian',
+  'Dessert', 'Sandwiches', 'Portuguese', 'Malaysian/Indonesian',
+  'BBQ', 'Turkish', 'Lebanese', 'Ethiopian',
   'Wine Bar', 'Pub', 'Gelato', 'Asian Fusion', 'Other',
 ]
 
