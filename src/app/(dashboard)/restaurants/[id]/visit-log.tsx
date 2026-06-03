@@ -12,9 +12,10 @@ interface VisitLogProps {
   restaurantId: string
   visits: RestaurantVisit[]
   currentUserId: string
+  profileNames: Record<string, string>
 }
 
-export function VisitLog({ restaurantId, visits, currentUserId }: VisitLogProps) {
+export function VisitLog({ restaurantId, visits, currentUserId, profileNames }: VisitLogProps) {
   const [showForm, setShowForm] = useState(false)
   const [date, setDate] = useState('')
   const [cost, setCost] = useState('')
@@ -133,7 +134,7 @@ export function VisitLog({ restaurantId, visits, currentUserId }: VisitLogProps)
                         {v.visit_ratings.filter(r => r.user_id !== currentUserId).map((r) => (
                           <div key={r.id} className="flex items-center gap-2">
                             <span className="text-xs text-espresso-400 w-20 truncate">
-                              {(r.profiles as any)?.name ?? 'Unknown'}
+                              {profileNames[r.user_id] ?? 'Unknown'}
                             </span>
                             <PipRating rating={r.rating} size="sm" />
                           </div>

@@ -32,9 +32,20 @@ export default async function RestaurantDetailPage({
 
   const { data: visits } = await supabase
     .from('restaurant_visits')
-    .select('*, profiles(name, email), visit_ratings(id, user_id, rating, profiles(name))')
+    .select('*, profiles(name, email), visit_ratings(id, user_id, rating)')
     .eq('restaurant_id', id)
     .order('visited_at', { ascending: false })
+
+  // Fetch list member names separately — avoids a 3-level nested join that PostgREST can drop silently
+  const { data: memberRows } = await supabase
+    .from('shared_list_members')
+    .select('user_id, profiles(name)')
+    .eq('list_id', r.list_id)
+
+  const profileNames: Record<string, string> = {}
+  memberRows?.forEach((m: any) => {
+    if (m.user_id && m.profiles?.name) profileNames[m.user_id] = m.profiles.name
+  })
 
   const { data: notes } = await supabase
     .from('restaurant_notes')
@@ -111,6 +122,7 @@ export default async function RestaurantDetailPage({
           restaurantId={r.id}
           visits={(visits || []) as RestaurantVisit[]}
           currentUserId={user.id}
+          profileNames={profileNames}
         />
 
         {/* Note log */}
