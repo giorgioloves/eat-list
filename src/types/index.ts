@@ -58,6 +58,7 @@ export interface Restaurant {
   would_go_again: WouldGoAgain | null
   tier: Tier | null
   rating: number | null
+  price_level: '$' | '$$' | '$$$' | '$$$$' | null
   latitude: number | null
   longitude: number | null
   created_by: string
@@ -163,6 +164,10 @@ export const CUISINE_EMOJI: Record<string, string> = {
   'Turkish':           '🇹🇷',
   'Lebanese':          '🇱🇧',
   'Ethiopian':         '🇪🇹',
+  'Wine Bar':          '🍷',
+  'Pub':               '🍺',
+  'Gelato':            '🍦',
+  'Asian Fusion':      '🥢',
   'Other':             '🌀',
 }
 
@@ -171,6 +176,7 @@ export const CUISINES = [
   'Mexican', 'French', 'Mediterranean', 'American', 'Korean', 'Vietnamese',
   'Greek', 'Spanish', 'Middle Eastern', 'Seafood', 'Steakhouse', 'Pizza',
   'Sushi', 'Ramen', 'Tapas', 'Dumplings', 'Burgers', 'Cafe', 'Bakery',
-  'Dessert', 'BBQ', 'Turkish', 'Lebanese', 'Ethiopian', 'Other',
+  'Dessert', 'BBQ', 'Turkish', 'Lebanese', 'Ethiopian',
+  'Wine Bar', 'Pub', 'Gelato', 'Asian Fusion', 'Other',
 ]
 

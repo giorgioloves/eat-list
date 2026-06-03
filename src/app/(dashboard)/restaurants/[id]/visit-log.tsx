@@ -1,8 +1,8 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
-import { Plus, Trash2, Calendar } from 'lucide-react'
-import { logVisit, deleteVisit } from './actions'
+import { Plus, Trash2, Pencil } from 'lucide-react'
+import { logVisit, deleteVisit, updateVisit } from './actions'
 import { formatDate } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { PipRating, PipSelector } from '@/components/ui/pip-rating'
@@ -20,20 +20,14 @@ export function VisitLog({ restaurantId, visits }: VisitLogProps) {
   const [cost, setCost] = useState('')
   const [loading, setLoading] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [editingId, setEditingId] = useState<string | null>(null)
   const [error, setError] = useState('')
 
   async function handleLog(e: React.FormEvent) {
     e.preventDefault()
     setError('')
     setLoading(true)
-
-    const result = await logVisit(
-      restaurantId,
-      date || null,
-      rating,
-      cost ? parseFloat(cost) : null
-    )
-
+    const result = await logVisit(restaurantId, date || null, rating, cost ? parseFloat(cost) : null)
     if (result.error) {
       setError(result.error)
     } else {
@@ -73,59 +67,28 @@ export function VisitLog({ restaurantId, visits }: VisitLogProps) {
 
       {/* Add visit form */}
       {showForm && (
-        <form
-          onSubmit={handleLog}
-          className="mb-4 p-4 bg-espresso-700 border border-espresso-600 rounded-xl space-y-4"
-        >
-          {/* Date + Cost row */}
+        <form onSubmit={handleLog} className="mb-4 p-4 bg-espresso-700 border border-espresso-600 rounded-xl space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs text-espresso-400 mb-1.5">Date</label>
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className={inputCls}
-              />
+              <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={inputCls} />
             </div>
             <div>
               <label className="block text-xs text-espresso-400 mb-1.5">Spent</label>
               <div className="relative">
                 <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-espresso-400 text-sm">$</span>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.50"
-                  value={cost}
-                  onChange={(e) => setCost(e.target.value)}
-                  placeholder="0.00"
-                  className={cn(inputCls, 'pl-6')}
-                />
+                <input type="number" min="0" step="0.50" value={cost} onChange={(e) => setCost(e.target.value)} placeholder="0.00" className={cn(inputCls, 'pl-6')} />
               </div>
             </div>
           </div>
-
-          {/* Rating pips */}
           <div>
             <label className="block text-xs text-espresso-400 mb-2">Rating</label>
             <PipSelector value={rating} onChange={setRating} />
           </div>
-
           {error && <p className="text-xs text-red-400">{error}</p>}
-
           <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => { setShowForm(false); setError('') }}
-              className="px-3 py-1.5 text-xs text-espresso-300 border border-espresso-500 rounded-lg hover:bg-espresso-600 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex-1 py-1.5 text-xs font-semibold bg-gold-500 hover:bg-gold-400 text-espresso-900 rounded-lg transition-colors disabled:opacity-50"
-            >
+            <button type="button" onClick={() => { setShowForm(false); setError('') }} className="px-3 py-1.5 text-xs text-espresso-300 border border-espresso-500 rounded-lg hover:bg-espresso-600 transition-colors">Cancel</button>
+            <button type="submit" disabled={loading} className="flex-1 py-1.5 text-xs font-semibold bg-gold-500 hover:bg-gold-400 text-espresso-900 rounded-lg transition-colors disabled:opacity-50">
               {loading ? 'Saving…' : 'Save Visit'}
             </button>
           </div>
@@ -137,40 +100,108 @@ export function VisitLog({ restaurantId, visits }: VisitLogProps) {
         <p className="text-sm text-espresso-400 py-2">No visits logged yet.</p>
       ) : (
         <div className="space-y-2">
-          {visits.map((v) => (
-            <div
-              key={v.id}
-              className="flex items-start gap-3 p-3 bg-espresso-700/50 rounded-lg group"
-            >
-              <Calendar className="w-3.5 h-3.5 text-espresso-400 mt-0.5 flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-sm text-espresso-200">{formatDate(v.visited_at)}</span>
-                  {v.rating !== null && <PipRating rating={v.rating} size="sm" />}
-                  {v.cost !== null && (
-                    <span className="text-xs text-espresso-300 font-medium">
-                      ${v.cost.toFixed(2)}
-                    </span>
-                  )}
-                  {(v.profiles as any)?.name && (
-                    <span className="text-xs text-espresso-500">
-                      · {(v.profiles as any).name}
-                    </span>
-                  )}
+          {visits.map((v) =>
+            editingId === v.id ? (
+              <EditVisitRow
+                key={v.id}
+                visit={v}
+                restaurantId={restaurantId}
+                onDone={() => setEditingId(null)}
+              />
+            ) : (
+              <div key={v.id} className="flex items-start gap-3 p-3 bg-espresso-700/50 rounded-lg group">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-sm text-espresso-200">{formatDate(v.visited_at)}</span>
+                    {v.rating !== null && <PipRating rating={v.rating} size="sm" />}
+                    {v.cost !== null && (
+                      <span className="text-xs text-espresso-300 font-medium">${v.cost.toFixed(2)}</span>
+                    )}
+                    {(v.profiles as any)?.name && (
+                      <span className="text-xs text-espresso-500">· {(v.profiles as any).name}</span>
+                    )}
+                  </div>
+                </div>
+                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                  <button
+                    onClick={() => setEditingId(v.id)}
+                    className="p-1 text-espresso-500 hover:text-espresso-200 transition-colors"
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(v.id)}
+                    disabled={deletingId === v.id}
+                    className="p-1 text-espresso-500 hover:text-red-400 transition-colors disabled:opacity-50"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
                 </div>
               </div>
-              <button
-                onClick={() => handleDelete(v.id)}
-                disabled={deletingId === v.id}
-                className="opacity-0 group-hover:opacity-100 p-1 text-espresso-500 hover:text-red-400 transition-all disabled:opacity-50"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          ))}
+            )
+          )}
         </div>
       )}
     </div>
+  )
+}
+
+function EditVisitRow({ visit, restaurantId, onDone }: {
+  visit: RestaurantVisit
+  restaurantId: string
+  onDone: () => void
+}) {
+  const [date, setDate] = useState(visit.visited_at ?? '')
+  const [rating, setRating] = useState<number | null>(visit.rating)
+  const [cost, setCost] = useState(visit.cost != null ? String(visit.cost) : '')
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+
+  async function handleSave(e: React.FormEvent) {
+    e.preventDefault()
+    setSaving(true)
+    const result = await updateVisit(
+      visit.id,
+      restaurantId,
+      date || null,
+      rating,
+      cost ? parseFloat(cost) : null
+    )
+    if (result.error) {
+      setError(result.error)
+      setSaving(false)
+    } else {
+      onDone()
+    }
+  }
+
+  return (
+    <form onSubmit={handleSave} className="p-3 bg-espresso-700 border border-gold-500/30 rounded-lg space-y-3">
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="block text-xs text-espresso-400 mb-1">Date</label>
+          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={inputCls} />
+        </div>
+        <div>
+          <label className="block text-xs text-espresso-400 mb-1">Spent</label>
+          <div className="relative">
+            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-espresso-400 text-sm">$</span>
+            <input type="number" min="0" step="0.50" value={cost} onChange={(e) => setCost(e.target.value)} placeholder="0.00" className={cn(inputCls, 'pl-6')} />
+          </div>
+        </div>
+      </div>
+      <div>
+        <label className="block text-xs text-espresso-400 mb-1.5">Rating</label>
+        <PipSelector value={rating} onChange={setRating} />
+      </div>
+      {error && <p className="text-xs text-red-400">{error}</p>}
+      <div className="flex gap-2">
+        <button type="button" onClick={onDone} className="px-3 py-1.5 text-xs text-espresso-300 border border-espresso-500 rounded-lg hover:bg-espresso-600 transition-colors">Cancel</button>
+        <button type="submit" disabled={saving} className="flex-1 py-1.5 text-xs font-semibold bg-gold-500 hover:bg-gold-400 text-espresso-900 rounded-lg transition-colors disabled:opacity-50">
+          {saving ? 'Saving…' : 'Save'}
+        </button>
+      </div>
+    </form>
   )
 }
 

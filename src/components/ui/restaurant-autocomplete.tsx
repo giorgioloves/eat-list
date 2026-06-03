@@ -12,6 +12,7 @@ export interface PlaceResult {
   lat: number | null
   lng: number | null
   cuisine: string | null
+  priceLevel: string | null
 }
 
 const GOOGLE_TYPE_TO_CUISINE: Record<string, string> = {
@@ -161,6 +162,7 @@ export function RestaurantAutocomplete({
           lat,
           lng,
           cuisine,
+          priceLevel: result.priceLevel ?? null,
         })
       }
     } catch {

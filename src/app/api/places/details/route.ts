@@ -13,7 +13,7 @@ export async function GET(request: Request) {
       {
         headers: {
           'X-Goog-Api-Key': key,
-          'X-Goog-FieldMask': 'displayName,addressComponents,location,primaryType,types',
+          'X-Goog-FieldMask': 'displayName,addressComponents,location,primaryType,types,priceLevel',
         },
       }
     )
@@ -33,11 +33,19 @@ export async function GET(request: Request) {
     const route = getComp('route')?.shortText ?? ''
     const street = [streetNumber, route].filter(Boolean).join(' ')
 
+    const PRICE_MAP: Record<string, string> = {
+      PRICE_LEVEL_INEXPENSIVE:   '$',
+      PRICE_LEVEL_MODERATE:      '$$',
+      PRICE_LEVEL_EXPENSIVE:     '$$$',
+      PRICE_LEVEL_VERY_EXPENSIVE: '$$$$',
+    }
+
     const result = {
       name: data.displayName?.text ?? '',
       street,
       primaryType: data.primaryType ?? null,
       types: data.types ?? [],
+      priceLevel: PRICE_MAP[data.priceLevel ?? ''] ?? null,
       address_components: components.map((c) => ({
         short_name: c.shortText ?? '',
         long_name: c.longText ?? '',

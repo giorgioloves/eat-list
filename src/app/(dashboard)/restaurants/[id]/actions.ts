@@ -83,6 +83,63 @@ export async function deleteNote(noteId: string, restaurantId: string) {
   return { success: true }
 }
 
+export async function updateVisit(
+  visitId: string,
+  restaurantId: string,
+  visitedAt: string | null,
+  rating: number | null,
+  cost: number | null
+) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated' }
+
+  const { error } = await supabase
+    .from('restaurant_visits')
+    .update({ visited_at: visitedAt, rating, cost })
+    .eq('id', visitId)
+
+  if (error) return { error: error.message }
+
+  // Recalculate restaurant stats
+  const { data: allVisits } = await supabase
+    .from('restaurant_visits')
+    .select('visited_at, rating')
+    .eq('restaurant_id', restaurantId)
+    .order('visited_at', { ascending: true })
+
+  if (allVisits) {
+    const ratings = allVisits.map((v) => v.rating).filter((x): x is number => x !== null)
+    const avgRating = ratings.length > 0
+      ? Math.round((ratings.reduce((a, b) => a + b, 0) / ratings.length) * 10) / 10
+      : null
+    const datedVisits = allVisits.filter((v) => v.visited_at)
+    await supabase.from('restaurants').update({
+      first_visit_date: datedVisits[0]?.visited_at ?? null,
+      last_visit_date: datedVisits[datedVisits.length - 1]?.visited_at ?? null,
+      ...(avgRating !== null ? { rating: avgRating } : {}),
+    }).eq('id', restaurantId)
+  }
+
+  revalidatePath(`/restaurants/${restaurantId}`)
+  return { success: true }
+}
+
+export async function setWouldGoAgain(restaurantId: string, value: 'definitely' | 'maybe' | 'no' | null) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated' }
+
+  const { error } = await supabase
+    .from('restaurants')
+    .update({ would_go_again: value, updated_at: new Date().toISOString() })
+    .eq('id', restaurantId)
+
+  if (error) return { error: error.message }
+  revalidatePath(`/restaurants/${restaurantId}`)
+  return { success: true }
+}
+
 export async function deleteVisit(visitId: string, restaurantId: string) {
   const supabase = await createClient()
 

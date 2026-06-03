@@ -15,13 +15,15 @@ interface Filters {
   suburb: string
   status: RestaurantStatus | ''
   excludeCafes: boolean
+  excludeBakeries: boolean
+  excludeGelaterias: boolean
 }
 
 const CAPITAL_CITIES = [
   { label: 'Sydney',    states: ['NSW', 'New South Wales', 'Sydney'] },
   { label: 'Melbourne', states: ['VIC', 'Victoria', 'Melbourne'] },
   { label: 'Brisbane',  states: ['QLD', 'Queensland', 'Brisbane'] },
-  { label: 'Perth',     states: ['WA', 'Western Australia', 'Perth'] },
+  { label: 'Perth',     states: ['WA', 'Western Australia', 'Perth', 'Fremantle'] },
   { label: 'Adelaide',  states: ['SA', 'South Australia', 'Adelaide'] },
   { label: 'Hobart',    states: ['TAS', 'Tasmania', 'Hobart'] },
   { label: 'Canberra',  states: ['ACT', 'Australian Capital Territory', 'Canberra'] },
@@ -37,6 +39,8 @@ export function RandomPicker({ restaurants }: { restaurants: Restaurant[] }) {
     suburb: '',
     status: 'want_to_try',
     excludeCafes: false,
+    excludeBakeries: false,
+    excludeGelaterias: false,
   })
   const [phase, setPhase] = useState<Phase>('idle')
   const [winner, setWinner] = useState<Restaurant | null>(null)
@@ -64,6 +68,8 @@ export function RandomPicker({ restaurants }: { restaurants: Restaurant[] }) {
     if (filters.suburb) result = result.filter((r) => r.suburb === filters.suburb)
     if (filters.status) result = result.filter((r) => r.status === filters.status)
     if (filters.excludeCafes) result = result.filter((r) => r.cuisine !== 'Cafe')
+    if (filters.excludeBakeries) result = result.filter((r) => r.cuisine !== 'Bakery')
+    if (filters.excludeGelaterias) result = result.filter((r) => r.cuisine !== 'Gelato')
     return result
   }, [restaurants, filters])
 
@@ -128,15 +134,23 @@ export function RandomPicker({ restaurants }: { restaurants: Restaurant[] }) {
                 onChange={(v) => setFilters((f) => ({ ...f, suburb: v }))}
                 options={[{ value: '', label: 'Any suburb' }, ...suburbs.map((s) => ({ value: s, label: s }))]}
               />
-              <label className="flex items-center gap-2 cursor-pointer self-end pb-1.5">
-                <input
-                  type="checkbox"
-                  checked={filters.excludeCafes}
-                  onChange={(e) => setFilters((f) => ({ ...f, excludeCafes: e.target.checked }))}
-                  className="w-3.5 h-3.5 rounded accent-gold-500 cursor-pointer"
-                />
-                <span className="text-xs text-espresso-200">Exclude cafes</span>
-              </label>
+              <div className="col-span-2 flex flex-wrap gap-x-4 gap-y-2 pt-1">
+                {([
+                  { key: 'excludeCafes',      label: 'Exclude cafes' },
+                  { key: 'excludeBakeries',   label: 'Exclude bakeries' },
+                  { key: 'excludeGelaterias', label: 'Exclude gelaterias' },
+                ] as const).map(({ key, label }) => (
+                  <label key={key} className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={filters[key]}
+                      onChange={(e) => setFilters((f) => ({ ...f, [key]: e.target.checked }))}
+                      className="w-3.5 h-3.5 rounded accent-gold-500 cursor-pointer"
+                    />
+                    <span className="text-xs text-espresso-200">{label}</span>
+                  </label>
+                ))}
+              </div>
             </div>
 
           </motion.div>

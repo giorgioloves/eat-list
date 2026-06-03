@@ -6,6 +6,7 @@ import { PipRating } from '@/components/ui/pip-rating'
 import { ArrowLeft, Pencil, MapPin } from 'lucide-react'
 import { VisitLog } from './visit-log'
 import { NoteLog } from './note-log'
+import { WouldGoAgainToggle } from './would-go-again'
 import type { Restaurant, RestaurantVisit, RestaurantNote } from '@/types'
 
 export default async function RestaurantDetailPage({
@@ -87,12 +88,22 @@ export default async function RestaurantDetailPage({
             <div className="flex flex-col items-end gap-2 flex-shrink-0">
               {r.tier && <TierBadge tier={r.tier} />}
               <PipRating rating={r.rating} />
+              {r.price_level && (
+                <span className="text-xs text-espresso-400 font-medium">{r.price_level}</span>
+              )}
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
             <StatusBadge status={r.status} />
           </div>
+
+          {r.status === 'visited' && (
+            <div className="mt-3 pt-3 border-t border-espresso-700">
+              <p className="text-xs text-espresso-400 mb-2">Would go again?</p>
+              <WouldGoAgainToggle restaurantId={r.id} current={r.would_go_again} />
+            </div>
+          )}
         </div>
 
         {/* Visit log */}

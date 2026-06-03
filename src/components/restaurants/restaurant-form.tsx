@@ -24,6 +24,7 @@ interface FormData {
   city: string   // not shown — used for geocoding
   lat: number | null
   lng: number | null
+  priceLevel: string | null
 }
 
 export function RestaurantForm({ listId, userId, restaurant }: RestaurantFormProps) {
@@ -38,6 +39,7 @@ export function RestaurantForm({ listId, userId, restaurant }: RestaurantFormPro
     city: restaurant?.city || '',
     lat: restaurant?.latitude ?? null,
     lng: restaurant?.longitude ?? null,
+    priceLevel: restaurant?.price_level ?? null,
   })
 
   const [loading, setLoading] = useState(false)
@@ -71,6 +73,7 @@ export function RestaurantForm({ listId, userId, restaurant }: RestaurantFormPro
       city: form.city || null,
       latitude: lat,
       longitude: lng,
+      price_level: form.priceLevel || null,
     }
 
     let err
@@ -120,7 +123,7 @@ export function RestaurantForm({ listId, userId, restaurant }: RestaurantFormPro
             <RestaurantAutocomplete
               value={form.name}
               onChange={(name) => setForm((prev) => ({ ...prev, name }))}
-              onSelect={({ name, street, suburb, city, lat, lng, cuisine }) =>
+              onSelect={({ name, street, suburb, city, lat, lng, cuisine, priceLevel }) =>
                 setForm((prev) => ({
                   ...prev,
                   name,
@@ -130,6 +133,7 @@ export function RestaurantForm({ listId, userId, restaurant }: RestaurantFormPro
                   cuisine: cuisine || prev.cuisine,
                   lat,
                   lng,
+                  priceLevel: priceLevel ?? prev.priceLevel,
                 }))
               }
               required

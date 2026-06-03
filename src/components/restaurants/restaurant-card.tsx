@@ -32,6 +32,9 @@ export function RestaurantCard({ restaurant: r }: { restaurant: Restaurant }) {
       <div className="flex items-center gap-2 flex-wrap mt-auto pt-2 border-t border-espresso-700">
         <StatusBadge status={r.status} />
         <PipRating rating={r.rating} size="sm" />
+        {r.price_level && (
+          <span className="text-xs text-espresso-400 font-medium">{r.price_level}</span>
+        )}
         {r.visit_count >= 2 && (
           <span className="flex items-center gap-0.5 text-xs text-espresso-500">
             <RotateCcw className="w-3 h-3" />

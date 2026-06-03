@@ -31,7 +31,7 @@ export default async function DashboardPage() {
     .from('restaurants')
     .select('*')
     .eq('list_id', listId)
-    .order('updated_at', { ascending: false })
+    .order('created_at', { ascending: false })
 
   const all = (restaurants || []) as Restaurant[]
   const visited = all.filter((r) => r.status === 'visited')
