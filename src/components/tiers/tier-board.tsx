@@ -1,6 +1,6 @@
 ﻿'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   DndContext,
   DragEndEvent,
@@ -49,6 +49,17 @@ function groupByTier(restaurants: Restaurant[]): TierGroup {
 export function TierBoard({ restaurants }: TierBoardProps) {
   const supabase = createClient()
   const [groups, setGroups] = useState<TierGroup>(() => groupByTier(restaurants))
+
+  useEffect(() => {
+    const el = document.body
+    const prev = el.style.userSelect
+    el.style.userSelect = 'none';
+    (el.style as any).webkitUserSelect = 'none'
+    return () => {
+      el.style.userSelect = prev;
+      (el.style as any).webkitUserSelect = prev
+    }
+  }, [])
   const [activeId, setActiveId] = useState<string | null>(null)
   const [saving, setSaving] = useState<string | null>(null)
 
