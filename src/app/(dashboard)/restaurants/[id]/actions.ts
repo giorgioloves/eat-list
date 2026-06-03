@@ -6,23 +6,35 @@ import { revalidatePath } from 'next/cache'
 export async function logVisit(
   restaurantId: string,
   visitedAt: string | null,
-  rating: number | null,
-  cost: number | null
+  cost: number | null,
+  myRating: number | null
 ) {
   const supabase = await createClient()
 
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Not authenticated' }
 
-  const { error: visitErr } = await supabase.from('restaurant_visits').insert({
-    restaurant_id: restaurantId,
-    visited_by: user.id,
-    visited_at: visitedAt,
-    rating,
-    cost,
-  })
+  const { data: visit, error: visitErr } = await supabase
+    .from('restaurant_visits')
+    .insert({
+      restaurant_id: restaurantId,
+      visited_by: user.id,
+      visited_at: visitedAt,
+      rating: myRating,
+      cost,
+    })
+    .select()
+    .single()
 
   if (visitErr) return { error: visitErr.message }
+
+  if (myRating !== null) {
+    await supabase.from('visit_ratings').insert({
+      visit_id: visit.id,
+      user_id: user.id,
+      rating: myRating,
+    })
+  }
 
   // Recalculate restaurant stats from all visits
   const { data: r } = await supabase
@@ -59,6 +71,60 @@ export async function logVisit(
   return { success: true }
 }
 
+export async function rateVisit(
+  visitId: string,
+  restaurantId: string,
+  rating: number | null
+) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated' }
+
+  // Always delete first, then insert if a rating was provided
+  await supabase.from('visit_ratings').delete()
+    .eq('visit_id', visitId)
+    .eq('user_id', user.id)
+
+  if (rating !== null) {
+    const { error: insertErr } = await supabase.from('visit_ratings').insert({
+      visit_id: visitId,
+      user_id: user.id,
+      rating,
+    })
+    if (insertErr) return { error: insertErr.message }
+  }
+
+  // Recalculate this visit's avg rating
+  const { data: visitRatings } = await supabase
+    .from('visit_ratings')
+    .select('rating')
+    .eq('visit_id', visitId)
+
+  const ratingVals = visitRatings?.map(r => r.rating) ?? []
+  const avgVisitRating = ratingVals.length > 0
+    ? Math.round((ratingVals.reduce((a, b) => a + b, 0) / ratingVals.length) * 10) / 10
+    : null
+
+  await supabase.from('restaurant_visits').update({ rating: avgVisitRating }).eq('id', visitId)
+
+  // Recalculate restaurant avg rating
+  const { data: allVisits } = await supabase
+    .from('restaurant_visits')
+    .select('rating')
+    .eq('restaurant_id', restaurantId)
+
+  if (allVisits) {
+    const allRatings = allVisits.map(v => v.rating).filter((x): x is number => x !== null)
+    const avgRestaurantRating = allRatings.length > 0
+      ? Math.round((allRatings.reduce((a, b) => a + b, 0) / allRatings.length) * 10) / 10
+      : null
+    await supabase.from('restaurants').update({ rating: avgRestaurantRating }).eq('id', restaurantId)
+  }
+
+  revalidatePath(`/restaurants/${restaurantId}`)
+  return { success: true }
+}
+
 export async function addNote(restaurantId: string, content: string) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -87,7 +153,6 @@ export async function updateVisit(
   visitId: string,
   restaurantId: string,
   visitedAt: string | null,
-  rating: number | null,
   cost: number | null
 ) {
   const supabase = await createClient()
@@ -96,28 +161,23 @@ export async function updateVisit(
 
   const { error } = await supabase
     .from('restaurant_visits')
-    .update({ visited_at: visitedAt, rating, cost })
+    .update({ visited_at: visitedAt, cost })
     .eq('id', visitId)
 
   if (error) return { error: error.message }
 
-  // Recalculate restaurant stats
+  // Recalculate first/last visit dates
   const { data: allVisits } = await supabase
     .from('restaurant_visits')
-    .select('visited_at, rating')
+    .select('visited_at')
     .eq('restaurant_id', restaurantId)
     .order('visited_at', { ascending: true })
 
   if (allVisits) {
-    const ratings = allVisits.map((v) => v.rating).filter((x): x is number => x !== null)
-    const avgRating = ratings.length > 0
-      ? Math.round((ratings.reduce((a, b) => a + b, 0) / ratings.length) * 10) / 10
-      : null
     const datedVisits = allVisits.filter((v) => v.visited_at)
     await supabase.from('restaurants').update({
       first_visit_date: datedVisits[0]?.visited_at ?? null,
       last_visit_date: datedVisits[datedVisits.length - 1]?.visited_at ?? null,
-      ...(avgRating !== null ? { rating: avgRating } : {}),
     }).eq('id', restaurantId)
   }
 

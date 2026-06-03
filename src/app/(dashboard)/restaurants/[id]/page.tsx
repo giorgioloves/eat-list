@@ -32,7 +32,7 @@ export default async function RestaurantDetailPage({
 
   const { data: visits } = await supabase
     .from('restaurant_visits')
-    .select('*, profiles(name, email)')
+    .select('*, profiles(name, email), visit_ratings(id, user_id, rating, profiles(name))')
     .eq('restaurant_id', id)
     .order('visited_at', { ascending: false })
 
@@ -110,6 +110,7 @@ export default async function RestaurantDetailPage({
         <VisitLog
           restaurantId={r.id}
           visits={(visits || []) as RestaurantVisit[]}
+          currentUserId={user.id}
         />
 
         {/* Note log */}

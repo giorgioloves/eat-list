@@ -75,16 +75,26 @@ export interface RestaurantNote {
   profiles?: Profile
 }
 
+export interface VisitRating {
+  id: string
+  visit_id: string
+  user_id: string
+  rating: number
+  created_at: string
+  profiles?: { name: string | null }
+}
+
 export interface RestaurantVisit {
   id: string
   restaurant_id: string
   visited_by: string
   visited_at: string | null
   notes: string | null
-  rating: number | null  // 1–5 pips
+  rating: number | null  // avg of visit_ratings
   cost: number | null    // $ spend
   created_at: string
   profiles?: Profile
+  visit_ratings?: VisitRating[]
 }
 
 export interface RestaurantFilters {
