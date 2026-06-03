@@ -153,11 +153,11 @@ export function VisitLog({ restaurantId, visits, currentUserId, profileNames }: 
                       ) : myExistingRating ? (
                         <button
                           onClick={() => setRatingVisitId(v.id)}
-                          className="flex items-center gap-2 group/rate"
+                          className="flex items-center gap-2 hover:bg-espresso-700 rounded px-1 -mx-1 transition-colors"
                         >
                           <span className="text-xs text-espresso-400 w-20 truncate">You</span>
                           <PipRating rating={myExistingRating.rating} size="sm" />
-                          <Pencil className="w-3 h-3 text-espresso-600 opacity-0 group-hover/rate:opacity-100 transition-opacity" />
+                          <Pencil className="w-3 h-3 text-espresso-500" />
                         </button>
                       ) : (
                         <button
