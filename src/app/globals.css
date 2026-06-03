@@ -58,6 +58,13 @@
     0 0 80px rgba(214,169,75,.1);
 }
 
+/* Tier page — prevent any text selection on touch */
+.tier-page * {
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+}
+
 /* Restaurant map pins */
 .restaurant-marker {
   position: relative;
