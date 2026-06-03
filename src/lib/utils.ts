@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatDate(dateString: string | null): string {
-  if (!dateString) return '—'
+  if (!dateString) return 'No date recorded'
   return new Date(dateString).toLocaleDateString('en-AU', {
     day: 'numeric',
     month: 'short',
