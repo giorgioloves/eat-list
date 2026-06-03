@@ -17,7 +17,7 @@ import {
 import {
   SortableContext,
   useSortable,
-  rectSortingStrategy,
+  verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { createClient } from '@/lib/supabase/client'
@@ -192,7 +192,7 @@ function TierRow({
         </div>
       )}
       <div className="flex-1" ref={setNodeRef}>
-        <SortableContext items={items.map((r) => r.id)} strategy={rectSortingStrategy}>
+        <SortableContext items={items.map((r) => r.id)} strategy={verticalListSortingStrategy}>
           {items.length === 0 ? (
             <div className={`border border-dashed rounded-lg h-12 flex items-center justify-center text-xs transition-colors ${isOver ? 'border-gold-500/50 text-gold-600 bg-gold-500/5' : 'border-espresso-600 text-espresso-500'}`}>
               Drop here
