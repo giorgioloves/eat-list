@@ -54,7 +54,7 @@ export function TierBoard({ restaurants }: TierBoardProps) {
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(TouchSensor, { activationConstraint: { delay: 150, tolerance: 8 } })
+    useSensor(TouchSensor, { activationConstraint: { distance: 1 } })
   )
 
   function findContainerOf(id: string): string | null {
