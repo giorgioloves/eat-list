@@ -14,39 +14,38 @@ const DEFAULT_FILTERS: Filters = {
   sortBy: 'newest',
 }
 
-const CAPITAL_CITIES = [
-  { label: 'Sydney',    states: ['NSW', 'New South Wales', 'Sydney'],                    color: '#5FA8FF' },
-  { label: 'Melbourne', states: ['VIC', 'Victoria', 'Melbourne'],                        color: '#B983FF' },
-  { label: 'Brisbane',  states: ['QLD', 'Queensland', 'Brisbane'],                       color: '#E8A87C' },
-  { label: 'Perth',     states: ['WA', 'Western Australia', 'Perth'],                    color: '#59D67A' },
-  { label: 'Adelaide',  states: ['SA', 'South Australia', 'Adelaide'],                   color: '#FF8FAB' },
-  { label: 'Hobart',    states: ['TAS', 'Tasmania', 'Hobart'],                           color: '#7AB8F5' },
-  { label: 'Canberra',  states: ['ACT', 'Australian Capital Territory', 'Canberra'],     color: '#7A8A6B' },
-  { label: 'Darwin',    states: ['NT', 'Northern Territory', 'Darwin'],                  color: '#FF9B54' },
-]
+const STATE_TO_CITY: Record<string, { label: string; color: string }> = {
+  WA:  { label: 'Perth',     color: '#59D67A' },
+  VIC: { label: 'Melbourne', color: '#B983FF' },
+  NSW: { label: 'Sydney',    color: '#5FA8FF' },
+  QLD: { label: 'Brisbane',  color: '#E8A87C' },
+  SA:  { label: 'Adelaide',  color: '#FF8FAB' },
+  TAS: { label: 'Hobart',    color: '#7AB8F5' },
+  ACT: { label: 'Canberra',  color: '#7A8A6B' },
+  NT:  { label: 'Darwin',    color: '#FF9B54' },
+}
 
 export default function RestaurantListClient({ restaurants }: { restaurants: Restaurant[] }) {
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS)
-  const [selectedCity, setSelectedCity] = useState<string>('')
+  const [selectedState, setSelectedState] = useState<string>('')
 
   const suburbs = useMemo(
     () => [...new Set(restaurants.map((r) => r.suburb).filter(Boolean) as string[])].sort(),
     [restaurants]
   )
 
-  const availableCities = useMemo(
-    () => CAPITAL_CITIES.filter((c) =>
-      restaurants.some((r) => r.city && c.states.some((s) => r.city!.includes(s)))
-    ),
-    [restaurants]
-  )
+  const availableCities = useMemo(() => {
+    const states = new Set(restaurants.map((r) => r.state).filter(Boolean) as string[])
+    return Object.entries(STATE_TO_CITY)
+      .filter(([state]) => states.has(state))
+      .map(([state, { label, color }]) => ({ state, label, color }))
+  }, [restaurants])
 
   const filtered = useMemo(() => {
     let result = [...restaurants]
 
-    if (selectedCity) {
-      const entry = CAPITAL_CITIES.find((c) => c.label === selectedCity)
-      if (entry) result = result.filter((r) => r.city && entry.states.some((s) => r.city!.includes(s)))
+    if (selectedState) {
+      result = result.filter((r) => r.state === selectedState)
     }
 
     if (filters.search) {
@@ -104,7 +103,7 @@ export default function RestaurantListClient({ restaurants }: { restaurants: Res
     })
 
     return result
-  }, [restaurants, filters, selectedCity])
+  }, [restaurants, filters, selectedState])
 
   return (
     <div className="space-y-4">
@@ -114,11 +113,11 @@ export default function RestaurantListClient({ restaurants }: { restaurants: Res
         <div className="flex gap-2 flex-wrap">
           {availableCities.map((c) => (
             <button
-              key={c.label}
-              onClick={() => setSelectedCity((prev) => prev === c.label ? '' : c.label)}
+              key={c.state}
+              onClick={() => setSelectedState((prev) => prev === c.state ? '' : c.state)}
               className="px-3 py-1.5 rounded-lg text-xs font-medium border transition-all"
               style={
-                selectedCity === c.label
+                selectedState === c.state
                   ? {
                       backgroundColor: `${c.color}22`,
                       borderColor: `${c.color}66`,

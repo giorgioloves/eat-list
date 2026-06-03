@@ -9,6 +9,7 @@ export interface PlaceResult {
   street: string
   suburb: string
   city: string
+  state: string
   lat: number | null
   lng: number | null
   cuisine: string | null
@@ -150,6 +151,7 @@ export function RestaurantAutocomplete({
         const components: AddressComponent[] = result.address_components ?? []
         const suburb = getComponent(components, 'sublocality_level_1', 'sublocality', 'neighborhood', 'locality')
         const city = getComponent(components, 'administrative_area_level_2', 'administrative_area_level_1')
+        const state = getComponent(components, 'administrative_area_level_1')
         const lat = result.geometry?.location?.lat ?? null
         const lng = result.geometry?.location?.lng ?? null
         const cuisine = resolveCuisine(result.primaryType ?? null, result.types ?? [])
@@ -159,6 +161,7 @@ export function RestaurantAutocomplete({
           street: result.street ?? '',
           suburb,
           city,
+          state,
           lat,
           lng,
           cuisine,

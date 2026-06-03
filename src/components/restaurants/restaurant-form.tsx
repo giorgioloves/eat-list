@@ -21,7 +21,8 @@ interface FormData {
   cuisine: string
   address: string
   suburb: string
-  city: string   // not shown — used for geocoding
+  city: string    // not shown — used for geocoding
+  state: string   // not shown — derived from Google Places, drives city filter
   lat: number | null
   lng: number | null
   priceLevel: string | null
@@ -37,6 +38,7 @@ export function RestaurantForm({ listId, userId, restaurant }: RestaurantFormPro
     address: restaurant?.address || '',
     suburb: restaurant?.suburb || '',
     city: restaurant?.city || '',
+    state: restaurant?.state || '',
     lat: restaurant?.latitude ?? null,
     lng: restaurant?.longitude ?? null,
     priceLevel: restaurant?.price_level ?? null,
@@ -71,6 +73,7 @@ export function RestaurantForm({ listId, userId, restaurant }: RestaurantFormPro
       address: form.address || null,
       suburb: form.suburb || null,
       city: form.city || null,
+      state: form.state || null,
       latitude: lat,
       longitude: lng,
       price_level: form.priceLevel || null,
@@ -123,13 +126,14 @@ export function RestaurantForm({ listId, userId, restaurant }: RestaurantFormPro
             <RestaurantAutocomplete
               value={form.name}
               onChange={(name) => setForm((prev) => ({ ...prev, name }))}
-              onSelect={({ name, street, suburb, city, lat, lng, cuisine, priceLevel }) =>
+              onSelect={({ name, street, suburb, city, state, lat, lng, cuisine, priceLevel }) =>
                 setForm((prev) => ({
                   ...prev,
                   name,
                   address: street || prev.address,
                   suburb: suburb || prev.suburb,
                   city: city || prev.city,
+                  state: state || prev.state,
                   cuisine: cuisine || prev.cuisine,
                   lat,
                   lng,

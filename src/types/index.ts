@@ -50,6 +50,7 @@ export interface Restaurant {
   address: string | null
   suburb: string | null
   city: string | null
+  state: string | null
   notes: string | null
   status: RestaurantStatus
   visit_count: number
