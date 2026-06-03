@@ -17,13 +17,11 @@ import {
 import {
   SortableContext,
   useSortable,
-  verticalListSortingStrategy,
+  rectSortingStrategy,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { createClient } from '@/lib/supabase/client'
 import { TIERS, TIER_COLORS, TIER_BG_COLORS, STATUS_LABELS } from '@/types'
-import { RotateCcw } from 'lucide-react'
-import { PipRating } from '@/components/ui/pip-rating'
 import type { Restaurant, Tier } from '@/types'
 
 interface TierBoardProps {
@@ -192,13 +190,13 @@ function TierRow({
         </div>
       )}
       <div className="flex-1" ref={setNodeRef}>
-        <SortableContext items={items.map((r) => r.id)} strategy={verticalListSortingStrategy}>
+        <SortableContext items={items.map((r) => r.id)} strategy={rectSortingStrategy}>
           {items.length === 0 ? (
             <div className={`border border-dashed rounded-lg h-12 flex items-center justify-center text-xs transition-colors ${isOver ? 'border-gold-500/50 text-gold-600 bg-gold-500/5' : 'border-espresso-600 text-espresso-500'}`}>
               Drop here
             </div>
           ) : (
-            <div className="flex flex-col gap-1.5">
+            <div className="grid grid-cols-3 gap-1.5">
               {items.map((r) => (
                 <RestaurantDragCard
                   key={r.id}
@@ -237,29 +235,13 @@ function RestaurantDragCard({
       style={{ ...style, WebkitTouchCallout: 'none' } as React.CSSProperties}
       {...attributes}
       {...listeners}
-      className={`select-none touch-none flex items-center gap-2 p-2.5 bg-espresso-800 border rounded-lg transition-all cursor-grab active:cursor-grabbing ${
+      className={`select-none touch-none flex items-center justify-center p-2 bg-espresso-800 border rounded-lg transition-all cursor-grab active:cursor-grabbing ${
         isDragging
           ? 'border-gold-500/50 shadow-lg shadow-black/30 rotate-1'
           : 'border-espresso-700 hover:border-espresso-600'
       } ${isSaving ? 'opacity-60' : ''}`}
     >
-      <div className="flex-1 min-w-0 pointer-events-none">
-        <p className="text-sm font-medium text-espresso-50 truncate">{restaurant.name}</p>
-        <div className="flex items-center gap-2 mt-0.5">
-          {restaurant.cuisine && <span className="text-xs text-espresso-400 truncate">{restaurant.cuisine}</span>}
-          {restaurant.suburb && <span className="text-xs text-espresso-500 truncate">{restaurant.suburb}</span>}
-        </div>
-      </div>
-
-      <div className="flex items-center gap-2 flex-shrink-0 pointer-events-none">
-        {restaurant.visit_count > 1 && (
-          <div className="flex items-center gap-1 text-xs text-espresso-400">
-            <RotateCcw className="w-3 h-3" />
-            {restaurant.visit_count}
-          </div>
-        )}
-        <PipRating rating={restaurant.rating} size="sm" />
-      </div>
+      <p className="text-xs font-medium text-espresso-50 truncate text-center pointer-events-none">{restaurant.name}</p>
 
       {isSaving && (
         <svg className="animate-spin w-3 h-3 text-gold-500 flex-shrink-0" fill="none" viewBox="0 0 24 24">
