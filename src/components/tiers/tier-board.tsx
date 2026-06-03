@@ -8,6 +8,7 @@ import {
   DragStartEvent,
   DragOverlay,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   closestCenter,
@@ -52,7 +53,8 @@ export function TierBoard({ restaurants }: TierBoardProps) {
   const [saving, setSaving] = useState<string | null>(null)
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 150, tolerance: 8 } })
   )
 
   function findContainerOf(id: string): string | null {
@@ -221,7 +223,7 @@ function RestaurantDragCard({
   return (
     <div
       ref={setNodeRef}
-      style={style}
+      style={{ ...style, WebkitTouchCallout: 'none' } as React.CSSProperties}
       {...attributes}
       {...listeners}
       className={`select-none touch-none flex items-center gap-2 p-2.5 bg-espresso-800 border rounded-lg transition-all cursor-grab active:cursor-grabbing ${

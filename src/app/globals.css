@@ -58,13 +58,6 @@
     0 0 80px rgba(214,169,75,.1);
 }
 
-/* Prevent text selection (needed for drag interfaces on iOS) */
-.no-select, .no-select * {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  user-select: none;
-}
-
 /* Restaurant map pins */
 .restaurant-marker {
   position: relative;
