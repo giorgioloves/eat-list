@@ -3,13 +3,15 @@
 import { useState } from 'react'
 import { Search, SlidersHorizontal, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { CUISINES, TIERS, STATUS_LABELS } from '@/types'
+import { STATUS_LABELS } from '@/types'
 import type { RestaurantFilters, RestaurantStatus, Tier } from '@/types'
 
 interface FiltersProps {
   filters: RestaurantFilters
   onChange: (filters: RestaurantFilters) => void
   suburbs: string[]
+  cuisines: string[]
+  tiers: Tier[]
 }
 
 const SORT_OPTIONS = [
@@ -23,7 +25,7 @@ const SORT_OPTIONS = [
 
 const STATUSES: RestaurantStatus[] = ['want_to_try', 'visited']
 
-export function RestaurantFilters({ filters, onChange, suburbs }: FiltersProps) {
+export function RestaurantFilters({ filters, onChange, suburbs, cuisines, tiers }: FiltersProps) {
   const [showFilters, setShowFilters] = useState(false)
 
   function toggle<T extends string>(arr: T[], val: T): T[] {
@@ -101,18 +103,20 @@ export function RestaurantFilters({ filters, onChange, suburbs }: FiltersProps) 
             </div>
           </FilterSection>
 
-          <FilterSection label="Tier">
-            <div className="flex flex-wrap gap-1.5">
-              {TIERS.map((t) => (
-                <FilterChip
-                  key={t}
-                  label={t}
-                  active={filters.tier.includes(t)}
-                  onClick={() => onChange({ ...filters, tier: toggle(filters.tier, t) })}
-                />
-              ))}
-            </div>
-          </FilterSection>
+          {tiers.length > 0 && (
+            <FilterSection label="Tier">
+              <div className="flex flex-wrap gap-1.5">
+                {tiers.map((t) => (
+                  <FilterChip
+                    key={t}
+                    label={t}
+                    active={filters.tier.includes(t)}
+                    onClick={() => onChange({ ...filters, tier: toggle(filters.tier, t) })}
+                  />
+                ))}
+              </div>
+            </FilterSection>
+          )}
 
           {suburbs.length > 0 && (
             <FilterSection label="Suburb">
@@ -129,18 +133,20 @@ export function RestaurantFilters({ filters, onChange, suburbs }: FiltersProps) 
             </FilterSection>
           )}
 
-          <FilterSection label="Cuisine">
-            <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto">
-              {CUISINES.map((c) => (
-                <FilterChip
-                  key={c}
-                  label={c}
-                  active={filters.cuisine.includes(c)}
-                  onClick={() => onChange({ ...filters, cuisine: toggle(filters.cuisine, c) })}
-                />
-              ))}
-            </div>
-          </FilterSection>
+          {cuisines.length > 0 && (
+            <FilterSection label="Cuisine">
+              <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto">
+                {cuisines.map((c) => (
+                  <FilterChip
+                    key={c}
+                    label={c}
+                    active={filters.cuisine.includes(c)}
+                    onClick={() => onChange({ ...filters, cuisine: toggle(filters.cuisine, c) })}
+                  />
+                ))}
+              </div>
+            </FilterSection>
+          )}
         </div>
       )}
     </div>
