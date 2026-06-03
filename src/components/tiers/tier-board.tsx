@@ -243,7 +243,7 @@ function RestaurantDragCard({
           : 'border-espresso-700 hover:border-espresso-600'
       } ${isSaving ? 'opacity-60' : ''}`}
     >
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0 pointer-events-none">
         <p className="text-sm font-medium text-espresso-50 truncate">{restaurant.name}</p>
         <div className="flex items-center gap-2 mt-0.5">
           {restaurant.cuisine && <span className="text-xs text-espresso-400 truncate">{restaurant.cuisine}</span>}
@@ -251,7 +251,7 @@ function RestaurantDragCard({
         </div>
       </div>
 
-      <div className="flex items-center gap-2 flex-shrink-0">
+      <div className="flex items-center gap-2 flex-shrink-0 pointer-events-none">
         {restaurant.visit_count > 1 && (
           <div className="flex items-center gap-1 text-xs text-espresso-400">
             <RotateCcw className="w-3 h-3" />
