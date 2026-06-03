@@ -32,11 +32,22 @@ if (!SUPABASE_URL || !SERVICE_KEY || !GOOGLE_KEY) {
 
 const supabase = createClient(SUPABASE_URL, SERVICE_KEY)
 
-const PRICE_MAP = {
+const PRICE_LEVEL_MAP = {
   PRICE_LEVEL_INEXPENSIVE:    '$',
   PRICE_LEVEL_MODERATE:       '$$',
   PRICE_LEVEL_EXPENSIVE:      '$$$',
   PRICE_LEVEL_VERY_EXPENSIVE: '$$$$',
+}
+
+function priceLevelFromRange(priceRange) {
+  if (!priceRange) return null
+  const end   = parseFloat(priceRange.endPrice?.units ?? '')
+  const start = parseFloat(priceRange.startPrice?.units ?? '0')
+  if (isNaN(end)) return start >= 200 ? '$$$$' : null
+  if (end <= 20)  return '$'
+  if (end <= 40)  return '$$'
+  if (end <= 200) return '$$$'
+  return '$$$$'
 }
 
 async function searchPriceLevel(name, suburb, city) {
@@ -46,13 +57,13 @@ async function searchPriceLevel(name, suburb, city) {
     headers: {
       'Content-Type': 'application/json',
       'X-Goog-Api-Key': GOOGLE_KEY,
-      'X-Goog-FieldMask': 'places.priceLevel,places.displayName',
+      'X-Goog-FieldMask': 'places.priceLevel,places.priceRange,places.displayName',
     },
     body: JSON.stringify({ textQuery: query, maxResultCount: 1, regionCode: 'AU' }),
   })
   const data = await res.json()
-  const level = data.places?.[0]?.priceLevel
-  return PRICE_MAP[level] ?? null
+  const place = data.places?.[0]
+  return PRICE_LEVEL_MAP[place?.priceLevel] ?? priceLevelFromRange(place?.priceRange) ?? null
 }
 
 async function main() {
