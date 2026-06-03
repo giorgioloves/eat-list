@@ -1,39 +1,55 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Shuffle } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
-import { CUISINES } from '@/types'
 import { RestaurantRoulette } from './restaurant-roulette'
 import { WinnerReveal } from './winner-reveal'
 import type { Restaurant, RestaurantStatus } from '@/types'
 
 interface Filters {
+  state: string
   cuisine: string
-  city: string
   suburb: string
   status: RestaurantStatus | ''
   excludeCafesBakeriesGelaterias: boolean
 }
 
-const CAPITAL_CITIES = [
-  { label: 'Sydney',    states: ['NSW', 'New South Wales', 'Sydney'] },
-  { label: 'Melbourne', states: ['VIC', 'Victoria', 'Melbourne'] },
-  { label: 'Brisbane',  states: ['QLD', 'Queensland', 'Brisbane'] },
-  { label: 'Perth',     states: ['WA', 'Western Australia', 'Perth', 'Fremantle'] },
-  { label: 'Adelaide',  states: ['SA', 'South Australia', 'Adelaide'] },
-  { label: 'Hobart',    states: ['TAS', 'Tasmania', 'Hobart'] },
-  { label: 'Canberra',  states: ['ACT', 'Australian Capital Territory', 'Canberra'] },
-  { label: 'Darwin',    states: ['NT', 'Northern Territory', 'Darwin'] },
-]
+const STATE_TO_CITY: Record<string, string> = {
+  WA:  'Perth',
+  VIC: 'Melbourne',
+  NSW: 'Sydney',
+  QLD: 'Brisbane',
+  SA:  'Adelaide',
+  TAS: 'Hobart',
+  ACT: 'Canberra',
+  NT:  'Darwin',
+}
 
 type Phase = 'idle' | 'spinning' | 'revealing'
 
+function applyPool(
+  list: Restaurant[],
+  state: string,
+  cuisine: string,
+  suburb: string,
+  status: string,
+  excludeCafes: boolean,
+): Restaurant[] {
+  let r = list
+  if (state) r = r.filter(x => x.state === state)
+  if (cuisine) r = r.filter(x => x.cuisine === cuisine)
+  if (suburb) r = r.filter(x => x.suburb === suburb)
+  if (status) r = r.filter(x => x.status === status)
+  if (excludeCafes) r = r.filter(x => !['Cafe', 'Bakery', 'Gelato'].includes(x.cuisine ?? ''))
+  return r
+}
+
 export function RandomPicker({ restaurants }: { restaurants: Restaurant[] }) {
   const [filters, setFilters] = useState<Filters>({
+    state: '',
     cuisine: '',
-    city: '',
     suburb: '',
     status: 'want_to_try',
     excludeCafesBakeriesGelaterias: false,
@@ -42,39 +58,66 @@ export function RandomPicker({ restaurants }: { restaurants: Restaurant[] }) {
   const [winner, setWinner] = useState<Restaurant | null>(null)
   const [history, setHistory] = useState<string[]>([])
 
-  const suburbs = useMemo(
-    () => [...new Set(restaurants.map((r) => r.suburb).filter(Boolean) as string[])].sort(),
-    [restaurants]
+  const { state, cuisine, suburb, status, excludeCafesBakeriesGelaterias: excludeCafes } = filters
+
+  // Base sets for each facet
+  const baseNoState = useMemo(() =>
+    applyPool(restaurants, '', cuisine, suburb, status, excludeCafes),
+    [restaurants, cuisine, suburb, status, excludeCafes]
+  )
+  const baseNoCuisine = useMemo(() =>
+    applyPool(restaurants, state, '', suburb, status, excludeCafes),
+    [restaurants, state, suburb, status, excludeCafes]
+  )
+  const baseNoSuburb = useMemo(() =>
+    applyPool(restaurants, state, cuisine, '', status, excludeCafes),
+    [restaurants, state, cuisine, status, excludeCafes]
   )
 
-  const availableCities = useMemo(
-    () => CAPITAL_CITIES.filter((c) =>
-      restaurants.some((r) => r.city && c.states.some((s) => r.city!.includes(s)))
-    ).map((c) => c.label),
-    [restaurants]
+  // Derive available options
+  const availableCities = useMemo(() => {
+    const states = new Set(baseNoState.map(r => r.state).filter(Boolean) as string[])
+    return Object.entries(STATE_TO_CITY)
+      .filter(([s]) => states.has(s))
+      .map(([s, label]) => ({ value: s, label }))
+  }, [baseNoState])
+
+  const availableCuisines = useMemo(() =>
+    [...new Set(baseNoCuisine.map(r => r.cuisine).filter(Boolean) as string[])].sort(),
+    [baseNoCuisine]
   )
 
-  const pool = useMemo(() => {
-    let result = [...restaurants]
-    if (filters.city) {
-      const entry = CAPITAL_CITIES.find((c) => c.label === filters.city)
-      if (entry) result = result.filter((r) => r.city && entry.states.some((s) => r.city!.includes(s)))
-    }
-    if (filters.cuisine) result = result.filter((r) => r.cuisine === filters.cuisine)
-    if (filters.suburb) result = result.filter((r) => r.suburb === filters.suburb)
-    if (filters.status) result = result.filter((r) => r.status === filters.status)
-    if (filters.excludeCafesBakeriesGelaterias)
-      result = result.filter((r) => !['Cafe', 'Bakery', 'Gelato'].includes(r.cuisine ?? ''))
-    return result
-  }, [restaurants, filters])
+  const availableSuburbs = useMemo(() =>
+    [...new Set(baseNoSuburb.map(r => r.suburb).filter(Boolean) as string[])].sort(),
+    [baseNoSuburb]
+  )
+
+  // Auto-reset stale single-select values
+  useEffect(() => {
+    setFilters(prev => {
+      const stateOk  = !prev.state   || availableCities.some(c => c.value === prev.state)
+      const cuisineOk = !prev.cuisine || availableCuisines.includes(prev.cuisine)
+      const suburbOk  = !prev.suburb  || availableSuburbs.includes(prev.suburb)
+      if (stateOk && cuisineOk && suburbOk) return prev
+      return {
+        ...prev,
+        state:   stateOk   ? prev.state   : '',
+        cuisine: cuisineOk ? prev.cuisine : '',
+        suburb:  suburbOk  ? prev.suburb  : '',
+      }
+    })
+  }, [availableCities, availableCuisines, availableSuburbs])
+
+  const pool = useMemo(() =>
+    applyPool(restaurants, state, cuisine, suburb, status, excludeCafes),
+    [restaurants, state, cuisine, suburb, status, excludeCafes]
+  )
 
   function handlePick() {
     if (pool.length === 0 || phase !== 'idle') return
-
     const candidates = pool.filter((r) => !history.includes(r.id))
     const available = candidates.length > 0 ? candidates : pool
     const choice = available[Math.floor(Math.random() * available.length)]
-
     setWinner(choice)
     setPhase('spinning')
     setHistory((h) => [choice.id, ...h].slice(0, 5))
@@ -113,21 +156,21 @@ export function RandomPicker({ restaurants }: { restaurants: Restaurant[] }) {
               />
               <FilterSelect
                 label="City"
-                value={filters.city}
-                onChange={(v) => setFilters((f) => ({ ...f, city: v, suburb: '' }))}
-                options={[{ value: '', label: 'Any city' }, ...availableCities.map((c) => ({ value: c, label: c }))]}
+                value={filters.state}
+                onChange={(v) => setFilters((f) => ({ ...f, state: v, suburb: '' }))}
+                options={[{ value: '', label: 'Any city' }, ...availableCities]}
               />
               <FilterSelect
                 label="Cuisine"
                 value={filters.cuisine}
                 onChange={(v) => setFilters((f) => ({ ...f, cuisine: v }))}
-                options={[{ value: '', label: 'Any cuisine' }, ...CUISINES.map((c) => ({ value: c, label: c }))]}
+                options={[{ value: '', label: 'Any cuisine' }, ...availableCuisines.map((c) => ({ value: c, label: c }))]}
               />
               <FilterSelect
                 label="Suburb"
                 value={filters.suburb}
                 onChange={(v) => setFilters((f) => ({ ...f, suburb: v }))}
-                options={[{ value: '', label: 'Any suburb' }, ...suburbs.map((s) => ({ value: s, label: s }))]}
+                options={[{ value: '', label: 'Any suburb' }, ...availableSuburbs.map((s) => ({ value: s, label: s }))]}
               />
               <label className="flex items-center gap-2 cursor-pointer self-end pb-1.5">
                 <input
@@ -136,7 +179,7 @@ export function RandomPicker({ restaurants }: { restaurants: Restaurant[] }) {
                   onChange={(e) => setFilters((f) => ({ ...f, excludeCafesBakeriesGelaterias: e.target.checked }))}
                   className="w-3.5 h-3.5 rounded accent-gold-500 cursor-pointer"
                 />
-                <span className="text-xs text-espresso-200">Exclude cafes, bakeries & gelaterias</span>
+                <span className="text-xs text-espresso-200">Exclude cafes, bakeries &amp; gelaterias</span>
               </label>
             </div>
 
