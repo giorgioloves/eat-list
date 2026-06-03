@@ -28,7 +28,7 @@ export default async function TiersPage() {
   const all = (restaurants || []) as Restaurant[]
 
   return (
-    <div className="p-4 sm:p-6 max-w-3xl mx-auto select-none">
+    <div className="p-4 sm:p-6 max-w-3xl mx-auto no-select">
       <div className="mb-6">
         <h1 className="text-xl font-bold text-espresso-50">Tier List</h1>
         <p className="text-sm text-espresso-300 mt-0.5">Drag restaurants between tiers · saves automatically</p>
