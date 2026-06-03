@@ -102,6 +102,7 @@ export default async function DashboardPage() {
                 <div className="flex items-center gap-2 mt-0.5">
                   <StatusBadge status={r.status} />
                   {r.cuisine && <span className="text-xs text-espresso-400">{r.cuisine}</span>}
+                  {r.price_level && <span className="text-xs text-espresso-400">{r.price_level}</span>}
                 </div>
               </div>
             </Link>
