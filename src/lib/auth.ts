@@ -15,11 +15,11 @@ export const getListInfo = cache(async (userId: string): Promise<{ listId: strin
     .eq('user_id', userId)
     .limit(1)
     .single()
+  // Supabase types joined relations as arrays; grab the first element's name.
+  const lists = data?.shared_lists as { name: string }[] | null
   return {
     listId: data?.list_id ?? null,
-    listName: data?.shared_lists
-      ? (data.shared_lists as { name: string }).name
-      : null,
+    listName: lists?.[0]?.name ?? null,
   }
 })
 
