@@ -59,7 +59,6 @@ export default function RestaurantListClient({ restaurants }: { restaurants: Res
 
   const { search, status, cuisine, suburb, tier } = filters
 
-  // Base sets for each facet — apply all OTHER active filters
   const baseNoState = useMemo(() =>
     applyFilters(restaurants, search, status, cuisine, suburb, tier, ''),
     [restaurants, search, status, cuisine, suburb, tier]
@@ -77,7 +76,6 @@ export default function RestaurantListClient({ restaurants }: { restaurants: Res
     [restaurants, search, status, cuisine, suburb, selectedState]
   )
 
-  // Derive available options from each base set
   const availableCities = useMemo(() => {
     const states = new Set(baseNoState.map(r => r.state).filter(Boolean) as string[])
     return Object.entries(STATE_TO_CITY)
@@ -89,18 +87,15 @@ export default function RestaurantListClient({ restaurants }: { restaurants: Res
     [...new Set(baseNoSuburb.map(r => r.suburb).filter(Boolean) as string[])].sort(),
     [baseNoSuburb]
   )
-
   const availableCuisines = useMemo(() =>
     [...new Set(baseNoCuisine.map(r => r.cuisine).filter(Boolean) as string[])].sort(),
     [baseNoCuisine]
   )
-
   const availableTiers = useMemo(() =>
     TIERS.filter(t => baseNoTier.some(r => r.tier === t)),
     [baseNoTier]
   )
 
-  // Auto-deselect values that are no longer available given other active filters
   useEffect(() => {
     setFilters(prev => {
       const newSuburb = prev.suburb.filter(s => availableSuburbs.includes(s))
@@ -116,7 +111,6 @@ export default function RestaurantListClient({ restaurants }: { restaurants: Res
     setSelectedState(prev => (!prev || availableCities.some(c => c.state === prev)) ? prev : '')
   }, [availableSuburbs, availableCuisines, availableTiers, availableCities])
 
-  // Final filtered + sorted results
   const filtered = useMemo(() => {
     const result = [...applyFilters(restaurants, search, status, cuisine, suburb, tier, selectedState)]
     const tierOrder: Record<string, number> = { S: 0, A: 1, B: 2, C: 3, D: 4, E: 5, F: 6 }
@@ -141,8 +135,23 @@ export default function RestaurantListClient({ restaurants }: { restaurants: Res
     return result
   }, [restaurants, filters, selectedState, search, status, cuisine, suburb, tier])
 
+  const hasActiveFilters =
+    filters.search !== '' ||
+    filters.status.length > 0 ||
+    filters.cuisine.length > 0 ||
+    filters.suburb.length > 0 ||
+    filters.tier.length > 0 ||
+    selectedState !== ''
+
+  function clearAll() {
+    setFilters(DEFAULT_FILTERS)
+    setSelectedState('')
+  }
+
   return (
     <div className="space-y-4">
+
+      {/* Search · Filter · Sort */}
       <RestaurantFilters
         filters={filters}
         onChange={setFilters}
@@ -151,40 +160,56 @@ export default function RestaurantListClient({ restaurants }: { restaurants: Res
         tiers={availableTiers}
       />
 
+      {/* City chips — horizontal scroll, breaks out of parent px-4 */}
       {availableCities.length > 0 && (
-        <div className="flex gap-2 flex-wrap">
-          {availableCities.map((c) => (
-            <button
-              key={c.state}
-              onClick={() => setSelectedState(prev => prev === c.state ? '' : c.state)}
-              className="px-3 py-1.5 rounded-lg text-xs font-medium border transition-all"
-              style={
-                selectedState === c.state
-                  ? { backgroundColor: `${c.color}22`, borderColor: `${c.color}66`, color: c.color }
-                  : { backgroundColor: 'transparent', borderColor: `${c.color}44`, color: `${c.color}CC` }
-              }
-            >
-              {c.label}
-            </button>
-          ))}
+        <div className="-mx-4 px-4 overflow-x-auto scrollbar-none">
+          <div className="flex gap-2 pb-0.5">
+            {availableCities.map(c => (
+              <button
+                key={c.state}
+                onClick={() => setSelectedState(prev => prev === c.state ? '' : c.state)}
+                className="h-10 px-4 rounded-full text-sm font-semibold border transition-all whitespace-nowrap flex-shrink-0 min-w-[44px]"
+                style={
+                  selectedState === c.state
+                    ? { backgroundColor: `${c.color}22`, borderColor: `${c.color}70`, color: c.color }
+                    : { backgroundColor: 'transparent', borderColor: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.45)' }
+                }
+              >
+                {c.label}
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
+      {/* Result count + clear */}
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-espresso-500">
+          {filtered.length === restaurants.length
+            ? `${restaurants.length} restaurants`
+            : `${filtered.length} of ${restaurants.length}`}
+        </p>
+        {hasActiveFilters && (
+          <button
+            onClick={clearAll}
+            className="text-sm font-semibold text-gold-400 hover:text-gold-300 transition-colors"
+          >
+            Clear
+          </button>
+        )}
+      </div>
+
+      {/* Cards */}
       {filtered.length === 0 ? (
-        <div className="text-center py-10 text-espresso-400 text-sm">
+        <div className="text-center py-12 text-espresso-500 text-sm">
           No restaurants match your filters
         </div>
       ) : (
-        <>
-          <p className="text-xs text-espresso-400">
-            Showing {filtered.length} of {restaurants.length}
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {filtered.map((r) => (
-              <RestaurantCard key={r.id} restaurant={r} />
-            ))}
-          </div>
-        </>
+        <div className="space-y-3">
+          {filtered.map(r => (
+            <RestaurantCard key={r.id} restaurant={r} />
+          ))}
+        </div>
       )}
     </div>
   )
