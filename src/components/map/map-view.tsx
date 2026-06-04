@@ -3,11 +3,14 @@
 import { useState, useRef, useEffect } from 'react'
 import { GoogleMap, useJsApiLoader, OverlayView } from '@react-google-maps/api'
 import Link from 'next/link'
+import { Instagram } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { CUISINE_EMOJI, TIER_COLORS } from '@/types'
 import { PipRating } from '@/components/ui/pip-rating'
 import { formatDate } from '@/lib/utils'
 import type { Restaurant, RestaurantVisit } from '@/types'
+
+const markerOffset = () => ({ x: -21, y: -50 })
 
 
 const MAP_STYLES = [
@@ -134,7 +137,7 @@ export function MapView({ restaurants }: MapViewProps) {
             key={r.id}
             position={{ lat: r.latitude!, lng: r.longitude! }}
             mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
-            getPixelPositionOffset={() => ({ x: -21, y: -50 })}
+            getPixelPositionOffset={markerOffset}
           >
             <div
               className={`restaurant-marker${selected?.id === r.id ? ' selected' : ''}`}
@@ -165,10 +168,10 @@ export function MapView({ restaurants }: MapViewProps) {
             </button>
             <p className="font-bold text-espresso-50 pr-6 text-base leading-tight">{selected.name}</p>
             {selected.cuisine && (
-              <p className="text-xs text-espresso-300 mt-0.5">{selected.cuisine}</p>
+              <p className="text-sm text-espresso-300 mt-0.5">{selected.cuisine}</p>
             )}
             {(selected.address || selected.suburb) && (
-              <p className="text-xs text-espresso-500 mt-0.5">
+              <p className="text-sm text-espresso-500 mt-0.5">
                 {[selected.address, selected.suburb].filter(Boolean).join(', ')}
               </p>
             )}
@@ -177,7 +180,7 @@ export function MapView({ restaurants }: MapViewProps) {
                 href={selected.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-gold-400 hover:text-gold-300 transition-colors truncate block mt-1"
+                className="text-sm text-gold-400 hover:text-gold-300 transition-colors truncate block mt-1"
               >
                 {selected.website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}
               </a>
@@ -187,8 +190,9 @@ export function MapView({ restaurants }: MapViewProps) {
                 href={`https://www.instagram.com/${selected.instagram.replace(/^@/, '')}/`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-espresso-400 hover:text-espresso-200 transition-colors block mt-0.5"
+                className="flex items-center gap-1.5 text-sm text-espresso-400 hover:text-espresso-200 transition-colors mt-0.5"
               >
+                <Instagram className="w-3.5 h-3.5 flex-shrink-0" />
                 @{selected.instagram.replace(/^@/, '')}
               </a>
             )}
@@ -241,7 +245,7 @@ export function MapView({ restaurants }: MapViewProps) {
           <div className="flex gap-2 p-3 pt-2 border-t border-espresso-700 flex-shrink-0">
             <Link
               href={`/restaurants/${selected.id}`}
-              className="flex-1 text-center text-xs py-1.5 bg-espresso-700 hover:bg-espresso-600 text-espresso-100 rounded-lg transition-colors"
+              className="flex-1 text-center text-sm py-1.5 bg-espresso-700 hover:bg-espresso-600 text-espresso-100 rounded-lg transition-colors"
             >
               View details
             </Link>
@@ -252,7 +256,7 @@ export function MapView({ restaurants }: MapViewProps) {
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs py-1.5 px-2.5 bg-gold-500/10 hover:bg-gold-500/20 text-gold-400 rounded-lg transition-colors"
+                className="text-sm py-1.5 px-2.5 bg-gold-500/10 hover:bg-gold-500/20 text-gold-400 rounded-lg transition-colors"
               >
                 Maps
               </a>
