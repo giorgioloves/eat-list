@@ -35,13 +35,16 @@ export function RestaurantProvider({
   const refresh = useCallback(async () => {
     if (!listId) { setLoading(false); return }
     const supabase = createClient()
-    const { data } = await supabase
-      .from('restaurants')
-      .select('*')
-      .eq('list_id', listId)
-      .order('created_at', { ascending: false })
-    setRestaurants((data ?? []) as Restaurant[])
-    setLoading(false)
+    try {
+      const { data, error } = await supabase
+        .from('restaurants')
+        .select('*')
+        .eq('list_id', listId)
+        .order('created_at', { ascending: false })
+      if (!error) setRestaurants((data ?? []) as Restaurant[])
+    } finally {
+      setLoading(false)
+    }
   }, [listId])
 
   useEffect(() => { refresh() }, [refresh])

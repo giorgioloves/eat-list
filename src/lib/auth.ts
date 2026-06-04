@@ -17,7 +17,9 @@ export const getListInfo = cache(async (userId: string): Promise<{ listId: strin
     .single()
   return {
     listId: data?.list_id ?? null,
-    listName: (data?.shared_lists as any)?.name ?? null,
+    listName: data?.shared_lists
+      ? (data.shared_lists as { name: string }).name
+      : null,
   }
 })
 

@@ -1,6 +1,8 @@
-﻿export type RestaurantStatus = 'want_to_try' | 'visited'
+﻿export const RESTAURANT_STATUSES = ['want_to_try', 'visited'] as const
+export type RestaurantStatus = typeof RESTAURANT_STATUSES[number]
 export type WouldGoAgain = 'definitely' | 'maybe' | 'no'
-export type Tier = 'S' | 'A' | 'B' | 'C' | 'D' | 'E' | 'F'
+export const TIERS = ['S', 'A', 'B', 'C', 'D', 'E', 'F'] as const
+export type Tier = typeof TIERS[number]
 export type MemberRole = 'owner' | 'member'
 export type InvitationStatus = 'pending' | 'accepted' | 'declined'
 
@@ -62,6 +64,7 @@ export interface Restaurant {
   price_level: '$' | '$$' | '$$$' | '$$$$' | null
   website: string | null
   instagram: string | null
+  tags: string[]
   latitude: number | null
   longitude: number | null
   created_by: string
@@ -144,7 +147,6 @@ export const TIER_BG_COLORS: Record<Tier, string> = {
   F: 'bg-[#4A2323] border-[#FF6B6B]/30',
 }
 
-export const TIERS: Tier[] = ['S', 'A', 'B', 'C', 'D', 'E', 'F']
 
 export const CUISINE_EMOJI: Record<string, string> = {
   'Modern Australian': '🇦🇺',
@@ -187,13 +189,5 @@ export const CUISINE_EMOJI: Record<string, string> = {
   'Other':             '🌀',
 }
 
-export const CUISINES = [
-  'Modern Australian', 'Italian', 'Japanese', 'Chinese', 'Thai', 'Indian',
-  'Mexican', 'French', 'Mediterranean', 'American', 'Korean', 'Vietnamese',
-  'Greek', 'Spanish', 'Middle Eastern', 'Seafood', 'Steakhouse', 'Pizza',
-  'Sushi', 'Ramen', 'Tapas', 'Dumplings', 'Burgers', 'Cafe', 'Bakery',
-  'Dessert', 'Sandwiches', 'Portuguese', 'Malaysian/Indonesian',
-  'BBQ', 'Turkish', 'Lebanese', 'Ethiopian',
-  'Wine Bar', 'Pub', 'Gelato', 'Asian Fusion', 'Other',
-]
+export const CUISINES = Object.keys(CUISINE_EMOJI)
 
