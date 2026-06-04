@@ -42,7 +42,7 @@ function applyPool(
   if (cuisine) r = r.filter(x => x.cuisine === cuisine)
   if (suburb) r = r.filter(x => x.suburb === suburb)
   if (status) r = r.filter(x => x.status === status)
-  if (excludeCafes) r = r.filter(x => !['Cafe', 'Bakery', 'Gelato'].includes(x.cuisine ?? ''))
+  if (excludeCafes) r = r.filter(x => !['Cafe', 'Bakery', 'Gelato', 'Sandwiches'].includes(x.cuisine ?? ''))
   return r
 }
 
@@ -179,7 +179,7 @@ export function RandomPicker({ restaurants }: { restaurants: Restaurant[] }) {
                   onChange={(e) => setFilters((f) => ({ ...f, excludeCafesBakeriesGelaterias: e.target.checked }))}
                   className="w-3.5 h-3.5 rounded accent-gold-500 cursor-pointer"
                 />
-                <span className="text-xs text-espresso-200">Exclude cafes, bakeries &amp; gelaterias</span>
+                <span className="text-xs text-espresso-200">Exclude cafes, bakeries, gelaterias &amp; sandwiches</span>
               </label>
             </div>
 
