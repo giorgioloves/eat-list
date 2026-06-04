@@ -32,18 +32,12 @@ export async function geocodeAddress(
   ...parts: string[]
 ): Promise<{ lat: number; lng: number } | null> {
   const query = parts.filter(Boolean).join(', ')
-  const key = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
-  if (!key) return null
+  if (!query) return null
 
   try {
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(query)}&key=${key}`
-    const response = await fetch(url)
-    const data = await response.json()
-    if (data.status === 'OK' && data.results.length > 0) {
-      const { lat, lng } = data.results[0].geometry.location
-      return { lat, lng }
-    }
-    return null
+    const res = await fetch(`/api/places/geocode?query=${encodeURIComponent(query)}`)
+    const data = await res.json()
+    return data.result ?? null
   } catch {
     return null
   }

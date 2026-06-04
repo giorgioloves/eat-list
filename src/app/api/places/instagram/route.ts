@@ -29,6 +29,30 @@ export async function GET(request: Request) {
   const url = searchParams.get('url')
   if (!url) return Response.json({ instagram: null })
 
+  // Only allow public HTTP(S) URLs — reject file://, internal IPs, etc.
+  let parsedUrl: URL
+  try {
+    parsedUrl = new URL(url)
+  } catch {
+    return Response.json({ instagram: null })
+  }
+  if (parsedUrl.protocol !== 'https:' && parsedUrl.protocol !== 'http:') {
+    return Response.json({ instagram: null })
+  }
+  // Block requests to private/loopback address ranges
+  const hostname = parsedUrl.hostname.toLowerCase()
+  if (
+    hostname === 'localhost' ||
+    hostname.startsWith('127.') ||
+    hostname.startsWith('10.') ||
+    hostname.startsWith('192.168.') ||
+    hostname === '169.254.169.254' ||
+    hostname.endsWith('.internal') ||
+    hostname.endsWith('.local')
+  ) {
+    return Response.json({ instagram: null })
+  }
+
   // If the website URL itself is an Instagram link, extract directly
   const direct = extractFromInstagramUrl(url)
   if (direct) return Response.json({ instagram: direct })

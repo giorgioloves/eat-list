@@ -3,6 +3,11 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 
+function avgRounded(nums: number[]): number | null {
+  if (nums.length === 0) return null
+  return Math.round((nums.reduce((a, b) => a + b, 0) / nums.length) * 10) / 10
+}
+
 export async function logVisit(
   restaurantId: string,
   visitedAt: string | null,
@@ -29,17 +34,18 @@ export async function logVisit(
   if (visitErr) return { error: visitErr.message }
 
   if (myRating !== null) {
-    await supabase.from('visit_ratings').insert({
+    const { error: ratingErr } = await supabase.from('visit_ratings').insert({
       visit_id: visit.id,
       user_id: user.id,
       rating: myRating,
     })
+    if (ratingErr) return { error: ratingErr.message }
   }
 
   // Recalculate restaurant stats from all visits
   const { data: r } = await supabase
     .from('restaurants')
-    .select('visit_count, first_visit_date, status')
+    .select('status')
     .eq('id', restaurantId)
     .single()
 
@@ -51,18 +57,14 @@ export async function logVisit(
 
   if (r && allVisits) {
     const ratings = allVisits.map((v) => v.rating).filter((x): x is number => x !== null)
-    const avgRating = ratings.length > 0
-      ? Math.round((ratings.reduce((a, b) => a + b, 0) / ratings.length) * 10) / 10
-      : null
-
     const datedVisits = allVisits.filter((v) => v.visited_at)
     const updates: Record<string, unknown> = {
       visit_count: allVisits.length,
       first_visit_date: datedVisits[0]?.visited_at ?? null,
       last_visit_date: datedVisits[datedVisits.length - 1]?.visited_at ?? null,
+      rating: avgRounded(ratings),
     }
     if (r.status === 'want_to_try') updates.status = 'visited'
-    if (avgRating !== null) updates.rating = avgRating
 
     await supabase.from('restaurants').update(updates).eq('id', restaurantId)
   }
@@ -100,11 +102,7 @@ export async function rateVisit(
     .select('rating')
     .eq('visit_id', visitId)
 
-  const ratingVals = visitRatings?.map(r => r.rating) ?? []
-  const avgVisitRating = ratingVals.length > 0
-    ? Math.round((ratingVals.reduce((a, b) => a + b, 0) / ratingVals.length) * 10) / 10
-    : null
-
+  const avgVisitRating = avgRounded(visitRatings?.map(r => r.rating) ?? [])
   await supabase.from('restaurant_visits').update({ rating: avgVisitRating }).eq('id', visitId)
 
   // Recalculate restaurant avg rating
@@ -115,10 +113,7 @@ export async function rateVisit(
 
   if (allVisits) {
     const allRatings = allVisits.map(v => v.rating).filter((x): x is number => x !== null)
-    const avgRestaurantRating = allRatings.length > 0
-      ? Math.round((allRatings.reduce((a, b) => a + b, 0) / allRatings.length) * 10) / 10
-      : null
-    await supabase.from('restaurants').update({ rating: avgRestaurantRating }).eq('id', restaurantId)
+    await supabase.from('restaurants').update({ rating: avgRounded(allRatings) }).eq('id', restaurantId)
   }
 
   revalidatePath(`/restaurants/${restaurantId}`)
@@ -143,6 +138,8 @@ export async function addNote(restaurantId: string, content: string) {
 
 export async function deleteNote(noteId: string, restaurantId: string) {
   const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated' }
   const { error } = await supabase.from('restaurant_notes').delete().eq('id', noteId)
   if (error) return { error: error.message }
   revalidatePath(`/restaurants/${restaurantId}`)
@@ -163,6 +160,7 @@ export async function updateVisit(
     .from('restaurant_visits')
     .update({ visited_at: visitedAt, cost })
     .eq('id', visitId)
+    .eq('visited_by', user.id)
 
   if (error) return { error: error.message }
 
@@ -203,6 +201,9 @@ export async function setWouldGoAgain(restaurantId: string, value: 'definitely' 
 export async function deleteVisit(visitId: string, restaurantId: string) {
   const supabase = await createClient()
 
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated' }
+
   const { error } = await supabase.from('restaurant_visits').delete().eq('id', visitId)
   if (error) return { error: error.message }
 
@@ -215,15 +216,12 @@ export async function deleteVisit(visitId: string, restaurantId: string) {
 
   const visits = remaining ?? []
   const ratings = visits.map((v) => v.rating).filter((x): x is number => x !== null)
-  const avgRating = ratings.length > 0
-    ? Math.round((ratings.reduce((a, b) => a + b, 0) / ratings.length) * 10) / 10
-    : null
-
+  const datedVisits = visits.filter((v) => v.visited_at)
   const updates: Record<string, unknown> = {
     visit_count: visits.length,
-    first_visit_date: visits[0]?.visited_at ?? null,
-    last_visit_date: visits[visits.length - 1]?.visited_at ?? null,
-    rating: avgRating,
+    first_visit_date: datedVisits[0]?.visited_at ?? null,
+    last_visit_date: datedVisits[datedVisits.length - 1]?.visited_at ?? null,
+    rating: avgRounded(ratings),
   }
   if (visits.length === 0) updates.status = 'want_to_try'
 
