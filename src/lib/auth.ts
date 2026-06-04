@@ -15,8 +15,9 @@ export const getListInfo = cache(async (userId: string): Promise<{ listId: strin
     .eq('user_id', userId)
     .limit(1)
     .single()
-  // Many-to-one join (.single()) returns the related row as a plain object, not an array.
-  const list = data?.shared_lists as { name: string } | null
+  // Many-to-one join (.single()) returns the related row as a plain object at runtime,
+  // but Supabase's generated types always type joined relations as arrays — cast via unknown.
+  const list = (data?.shared_lists as unknown) as { name: string } | null
   return {
     listId: data?.list_id ?? null,
     listName: list?.name ?? null,
