@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { GoogleMap, useJsApiLoader, OverlayView } from '@react-google-maps/api'
+import { GoogleMap, useJsApiLoader, OverlayViewF } from '@react-google-maps/api'
 import Link from 'next/link'
-import { Instagram } from 'lucide-react'
+import { Instagram, Globe } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { CUISINE_EMOJI, TIER_COLORS } from '@/types'
 import { PipRating } from '@/components/ui/pip-rating'
@@ -133,10 +133,10 @@ export function MapView({ restaurants }: MapViewProps) {
         onClick={() => setSelected(null)}
       >
         {withCoords.map((r) => (
-          <OverlayView
+          <OverlayViewF
             key={r.id}
             position={{ lat: r.latitude!, lng: r.longitude! }}
-            mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+            mapPaneName="overlayMouseTarget"
             getPixelPositionOffset={markerOffset}
           >
             <div
@@ -151,7 +151,7 @@ export function MapView({ restaurants }: MapViewProps) {
                 {CUISINE_EMOJI[r.cuisine ?? ''] ?? '🍽️'}
               </span>
             </div>
-          </OverlayView>
+          </OverlayViewF>
         ))}
       </GoogleMap>
 
@@ -180,8 +180,9 @@ export function MapView({ restaurants }: MapViewProps) {
                 href={selected.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-gold-400 hover:text-gold-300 transition-colors truncate block mt-1"
+                className="flex items-center gap-1.5 text-sm text-gold-400 hover:text-gold-300 transition-colors truncate mt-1"
               >
+                <Globe className="w-3.5 h-3.5 flex-shrink-0" />
                 {selected.website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}
               </a>
             )}
