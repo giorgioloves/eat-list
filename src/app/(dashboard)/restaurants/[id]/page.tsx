@@ -1,9 +1,10 @@
 ﻿import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { getAuthUser } from '@/lib/auth'
 import { StatusBadge, TierBadge } from '@/components/ui/badge'
 import { PipRating } from '@/components/ui/pip-rating'
-import { ArrowLeft, Pencil, MapPin } from 'lucide-react'
+import { ArrowLeft, Pencil, MapPin, Globe, Instagram } from 'lucide-react'
 import { VisitLog } from './visit-log'
 import { NoteLog } from './note-log'
 import { WouldGoAgainToggle } from './would-go-again'
@@ -15,10 +16,10 @@ export default async function RestaurantDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const supabase = await createClient()
-
-  const { data: { user } } = await supabase.auth.getUser()
+  const user = await getAuthUser()
   if (!user) redirect('/login')
+
+  const supabase = await createClient()
 
   const { data: restaurant } = await supabase
     .from('restaurants')
@@ -30,28 +31,28 @@ export default async function RestaurantDetailPage({
 
   const r = restaurant as Restaurant
 
-  const { data: visits } = await supabase
-    .from('restaurant_visits')
-    .select('*, profiles(name, email), visit_ratings(id, user_id, rating)')
-    .eq('restaurant_id', id)
-    .order('visited_at', { ascending: false })
-
-  // Fetch list member names separately — avoids a 3-level nested join that PostgREST can drop silently
-  const { data: memberRows } = await supabase
-    .from('shared_list_members')
-    .select('user_id, profiles(name)')
-    .eq('list_id', r.list_id)
+  const [{ data: visits }, { data: memberRows }, { data: notes }] = await Promise.all([
+    supabase
+      .from('restaurant_visits')
+      .select('*, profiles(name, email), visit_ratings(id, user_id, rating)')
+      .eq('restaurant_id', id)
+      .order('visited_at', { ascending: false }),
+    // Fetch list member names separately — avoids a 3-level nested join that PostgREST can drop silently
+    supabase
+      .from('shared_list_members')
+      .select('user_id, profiles(name)')
+      .eq('list_id', r.list_id),
+    supabase
+      .from('restaurant_notes')
+      .select('*, profiles(name, email)')
+      .eq('restaurant_id', id)
+      .order('created_at', { ascending: false }),
+  ])
 
   const profileNames: Record<string, string> = {}
   memberRows?.forEach((m: any) => {
     if (m.user_id && m.profiles?.name) profileNames[m.user_id] = m.profiles.name
   })
-
-  const { data: notes } = await supabase
-    .from('restaurant_notes')
-    .select('*, profiles(name, email)')
-    .eq('restaurant_id', id)
-    .order('created_at', { ascending: false })
 
   return (
     <div className="p-4 sm:p-6 max-w-xl mx-auto">
@@ -108,6 +109,33 @@ export default async function RestaurantDetailPage({
           <div className="flex flex-wrap items-center gap-2">
             <StatusBadge status={r.status} />
           </div>
+
+          {(r.website || r.instagram) && (
+            <div className="flex flex-wrap items-center gap-3 mt-3 pt-3 border-t border-espresso-700">
+              {r.website && (
+                <a
+                  href={r.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-sm text-gold-400 hover:text-gold-300 transition-colors"
+                >
+                  <Globe className="w-3.5 h-3.5" />
+                  {r.website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '').split('/')[0]}
+                </a>
+              )}
+              {r.instagram && (
+                <a
+                  href={`https://www.instagram.com/${r.instagram.replace(/^@/, '')}/`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-sm text-espresso-300 hover:text-espresso-50 transition-colors"
+                >
+                  <Instagram className="w-3.5 h-3.5" />
+                  @{r.instagram.replace(/^@/, '')}
+                </a>
+              )}
+            </div>
+          )}
 
           {r.status === 'visited' && (
             <div className="mt-3 pt-3 border-t border-espresso-700">

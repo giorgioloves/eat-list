@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -17,21 +17,29 @@ export function BottomNav() {
   const pathname = usePathname()
 
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-espresso-900/95 backdrop-blur border-t border-espresso-700 z-30 pb-safe">
-      <div className="flex items-center justify-around px-2 h-16">
+    <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 200, backgroundColor: '#2B2623', borderTop: '1px solid #4A3E3A', paddingBottom: 'env(safe-area-inset-bottom)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', padding: '0 8px', height: 64 }}>
         {navItems.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(href + '/')
           return (
             <Link
               key={href}
               href={href}
-              className={cn(
-                'flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg transition-colors min-w-0',
-                active ? 'text-gold-400' : 'text-espresso-400 hover:text-espresso-200'
-              )}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 2,
+                padding: '6px 12px',
+                borderRadius: 10,
+                minWidth: 0,
+                backgroundColor: active ? '#D9B65D' : 'transparent',
+                color: active ? '#2B2623' : '#C0B5B0',
+                fontWeight: active ? 600 : 400,
+              }}
             >
-              <Icon className="w-5 h-5" />
-              <span className="text-xs">{label}</span>
+              <Icon style={{ width: 20, height: 20 }} />
+              <span style={{ fontSize: 11 }}>{label}</span>
             </Link>
           )
         })}

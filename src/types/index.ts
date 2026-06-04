@@ -60,6 +60,8 @@ export interface Restaurant {
   tier: Tier | null
   rating: number | null
   price_level: '$' | '$$' | '$$$' | '$$$$' | null
+  website: string | null
+  instagram: string | null
   latitude: number | null
   longitude: number | null
   created_by: string

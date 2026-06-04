@@ -1,13 +1,14 @@
 ﻿import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { getAuthUser } from '@/lib/auth'
 import { ListSettingsClient } from './list-client'
 import type { SharedList, SharedListMember } from '@/types'
 
 export default async function ListSettingsPage() {
-  const supabase = await createClient()
-
-  const { data: { user } } = await supabase.auth.getUser()
+  const user = await getAuthUser()
   if (!user) redirect('/login')
+
+  const supabase = await createClient()
 
   const { data: memberships } = await supabase
     .from('shared_list_members')

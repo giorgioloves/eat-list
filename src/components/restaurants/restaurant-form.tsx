@@ -9,6 +9,7 @@ import { CUISINES, type Restaurant } from '@/types'
 import { Trash2 } from 'lucide-react'
 import { RestaurantAutocomplete } from '@/components/ui/restaurant-autocomplete'
 import { ConfirmModal } from '@/components/ui/modal'
+import { useRestaurants } from '@/contexts/restaurants'
 
 interface RestaurantFormProps {
   listId: string
@@ -26,10 +27,13 @@ interface FormData {
   lat: number | null
   lng: number | null
   priceLevel: string | null
+  website: string
+  instagram: string
 }
 
 export function RestaurantForm({ listId, userId, restaurant }: RestaurantFormProps) {
   const router = useRouter()
+  const { refresh } = useRestaurants()
   const supabase = createClient()
 
   const [form, setForm] = useState<FormData>({
@@ -42,6 +46,8 @@ export function RestaurantForm({ listId, userId, restaurant }: RestaurantFormPro
     lat: restaurant?.latitude ?? null,
     lng: restaurant?.longitude ?? null,
     priceLevel: restaurant?.price_level ?? null,
+    website: restaurant?.website || '',
+    instagram: restaurant?.instagram || '',
   })
 
   const [loading, setLoading] = useState(false)
@@ -77,6 +83,8 @@ export function RestaurantForm({ listId, userId, restaurant }: RestaurantFormPro
       latitude: lat,
       longitude: lng,
       price_level: form.priceLevel || null,
+      website: form.website || null,
+      instagram: form.instagram || null,
     }
 
     let err
@@ -100,8 +108,8 @@ export function RestaurantForm({ listId, userId, restaurant }: RestaurantFormPro
       setError(err.message)
       setLoading(false)
     } else {
+      await refresh()
       router.push('/restaurants')
-      router.refresh()
     }
   }
 
@@ -113,8 +121,8 @@ export function RestaurantForm({ listId, userId, restaurant }: RestaurantFormPro
       setDeleteLoading(false)
       setShowDelete(false)
     } else {
+      await refresh()
       router.push('/restaurants')
-      router.refresh()
     }
   }
 
@@ -126,7 +134,7 @@ export function RestaurantForm({ listId, userId, restaurant }: RestaurantFormPro
             <RestaurantAutocomplete
               value={form.name}
               onChange={(name) => setForm((prev) => ({ ...prev, name }))}
-              onSelect={({ name, street, suburb, city, state, lat, lng, cuisine, priceLevel }) =>
+              onSelect={({ name, street, suburb, city, state, lat, lng, cuisine, priceLevel, website }) =>
                 setForm((prev) => ({
                   ...prev,
                   name,
@@ -138,8 +146,10 @@ export function RestaurantForm({ listId, userId, restaurant }: RestaurantFormPro
                   lat,
                   lng,
                   priceLevel: priceLevel ?? prev.priceLevel,
+                  website: website || prev.website,
                 }))
               }
+              onInstagramFound={(instagram) => setForm((prev) => ({ ...prev, instagram: prev.instagram || instagram }))}
               required
             />
           </Field>
@@ -179,6 +189,7 @@ export function RestaurantForm({ listId, userId, restaurant }: RestaurantFormPro
               className={inputCls}
             />
           </Field>
+
         </div>
 
         {error && (

@@ -54,7 +54,8 @@ export function Sidebar({ user }: SidebarProps) {
               key={href}
               href={href}
               className={cn(
-                'flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors',
+                'flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-100',
+                'active:scale-95 active:bg-gold-500/20 active:text-gold-300',
                 active
                   ? 'bg-gold-500/10 text-gold-400 font-medium'
                   : 'text-espresso-300 hover:text-espresso-50 hover:bg-espresso-700'

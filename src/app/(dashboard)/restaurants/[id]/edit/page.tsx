@@ -1,6 +1,7 @@
 ﻿import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { getAuthUser, getListId } from '@/lib/auth'
 import { RestaurantForm } from '@/components/restaurants/restaurant-form'
 import { ArrowLeft } from 'lucide-react'
 import type { Restaurant } from '@/types'
@@ -11,20 +12,13 @@ export default async function EditRestaurantPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const supabase = await createClient()
-
-  const { data: { user } } = await supabase.auth.getUser()
+  const user = await getAuthUser()
   if (!user) redirect('/login')
 
-  const { data: memberships } = await supabase
-    .from('shared_list_members')
-    .select('list_id')
-    .eq('user_id', user.id)
+  const listId = await getListId(user.id)
+  if (!listId) redirect('/dashboard')
 
-  if (!memberships || memberships.length === 0) redirect('/dashboard')
-
-  const listId = memberships[0].list_id
-
+  const supabase = await createClient()
   const { data: restaurant } = await supabase
     .from('restaurants')
     .select('*')

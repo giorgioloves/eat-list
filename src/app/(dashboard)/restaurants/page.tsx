@@ -1,41 +1,19 @@
-﻿import { redirect } from 'next/navigation'
+'use client'
+
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
 import { Plus, UtensilsCrossed } from 'lucide-react'
 import RestaurantListClient from './list-client'
-import type { Restaurant } from '@/types'
+import { useRestaurants } from '@/contexts/restaurants'
 
-export default async function RestaurantsPage() {
-  const supabase = await createClient()
-
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
-
-  const { data: memberships } = await supabase
-    .from('shared_list_members')
-    .select('list_id')
-    .eq('user_id', user.id)
-
-  if (!memberships || memberships.length === 0) {
-    return redirect('/dashboard')
-  }
-
-  const listId = memberships[0].list_id
-
-  const { data: restaurants } = await supabase
-    .from('restaurants')
-    .select('*')
-    .eq('list_id', listId)
-    .order('created_at', { ascending: false })
-
-  const all = (restaurants || []) as Restaurant[]
+export default function RestaurantsPage() {
+  const { restaurants, loading } = useRestaurants()
 
   return (
     <div className="p-4 sm:p-6 max-w-5xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-xl font-bold text-espresso-50">Restaurants</h1>
-          <p className="text-sm text-espresso-300 mt-0.5">{all.length} total</p>
+          {!loading && <p className="text-sm text-espresso-300 mt-0.5">{restaurants.length} total</p>}
         </div>
         <Link
           href="/restaurants/add"
@@ -46,7 +24,7 @@ export default async function RestaurantsPage() {
         </Link>
       </div>
 
-      {all.length === 0 ? (
+      {!loading && restaurants.length === 0 ? (
         <div className="text-center py-16 bg-espresso-800 border border-espresso-700 rounded-2xl">
           <UtensilsCrossed className="w-12 h-12 text-espresso-500 mx-auto mb-3" />
           <p className="text-espresso-200 font-medium">No restaurants yet</p>
@@ -60,7 +38,7 @@ export default async function RestaurantsPage() {
           </Link>
         </div>
       ) : (
-        <RestaurantListClient restaurants={all} />
+        <RestaurantListClient restaurants={restaurants} />
       )}
     </div>
   )

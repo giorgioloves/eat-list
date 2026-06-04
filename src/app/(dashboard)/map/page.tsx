@@ -1,26 +1,20 @@
-﻿import { redirect } from 'next/navigation'
+import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { getAuthUser, getListId } from '@/lib/auth'
 import { MapClient } from './map-client'
 import type { Restaurant } from '@/types'
 
 export default async function MapPage() {
-  const supabase = await createClient()
-
-  const { data: { user } } = await supabase.auth.getUser()
+  const user = await getAuthUser()
   if (!user) redirect('/login')
 
-  const { data: memberships } = await supabase
-    .from('shared_list_members')
-    .select('list_id')
-    .eq('user_id', user.id)
+  const listId = await getListId(user.id)
+  if (!listId) redirect('/dashboard')
 
-  if (!memberships || memberships.length === 0) redirect('/dashboard')
-
-  const listId = memberships[0].list_id
-
+  const supabase = await createClient()
   const { data: restaurants } = await supabase
     .from('restaurants')
-    .select('id, name, cuisine, address, suburb, city, status, tier, rating, latitude, longitude, visit_count')
+    .select('id, name, cuisine, address, suburb, city, status, tier, rating, latitude, longitude, visit_count, website, instagram')
     .eq('list_id', listId)
 
   const all = (restaurants || []) as Restaurant[]

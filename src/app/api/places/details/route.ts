@@ -13,7 +13,7 @@ export async function GET(request: Request) {
       {
         headers: {
           'X-Goog-Api-Key': key,
-          'X-Goog-FieldMask': 'displayName,addressComponents,location,primaryType,types,priceLevel,priceRange',
+          'X-Goog-FieldMask': 'displayName,addressComponents,location,primaryType,types,priceLevel,priceRange,websiteUri',
         },
       }
     )
@@ -51,6 +51,7 @@ export async function GET(request: Request) {
       primaryType: data.primaryType ?? null,
       types: data.types ?? [],
       priceLevel,
+      website: data.websiteUri ?? null,
       address_components: components.map((c) => ({
         short_name: c.shortText ?? '',
         long_name: c.longText ?? '',
@@ -76,6 +77,7 @@ interface GoogleAddressComponent {
   longText?: string
   types?: string[]
 }
+
 
 function priceLevelFromRange(priceRange: { startPrice?: { units?: string }; endPrice?: { units?: string } } | null): string | null {
   if (!priceRange) return null

@@ -16,8 +16,7 @@ const MAP_STYLES = [
   { elementType: 'labels.text.fill', stylers: [{ color: '#A09590' }] },
   { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#4A3E3A' }] },
   { featureType: 'road.arterial', elementType: 'labels.text.fill', stylers: [{ color: '#C0B5B0' }] },
-  { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#5C4E49' }] },
-  { featureType: 'road.highway', elementType: 'labels.text.fill', stylers: [{ color: '#C0B5B0' }] },
+  { featureType: 'road.highway', stylers: [{ visibility: 'off' }] },
   { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#1B2C42' }] },
   { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#5FA8FF' }] },
   { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#352E2B' }] },
@@ -70,7 +69,7 @@ export function MapView({ restaurants }: MapViewProps) {
   }
 
   useEffect(() => {
-    if (!selected) { setVisits([]); return }
+    if (!selected || selected.visit_count === 0) { setVisits([]); return }
     setVisitsLoading(true)
     const supabase = createClient()
     supabase
@@ -173,6 +172,26 @@ export function MapView({ restaurants }: MapViewProps) {
                 {[selected.address, selected.suburb].filter(Boolean).join(', ')}
               </p>
             )}
+            {selected.website && (
+              <a
+                href={selected.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-gold-400 hover:text-gold-300 transition-colors truncate block mt-1"
+              >
+                {selected.website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}
+              </a>
+            )}
+            {selected.instagram && (
+              <a
+                href={`https://www.instagram.com/${selected.instagram.replace(/^@/, '')}/`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-espresso-400 hover:text-espresso-200 transition-colors block mt-0.5"
+              >
+                @{selected.instagram.replace(/^@/, '')}
+              </a>
+            )}
             <div className="flex items-center gap-2 mt-2 flex-wrap">
               {selected.tier && (
                 <span className={`text-xs px-1.5 py-0.5 rounded border ${TIER_COLORS[selected.tier]}`}>
@@ -183,42 +202,40 @@ export function MapView({ restaurants }: MapViewProps) {
             </div>
           </div>
 
-          {/* Visit log */}
-          <div className="border-t border-espresso-700 flex-1 overflow-y-auto">
-            <p className="text-xs font-semibold text-espresso-400 uppercase tracking-wider px-4 pt-3 pb-2">
-              Visit History
-              {visits.length > 0 && <span className="ml-1.5 font-normal normal-case">· {visits.length}</span>}
-            </p>
-
-            {visitsLoading ? (
-              <p className="text-xs text-espresso-500 px-4 pb-3">Loading…</p>
-            ) : visits.length === 0 ? (
-              <p className="text-xs text-espresso-500 px-4 pb-3">No visits logged yet</p>
-            ) : (
-              <div className="space-y-0 divide-y divide-espresso-800">
-                {visits.map((v) => (
-                  <div key={v.id} className="px-4 py-2.5">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-xs text-espresso-300">
-                        {formatDate(v.visited_at)}
-                      </span>
-                      {v.rating !== null && <PipRating rating={v.rating} size="sm" />}
-                    </div>
-                    <div className="flex items-center gap-3 mt-0.5">
-                      {(v.profiles as any)?.name && (
-                        <span className="text-xs text-espresso-500">{(v.profiles as any).name}</span>
-                      )}
-                      {v.cost !== null && (
-                        <span className="text-xs text-espresso-400">
-                          ${v.cost.toFixed(0)}
+          {selected.visit_count > 0 && (visitsLoading || visits.length > 0) && (
+            <div className="border-t border-espresso-700 flex-1 overflow-y-auto">
+              <p className="text-xs font-semibold text-espresso-400 uppercase tracking-wider px-4 pt-3 pb-2">
+                Visit History
+                {visits.length > 0 && <span className="ml-1.5 font-normal normal-case">· {visits.length}</span>}
+              </p>
+              {visitsLoading ? (
+                <p className="text-xs text-espresso-500 px-4 pb-3">Loading…</p>
+              ) : (
+                <div className="space-y-0 divide-y divide-espresso-800">
+                  {visits.map((v) => (
+                    <div key={v.id} className="px-4 py-2.5">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs text-espresso-300">
+                          {formatDate(v.visited_at)}
                         </span>
-                      )}
+                        {v.rating !== null && <PipRating rating={v.rating} size="sm" />}
+                      </div>
+                      <div className="flex items-center gap-3 mt-0.5">
+                        {(v.profiles as any)?.name && (
+                          <span className="text-xs text-espresso-500">{(v.profiles as any).name}</span>
+                        )}
+                        {v.cost !== null && (
+                          <span className="text-xs text-espresso-400">
+                            ${v.cost.toFixed(0)}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Actions */}
           <div className="flex gap-2 p-3 pt-2 border-t border-espresso-700 flex-shrink-0">

@@ -1,31 +1,12 @@
-﻿import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+'use client'
+
 import { TierBoardDynamic } from './tier-board-dynamic'
-import type { Restaurant } from '@/types'
+import { useRestaurants } from '@/contexts/restaurants'
 
-export default async function TiersPage() {
-  const supabase = await createClient()
+export default function TiersPage() {
+  const { restaurants } = useRestaurants()
 
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
-
-  const { data: memberships } = await supabase
-    .from('shared_list_members')
-    .select('list_id')
-    .eq('user_id', user.id)
-
-  if (!memberships || memberships.length === 0) redirect('/dashboard')
-
-  const listId = memberships[0].list_id
-
-  const { data: restaurants } = await supabase
-    .from('restaurants')
-    .select('id, name, cuisine, status, tier, rating, visit_count, suburb')
-    .eq('list_id', listId)
-    .eq('status', 'visited')
-    .order('name')
-
-  const all = (restaurants || []) as Restaurant[]
+  const visited = restaurants.filter((r) => r.status === 'visited')
 
   return (
     <div className="tier-page p-4 sm:p-6 max-w-3xl mx-auto">
@@ -34,12 +15,12 @@ export default async function TiersPage() {
         <p className="text-sm text-espresso-300 mt-0.5">Drag restaurants between tiers · saves automatically</p>
       </div>
 
-      {all.length === 0 ? (
+      {visited.length === 0 ? (
         <div className="text-center py-16 bg-espresso-800 border border-espresso-700 rounded-2xl">
           <p className="text-espresso-300">Add some restaurants first to build your tier list</p>
         </div>
       ) : (
-        <TierBoardDynamic restaurants={all} />
+        <TierBoardDynamic restaurants={visited} />
       )}
     </div>
   )

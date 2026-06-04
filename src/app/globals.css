@@ -152,6 +152,7 @@
   padding-bottom: env(safe-area-inset-bottom);
 }
 
+
 /* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 6px;

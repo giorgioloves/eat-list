@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Plus, Users } from 'lucide-react'
 import { createSharedList, joinSharedList } from './actions'
 
-export default function OnboardingClient({ userId: _ }: { userId: string }) {
+export default function OnboardingClient() {
   const router = useRouter()
 
   const [mode, setMode] = useState<'choose' | 'create' | 'join'>('choose')

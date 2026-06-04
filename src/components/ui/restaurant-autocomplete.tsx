@@ -14,6 +14,8 @@ export interface PlaceResult {
   lng: number | null
   cuisine: string | null
   priceLevel: string | null
+  website: string | null
+  instagram: string | null
 }
 
 const GOOGLE_TYPE_TO_CUISINE: Record<string, string> = {
@@ -68,6 +70,7 @@ interface RestaurantAutocompleteProps {
   value: string
   onChange: (value: string) => void
   onSelect: (result: PlaceResult) => void
+  onInstagramFound?: (instagram: string) => void
   placeholder?: string
   required?: boolean
 }
@@ -76,6 +79,7 @@ export function RestaurantAutocomplete({
   value,
   onChange,
   onSelect,
+  onInstagramFound,
   placeholder = 'e.g. Ester',
   required,
 }: RestaurantAutocompleteProps) {
@@ -155,6 +159,7 @@ export function RestaurantAutocomplete({
         const lat = result.geometry?.location?.lat ?? null
         const lng = result.geometry?.location?.lng ?? null
         const cuisine = resolveCuisine(result.primaryType ?? null, result.types ?? [])
+        const website: string | null = result.website ?? null
 
         onSelect({
           name: result.name ?? prediction.structured_formatting.main_text,
@@ -166,7 +171,17 @@ export function RestaurantAutocomplete({
           lng,
           cuisine,
           priceLevel: result.priceLevel ?? null,
+          website,
+          instagram: null,
         })
+
+        // Fetch Instagram independently so it doesn't delay form population
+        if (website && onInstagramFound) {
+          fetch(`/api/places/instagram?url=${encodeURIComponent(website)}`)
+            .then((r) => r.json())
+            .then(({ instagram }) => { if (instagram) onInstagramFound(instagram) })
+            .catch(() => {})
+        }
       }
     } catch {
       // silently fall through — name is already set, user can fill location manually
