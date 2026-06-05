@@ -270,9 +270,9 @@ function RestaurantDragCard({
     <div
       ref={setNodeRef}
       style={{
-        transform:    CSS.Transform.toString(transform),
+        transform:       isDragging ? `${CSS.Transform.toString(transform)} rotate(1deg)` : CSS.Transform.toString(transform),
         transition,
-        opacity:      isSortableDragging ? 0.35 : isSaving ? 0.6 : 1,
+        opacity:         isSortableDragging ? 0.35 : isSaving ? 0.6 : 1,
         WebkitTouchCallout: 'none',
         display:         'inline-flex',
         alignItems:      'center',
@@ -284,7 +284,6 @@ function RestaurantDragCard({
         cursor:          isDragging ? 'grabbing' : 'grab',
         userSelect:      'none',
         touchAction:     'none',
-        transform:       isDragging ? `${CSS.Transform.toString(transform)} rotate(1deg)` : CSS.Transform.toString(transform),
       } as React.CSSProperties}
       {...attributes}
       {...listeners}
