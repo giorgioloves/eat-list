@@ -4,6 +4,12 @@ import { useState } from 'react'
 import { setWouldGoAgain } from './actions'
 import type { WouldGoAgain } from '@/types'
 
+const T = {
+  espresso: '#3b2f27',
+  stone:    '#c4b8a8',
+  mist:     '#a08070',
+}
+
 export function WouldGoAgainToggle({
   restaurantId,
   current,
@@ -12,7 +18,7 @@ export function WouldGoAgainToggle({
   current: WouldGoAgain | null
 }) {
   const [checked, setChecked] = useState(current !== null)
-  const [saving, setSaving] = useState(false)
+  const [saving, setSaving]   = useState(false)
 
   async function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const next = e.target.checked
@@ -23,15 +29,36 @@ export function WouldGoAgainToggle({
   }
 
   return (
-    <label className="flex items-center gap-2 cursor-pointer select-none w-fit">
+    <label style={{
+      display:    'flex',
+      alignItems: 'center',
+      gap:        8,
+      cursor:     'pointer',
+      userSelect: 'none',
+      width:      'fit-content',
+      opacity:    saving ? 0.6 : 1,
+    }}>
       <input
         type="checkbox"
         checked={checked}
         onChange={handleChange}
         disabled={saving}
-        className="w-4 h-4 rounded accent-gold-500 cursor-pointer disabled:opacity-50"
+        style={{
+          width:       13,
+          height:      13,
+          borderRadius: 3,
+          border:      `1px solid ${T.stone}`,
+          accentColor: T.espresso,
+          cursor:      'pointer',
+          flexShrink:  0,
+        }}
       />
-      <span className="text-sm text-espresso-200">Want to go again</span>
+      <span style={{
+        fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+        fontSize:      8,
+        color:         T.mist,
+        letterSpacing: '0.06em',
+      }}>want to go again</span>
     </label>
   )
 }

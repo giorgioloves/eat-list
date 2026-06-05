@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
 import {
@@ -21,8 +21,20 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { updateTier } from '@/app/(dashboard)/tiers/actions'
-import { TIERS, TIER_COLORS, TIER_BG_COLORS, STATUS_LABELS } from '@/types'
+import { TIERS, TIER_ACCENT } from '@/types'
 import type { Restaurant, Tier } from '@/types'
+
+const T = {
+  parchment:  '#f5f0e8',
+  linen:      '#ede5d8',
+  espresso:   '#3b2f27',
+  stone:      '#c4b8a8',
+  mist:       '#a08070',
+  ghost:      '#b8a898',
+  border:     '#c4b8a8',
+  chipBg:     '#e8ddd3',
+  chipText:   '#6b5245',
+}
 
 interface TierBoardProps {
   restaurants: Restaurant[]
@@ -33,7 +45,6 @@ type TierGroup = { [key: string]: Restaurant[] }
 function groupByTier(restaurants: Restaurant[]): TierGroup {
   const groups: TierGroup = { untiered: [] }
   for (const tier of TIERS) groups[tier] = []
-
   for (const r of restaurants) {
     if (r.tier && TIERS.includes(r.tier as Tier)) {
       groups[r.tier].push(r)
@@ -57,8 +68,9 @@ export function TierBoard({ restaurants }: TierBoardProps) {
       (el.style as any).webkitUserSelect = prev
     }
   }, [])
-  const [activeId, setActiveId] = useState<string | null>(null)
-  const [saving, setSaving] = useState<string | null>(null)
+
+  const [activeId, setActiveId]   = useState<string | null>(null)
+  const [saving, setSaving]       = useState<string | null>(null)
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -87,19 +99,15 @@ export function TierBoard({ restaurants }: TierBoardProps) {
 
   function handleDragOver({ active, over }: DragOverEvent) {
     if (!over) return
-
     const activeContainer = findContainerOf(active.id as string)
-    // over.id can be a tier name (droppable zone) OR a restaurant id (sortable item)
     const allTierKeys = [...TIERS, 'untiered']
     const overContainer = allTierKeys.includes(over.id as string)
       ? (over.id as string)
       : findContainerOf(over.id as string)
-
     if (!activeContainer || !overContainer || activeContainer === overContainer) return
-
     setGroups((prev) => {
       const activeItems = [...prev[activeContainer]]
-      const overItems = [...(prev[overContainer] || [])]
+      const overItems   = [...(prev[overContainer] || [])]
       const activeIndex = activeItems.findIndex((r) => r.id === active.id)
       if (activeIndex === -1) return prev
       const [moved] = activeItems.splice(activeIndex, 1)
@@ -111,15 +119,12 @@ export function TierBoard({ restaurants }: TierBoardProps) {
   async function handleDragEnd({ active, over }: DragEndEvent) {
     setActiveId(null)
     if (!over) return
-
     const container = findContainerOf(active.id as string)
     if (!container) return
-
     const newTier = container === 'untiered' ? null : container as Tier
     const restaurant = getActiveRestaurant() ?? restaurants.find((r) => r.id === active.id)
     if (!restaurant) return
     if (restaurant.tier === newTier) return
-
     setSaving(active.id as string)
     await updateTier(active.id as string, newTier)
     setSaving(null)
@@ -135,7 +140,7 @@ export function TierBoard({ restaurants }: TierBoardProps) {
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className="space-y-3 select-none">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, userSelect: 'none' }}>
         {TIERS.map((tier) => (
           <TierRow
             key={tier}
@@ -146,8 +151,15 @@ export function TierBoard({ restaurants }: TierBoardProps) {
         ))}
 
         {(groups['untiered'] || []).length > 0 && (
-          <div className="mt-6">
-            <p className="text-xs font-medium text-espresso-400 uppercase tracking-wider mb-2">Untiered</p>
+          <div style={{ marginTop: 16 }}>
+            <p style={{
+              fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+              fontSize:      7,
+              color:         T.mist,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              marginBottom:  8,
+            }}>untiered</p>
             <TierRow tier="untiered" items={groups['untiered'] || []} savingId={saving} isUntiered />
           </div>
         )}
@@ -163,36 +175,69 @@ export function TierBoard({ restaurants }: TierBoardProps) {
 }
 
 function TierRow({
-  tier, items, savingId, isUntiered
+  tier, items, savingId, isUntiered,
 }: {
   tier: string
   items: Restaurant[]
   savingId: string | null
   isUntiered?: boolean
 }) {
-  const bgClass = isUntiered
-    ? 'bg-espresso-800/50 border-espresso-700'
-    : TIER_BG_COLORS[tier as Tier]
-
+  const accent = isUntiered ? T.stone : TIER_ACCENT[tier as Tier]
   const { setNodeRef, isOver } = useDroppable({ id: tier })
 
   return (
-    <div className={`flex gap-3 p-3 rounded-xl border transition-colors ${bgClass} ${isOver ? 'border-gold-500/50' : ''}`}>
+    <div style={{
+      display:         'flex',
+      gap:             10,
+      backgroundColor: T.parchment,
+      borderRadius:    isUntiered ? 10 : '0 10px 10px 0',
+      borderLeft:      isUntiered ? `0.5px solid ${T.border}` : `2.5px solid ${accent}`,
+      borderTop:       `0.5px solid ${T.border}`,
+      borderRight:     `0.5px solid ${T.border}`,
+      borderBottom:    `0.5px solid ${T.border}`,
+      padding:         '10px 12px',
+      transition:      'border-color 0.12s',
+      outline:         isOver ? `1px solid ${accent}` : 'none',
+    }}>
       {!isUntiered && (
-        <div className="flex flex-col items-center justify-center w-10 flex-shrink-0">
-          <span className={`text-xl font-black ${TIER_COLORS[tier as Tier].split(' ').find((c) => c.startsWith('text-'))}`}>
-            {tier}
-          </span>
+        <div style={{
+          display:        'flex',
+          alignItems:     'center',
+          justifyContent: 'center',
+          width:           28,
+          flexShrink:      0,
+        }}>
+          <span style={{
+            fontFamily: 'var(--font-crimson), Georgia, serif',
+            fontSize:   20,
+            fontStyle:  'italic',
+            fontWeight: 400,
+            color:      accent,
+            lineHeight: 1,
+          }}>{tier}</span>
         </div>
       )}
-      <div className="flex-1" ref={setNodeRef}>
+
+      <div style={{ flex: 1 }} ref={setNodeRef}>
         <SortableContext items={items.map((r) => r.id)} strategy={rectSortingStrategy}>
           {items.length === 0 ? (
-            <div className={`border border-dashed rounded-lg h-12 flex items-center justify-center text-xs transition-colors ${isOver ? 'border-gold-500/50 text-gold-600 bg-gold-500/5' : 'border-espresso-600 text-espresso-500'}`}>
-              Drop here
+            <div style={{
+              height:          40,
+              display:         'flex',
+              alignItems:      'center',
+              justifyContent:  'center',
+              border:          `0.5px dashed ${isOver ? accent : T.stone}`,
+              borderRadius:    6,
+              fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
+              fontSize:        8,
+              color:           isOver ? accent : T.ghost,
+              letterSpacing:   '0.06em',
+              transition:      'all 0.12s',
+            }}>
+              drop here
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-1.5">
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
               {items.map((r) => (
                 <RestaurantDragCard
                   key={r.id}
@@ -209,7 +254,7 @@ function TierRow({
 }
 
 function RestaurantDragCard({
-  restaurant, isDragging, isSaving
+  restaurant, isDragging, isSaving,
 }: {
   restaurant: Restaurant
   isDragging?: boolean
@@ -219,30 +264,44 @@ function RestaurantDragCard({
     id: restaurant.id,
   })
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isSortableDragging ? 0.4 : 1,
-  }
+  const displayName = restaurant.name.replace(/\s*\([^)]+\)\s*$/, '').trim()
 
   return (
     <div
       ref={setNodeRef}
-      style={{ ...style, WebkitTouchCallout: 'none' } as React.CSSProperties}
+      style={{
+        transform:    CSS.Transform.toString(transform),
+        transition,
+        opacity:      isSortableDragging ? 0.35 : isSaving ? 0.6 : 1,
+        WebkitTouchCallout: 'none',
+        display:         'inline-flex',
+        alignItems:      'center',
+        gap:             4,
+        padding:         '4px 10px',
+        backgroundColor: isDragging ? T.parchment : T.chipBg,
+        border:          `0.5px solid ${isDragging ? '#c4927a' : T.border}`,
+        borderRadius:    6,
+        cursor:          isDragging ? 'grabbing' : 'grab',
+        userSelect:      'none',
+        touchAction:     'none',
+        transform:       isDragging ? `${CSS.Transform.toString(transform)} rotate(1deg)` : CSS.Transform.toString(transform),
+      } as React.CSSProperties}
       {...attributes}
       {...listeners}
-      className={`select-none touch-none flex items-center justify-center p-2 bg-espresso-800 border rounded-lg transition-all cursor-grab active:cursor-grabbing ${
-        isDragging
-          ? 'border-gold-500/50 shadow-lg shadow-black/30 rotate-1'
-          : 'border-espresso-700 hover:border-espresso-600'
-      } ${isSaving ? 'opacity-60' : ''}`}
     >
-      <p className="text-xs font-medium text-espresso-50 truncate text-center pointer-events-none">{restaurant.name}</p>
+      <span style={{
+        fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
+        fontSize:        7,
+        color:           T.chipText,
+        letterSpacing:   '0.04em',
+        pointerEvents:   'none',
+        whiteSpace:      'nowrap',
+      }}>{displayName}</span>
 
       {isSaving && (
-        <svg className="animate-spin w-3 h-3 text-gold-500 flex-shrink-0" fill="none" viewBox="0 0 24 24">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+        <svg style={{ width: 10, height: 10, color: '#c4927a', flexShrink: 0, animation: 'spin 1s linear infinite' }} fill="none" viewBox="0 0 24 24">
+          <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+          <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
         </svg>
       )}
     </div>

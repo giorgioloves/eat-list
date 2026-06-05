@@ -3,13 +3,36 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { geocodeAddress } from '@/lib/utils'
-import { cn } from '@/lib/utils'
 import { CUISINES, type Restaurant } from '@/types'
 import { Trash2 } from 'lucide-react'
 import { RestaurantAutocomplete } from '@/components/ui/restaurant-autocomplete'
 import { ConfirmModal } from '@/components/ui/modal'
 import { useRestaurants } from '@/contexts/restaurants'
 import { addRestaurant, updateRestaurant, deleteRestaurant } from '@/app/(dashboard)/restaurants/actions'
+
+const T = {
+  parchment:  '#f5f0e8',
+  linen:      '#ede5d8',
+  espresso:   '#3b2f27',
+  terracotta: '#c4927a',
+  stone:      '#c4b8a8',
+  mist:       '#a08070',
+  ghost:      '#b8a898',
+  border:     '#c4b8a8',
+}
+
+const inputStyle: React.CSSProperties = {
+  width:           '100%',
+  backgroundColor: T.parchment,
+  border:          `0.5px solid ${T.border}`,
+  borderRadius:    7,
+  padding:         '7px 10px',
+  fontFamily:      'var(--font-crimson), Georgia, serif',
+  fontSize:        13,
+  color:           T.espresso,
+  outline:         'none',
+  boxSizing:       'border-box',
+}
 
 interface RestaurantFormProps {
   restaurant?: Restaurant
@@ -34,22 +57,22 @@ export function RestaurantForm({ restaurant }: RestaurantFormProps) {
   const { refresh } = useRestaurants()
 
   const [form, setForm] = useState<FormData>({
-    name: restaurant?.name || '',
-    cuisine: restaurant?.cuisine || '',
-    address: restaurant?.address || '',
-    suburb: restaurant?.suburb || '',
-    city: restaurant?.city || '',
-    state: restaurant?.state || '',
-    lat: restaurant?.latitude ?? null,
-    lng: restaurant?.longitude ?? null,
+    name:       restaurant?.name || '',
+    cuisine:    restaurant?.cuisine || '',
+    address:    restaurant?.address || '',
+    suburb:     restaurant?.suburb || '',
+    city:       restaurant?.city || '',
+    state:      restaurant?.state || '',
+    lat:        restaurant?.latitude ?? null,
+    lng:        restaurant?.longitude ?? null,
     priceLevel: restaurant?.price_level ?? null,
-    website: restaurant?.website || '',
-    instagram: restaurant?.instagram || '',
+    website:    restaurant?.website || '',
+    instagram:  restaurant?.instagram || '',
   })
 
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [showDelete, setShowDelete] = useState(false)
+  const [loading, setLoading]             = useState(false)
+  const [error, setError]                 = useState('')
+  const [showDelete, setShowDelete]       = useState(false)
   const [deleteLoading, setDeleteLoading] = useState(false)
 
   function set(field: keyof FormData, value: string) {
@@ -70,17 +93,17 @@ export function RestaurantForm({ restaurant }: RestaurantFormProps) {
     }
 
     const payload = {
-      name: form.name.trim(),
-      cuisine: form.cuisine || null,
-      address: form.address || null,
-      suburb: form.suburb || null,
-      city: form.city || null,
-      state: form.state || null,
-      latitude: lat,
-      longitude: lng,
+      name:        form.name.trim(),
+      cuisine:     form.cuisine || null,
+      address:     form.address || null,
+      suburb:      form.suburb || null,
+      city:        form.city || null,
+      state:       form.state || null,
+      latitude:    lat,
+      longitude:   lng,
       price_level: form.priceLevel || null,
-      website: form.website || null,
-      instagram: form.instagram || null,
+      website:     form.website || null,
+      instagram:   form.instagram || null,
     }
 
     const result = restaurant
@@ -111,9 +134,9 @@ export function RestaurantForm({ restaurant }: RestaurantFormProps) {
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid gap-4">
-          <Field label="Restaurant name" required>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+        <div style={{ display: 'grid', gap: 14 }}>
+          <Field label="restaurant name" required>
             <RestaurantAutocomplete
               value={form.name}
               onChange={(name) => setForm((prev) => ({ ...prev, name }))}
@@ -121,15 +144,15 @@ export function RestaurantForm({ restaurant }: RestaurantFormProps) {
                 setForm((prev) => ({
                   ...prev,
                   name,
-                  address: street || prev.address,
-                  suburb: suburb || prev.suburb,
-                  city: city || prev.city,
-                  state: state || prev.state,
-                  cuisine: cuisine || prev.cuisine,
+                  address:    street || prev.address,
+                  suburb:     suburb || prev.suburb,
+                  city:       city || prev.city,
+                  state:      state || prev.state,
+                  cuisine:    cuisine || prev.cuisine,
                   lat,
                   lng,
                   priceLevel: priceLevel ?? prev.priceLevel,
-                  website: website || prev.website,
+                  website:    website || prev.website,
                 }))
               }
               onInstagramFound={(instagram) => setForm((prev) => ({ ...prev, instagram: prev.instagram || instagram }))}
@@ -137,20 +160,27 @@ export function RestaurantForm({ restaurant }: RestaurantFormProps) {
             />
           </Field>
 
-          <Field label="Cuisine">
-            <select
-              value={form.cuisine}
-              onChange={(e) => set('cuisine', e.target.value)}
-              className={cn(inputCls, 'appearance-none [&>option]:bg-espresso-800')}
-            >
-              <option value="">Select cuisine</option>
-              {CUISINES.map((c) => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
+          <Field label="cuisine">
+            <div style={{ position: 'relative' }}>
+              <div style={{ ...inputStyle, display: 'flex', alignItems: 'center', pointerEvents: 'none' }}>
+                <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: form.cuisine ? T.espresso : T.ghost }}>
+                  {form.cuisine || 'select cuisine'}
+                </span>
+              </div>
+              <select
+                value={form.cuisine}
+                onChange={(e) => set('cuisine', e.target.value)}
+                style={{ position: 'absolute', inset: 0, width: '100%', opacity: 0, cursor: 'pointer' }}
+              >
+                <option value="">select cuisine</option>
+                {CUISINES.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </div>
           </Field>
 
-          <Field label="Street & Suburb">
+          <Field label="street & suburb">
             <input
               value={[form.address, form.suburb].filter(Boolean).join(', ')}
               onChange={(e) => {
@@ -162,48 +192,91 @@ export function RestaurantForm({ restaurant }: RestaurantFormProps) {
                   setForm((prev) => ({
                     ...prev,
                     address: val.slice(0, lastComma).trim(),
-                    suburb: val.slice(lastComma + 1).trim(),
-                    lat: null,
-                    lng: null,
+                    suburb:  val.slice(lastComma + 1).trim(),
+                    lat:     null,
+                    lng:     null,
                   }))
                 }
               }}
               placeholder="e.g. 46 Meagher St, Surry Hills"
-              className={inputCls}
+              style={inputStyle}
             />
           </Field>
         </div>
 
         {error && (
-          <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-sm text-red-400">
+          <div style={{
+            padding:         '10px 12px',
+            backgroundColor: 'rgba(196,122,122,0.08)',
+            border:          '0.5px solid rgba(196,122,122,0.3)',
+            borderRadius:    7,
+            fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
+            fontSize:        8,
+            color:           '#c47a7a',
+          }}>
             {error}
           </div>
         )}
 
-        <div className="flex gap-3 pt-2">
+        <div style={{ display: 'flex', gap: 8, paddingTop: 4 }}>
           {restaurant && (
             <button
               type="button"
               onClick={() => setShowDelete(true)}
-              className="flex items-center gap-2 px-4 py-2 text-sm text-red-400 border border-red-500/20 rounded-lg hover:bg-red-500/10 transition-colors"
+              style={{
+                display:         'flex',
+                alignItems:      'center',
+                gap:             5,
+                padding:         '8px 14px',
+                fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
+                fontSize:        8,
+                color:           '#c47a7a',
+                backgroundColor: 'transparent',
+                border:          '0.5px solid rgba(196,122,122,0.4)',
+                borderRadius:    7,
+                cursor:          'pointer',
+                letterSpacing:   '0.06em',
+              }}
             >
-              <Trash2 className="w-4 h-4" />
-              Delete
+              <Trash2 style={{ width: 11, height: 11 }} />
+              delete
             </button>
           )}
           <button
             type="button"
             onClick={() => router.back()}
-            className="px-4 py-2 text-sm text-espresso-300 border border-espresso-600 rounded-lg hover:bg-espresso-700 transition-colors"
+            style={{
+              padding:         '8px 14px',
+              fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
+              fontSize:        8,
+              color:           T.mist,
+              backgroundColor: T.linen,
+              border:          `0.5px solid ${T.border}`,
+              borderRadius:    7,
+              cursor:          'pointer',
+              letterSpacing:   '0.06em',
+            }}
           >
-            Cancel
+            cancel
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="flex-1 py-2 text-sm font-semibold bg-gold-500 hover:bg-gold-400 text-espresso-900 rounded-lg transition-colors disabled:opacity-50"
+            style={{
+              flex:            1,
+              padding:         '8px 0',
+              fontFamily:      'var(--font-crimson), Georgia, serif',
+              fontStyle:       'italic',
+              fontSize:        16,
+              color:           T.parchment,
+              backgroundColor: loading ? T.stone : T.espresso,
+              border:          'none',
+              borderRadius:    20,
+              cursor:          loading ? 'not-allowed' : 'pointer',
+              opacity:         loading ? 0.7 : 1,
+            }}
           >
-            {loading ? 'Saving…' : restaurant ? 'Save changes' : 'Add restaurant'}
+            {loading ? 'saving…' : restaurant ? 'save changes' : 'add restaurant'}
           </button>
         </div>
       </form>
@@ -212,9 +285,9 @@ export function RestaurantForm({ restaurant }: RestaurantFormProps) {
         open={showDelete}
         onClose={() => setShowDelete(false)}
         onConfirm={handleDelete}
-        title="Delete restaurant"
+        title="delete restaurant"
         message={`Are you sure you want to delete "${restaurant?.name}"? This cannot be undone.`}
-        confirmLabel="Delete"
+        confirmLabel="delete"
         danger
         loading={deleteLoading}
       />
@@ -222,15 +295,18 @@ export function RestaurantForm({ restaurant }: RestaurantFormProps) {
   )
 }
 
-const inputCls =
-  'w-full bg-espresso-800 border border-espresso-600 rounded-lg px-3 py-2 text-sm text-espresso-50 placeholder-espresso-400 focus:outline-none focus:ring-1 focus:ring-gold-500 focus:border-gold-500 transition-colors'
-
 function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
   return (
-    <div className="space-y-1.5">
-      <label className="block text-sm font-medium text-espresso-300">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+      <label style={{
+        fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+        fontSize:      7,
+        color:         T.mist,
+        letterSpacing: '0.1em',
+        textTransform: 'uppercase' as const,
+      }}>
         {label}
-        {required && <span className="text-gold-500 ml-1">*</span>}
+        {required && <span style={{ color: T.terracotta, marginLeft: 3 }}>*</span>}
       </label>
       {children}
     </div>

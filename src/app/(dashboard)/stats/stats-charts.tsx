@@ -2,6 +2,15 @@
 
 import { CUISINE_EMOJI } from '@/types'
 
+const T = {
+  espresso:   '#3b2f27',
+  terracotta: '#c4927a',
+  sage:       '#8a9e8a',
+  stone:      '#c4b8a8',
+  mist:       '#a08070',
+  ghost:      '#b8a898',
+}
+
 interface RatingBucket {
   label: string
   count: number
@@ -16,27 +25,38 @@ export function RatingDistributionChart({ buckets }: { buckets: RatingBucket[] }
   const max = Math.max(...buckets.map(b => b.count), 1)
 
   return (
-    <div className="flex items-end gap-2.5">
+    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8 }}>
       {buckets.map((bucket, i) => {
         const heightPct = bucket.count > 0 ? Math.max((bucket.count / max) * 100, 6) : 0
         const isMax = bucket.count === max && max > 0
 
         return (
-          <div key={i} className="flex-1 flex flex-col items-center gap-2">
-            <span className="text-xs text-espresso-400 h-4 leading-none">
+          <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+            <span style={{
+              fontFamily: 'var(--font-dm-mono), ui-monospace, monospace',
+              fontSize:   8,
+              color:      T.mist,
+              height:     14,
+              lineHeight: 1,
+            }}>
               {bucket.count > 0 ? bucket.count : ''}
             </span>
-            <div className="w-full flex items-end" style={{ height: 80 }}>
-              <div
-                className={`w-full rounded-t-lg transition-all duration-500 ${
-                  isMax ? 'bg-gold-500' : 'bg-espresso-600/80'
-                }`}
-                style={{ height: `${heightPct}%` }}
-              />
+            <div style={{ width: '100%', display: 'flex', alignItems: 'flex-end', height: 70 }}>
+              <div style={{
+                width:           '100%',
+                borderRadius:    '4px 4px 0 0',
+                backgroundColor: isMax ? T.terracotta : T.stone,
+                height:          `${heightPct}%`,
+                transition:      'height 0.5s',
+              }} />
             </div>
-            <div className="flex flex-col items-center gap-0.5">
-              <span className="text-[10px] text-gold-500/60">{'★'.repeat(i + 1)}</span>
-              <span className="text-[10px] text-espresso-500">{bucket.label}</span>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+              <span style={{ fontSize: 8, color: T.terracotta, opacity: 0.7 }}>{'●'.repeat(i + 1)}</span>
+              <span style={{
+                fontFamily: 'var(--font-dm-mono), ui-monospace, monospace',
+                fontSize:   8,
+                color:      T.ghost,
+              }}>{bucket.label}</span>
             </div>
           </div>
         )
@@ -49,26 +69,40 @@ export function CuisineBarList({ data }: { data: CuisineEntry[] }) {
   const max = Math.max(...data.map(d => d.value), 1)
 
   return (
-    <div className="space-y-3.5">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
       {data.map((item, i) => {
         const widthPct = (item.value / max) * 100
         const emoji = CUISINE_EMOJI[item.name] ?? '🍽️'
 
         return (
-          <div key={i} className="flex items-center gap-3">
-            <span className="text-base w-6 text-center flex-shrink-0 leading-none">{emoji}</span>
-            <div className="flex-1 min-w-0">
-              <div className="flex justify-between items-center mb-1.5">
-                <span className="text-sm text-espresso-100 truncate">{item.name}</span>
-                <span className="text-xs text-espresso-500 ml-3 flex-shrink-0 tabular-nums">
-                  {item.value}
-                </span>
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 12, width: 18, textAlign: 'center', flexShrink: 0, lineHeight: 1 }}>{emoji}</span>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                <span style={{
+                  fontFamily:   'var(--font-dm-mono), ui-monospace, monospace',
+                  fontSize:     8,
+                  color:        T.espresso,
+                  overflow:     'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace:   'nowrap',
+                }}>{item.name}</span>
+                <span style={{
+                  fontFamily: 'var(--font-dm-mono), ui-monospace, monospace',
+                  fontSize:   8,
+                  color:      T.ghost,
+                  marginLeft: 8,
+                  flexShrink: 0,
+                }}>{item.value}</span>
               </div>
-              <div className="h-1.5 bg-espresso-700/50 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gold-500/70 rounded-full transition-all duration-500"
-                  style={{ width: `${widthPct}%` }}
-                />
+              <div style={{ height: 4, backgroundColor: T.stone, borderRadius: 2, overflow: 'hidden' }}>
+                <div style={{
+                  height:          '100%',
+                  backgroundColor: T.sage,
+                  borderRadius:    2,
+                  width:           `${widthPct}%`,
+                  transition:      'width 0.5s',
+                }} />
               </div>
             </div>
           </div>

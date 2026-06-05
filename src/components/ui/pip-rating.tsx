@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { cn } from '@/lib/utils'
 
@@ -10,22 +10,25 @@ interface PipRatingProps {
   className?: string
 }
 
-/** Read-only pip display */
 export function PipRating({ rating, size = 'md', className }: PipRatingProps) {
   if (rating === null || rating === undefined) return null
 
   const filled = Math.round(rating)
+  const dim = size === 'sm' ? 6 : 10
 
   return (
     <div className={cn('flex items-center gap-1', className)}>
       {Array.from({ length: MAX }, (_, i) => (
         <div
           key={i}
-          className={cn(
-            'rounded-full transition-colors',
-            size === 'sm' ? 'w-1.5 h-1.5' : 'w-2.5 h-2.5',
-            i < filled ? 'bg-gold-400' : 'bg-espresso-600'
-          )}
+          style={{
+            width:        dim,
+            height:       dim,
+            borderRadius: '50%',
+            flexShrink:   0,
+            backgroundColor: i < filled ? '#c4927a' : '#d4c8b8',
+            transition:   'background-color 0.15s',
+          }}
         />
       ))}
     </div>
@@ -38,24 +41,26 @@ interface PipSelectorProps {
   className?: string
 }
 
-/** Interactive pip selector (1–5, click to set / click same to clear) */
 export function PipSelector({ value, onChange, className }: PipSelectorProps) {
   return (
     <div className={cn('flex items-center gap-2', className)}>
       {Array.from({ length: MAX }, (_, i) => {
-        const pip = i + 1
+        const pip    = i + 1
         const filled = value !== null && pip <= value
         return (
           <button
             key={i}
             type="button"
             onClick={() => onChange(value === pip ? null : pip)}
-            className={cn(
-              'w-7 h-7 rounded-full border-2 transition-all hover:scale-110 active:scale-95',
-              filled
-                ? 'bg-gold-400 border-gold-400'
-                : 'bg-transparent border-espresso-500 hover:border-gold-400/60'
-            )}
+            style={{
+              width:           28,
+              height:          28,
+              borderRadius:    '50%',
+              border:          filled ? '2px solid #c4927a' : '1.5px solid #c4b8a8',
+              backgroundColor: filled ? '#c4927a' : 'transparent',
+              cursor:          'pointer',
+              transition:      'all 0.12s',
+            }}
             aria-label={`${pip} pip${pip !== 1 ? 's' : ''}`}
           />
         )
@@ -64,7 +69,15 @@ export function PipSelector({ value, onChange, className }: PipSelectorProps) {
         <button
           type="button"
           onClick={() => onChange(null)}
-          className="text-xs text-espresso-500 hover:text-espresso-300 transition-colors ml-1"
+          style={{
+            fontFamily:  'var(--font-dm-mono), ui-monospace, monospace',
+            fontSize:    10,
+            color:       '#a08070',
+            background:  'none',
+            border:      'none',
+            cursor:      'pointer',
+            marginLeft:  4,
+          }}
         >
           clear
         </button>

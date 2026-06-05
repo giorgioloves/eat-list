@@ -217,33 +217,57 @@ export function RestaurantAutocomplete({
           placeholder={placeholder}
           autoComplete="off"
           required={required}
-          className={cn(
-            'w-full bg-espresso-800 border border-espresso-600 rounded-lg px-3 py-2 text-sm',
-            'text-espresso-50 placeholder-espresso-400 pr-8',
-            'focus:outline-none focus:ring-1 focus:ring-gold-500 focus:border-gold-500 transition-colors'
-          )}
+          style={{
+            width:           '100%',
+            backgroundColor: '#f5f0e8',
+            border:          '0.5px solid #c4b8a8',
+            borderRadius:    7,
+            padding:         '7px 32px 7px 10px',
+            fontFamily:      'var(--font-crimson), Georgia, serif',
+            fontSize:        13,
+            color:           '#3b2f27',
+            outline:         'none',
+            boxSizing:       'border-box' as const,
+          }}
         />
         {(loading || resolving) ? (
-          <Loader2 className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-espresso-400 animate-spin pointer-events-none" />
+          <Loader2 style={{ position: 'absolute', right: 9, top: '50%', transform: 'translateY(-50%)', width: 12, height: 12, color: '#a08070', animation: 'spin 1s linear infinite', pointerEvents: 'none' }} />
         ) : (
-          <Search className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-espresso-500 pointer-events-none" />
+          <Search style={{ position: 'absolute', right: 9, top: '50%', transform: 'translateY(-50%)', width: 12, height: 12, color: '#c4b8a8', pointerEvents: 'none' }} />
         )}
       </div>
 
       {open && (
-        <ul className="absolute z-50 top-full left-0 right-0 mt-1 bg-espresso-800 border border-espresso-600 rounded-xl shadow-2xl overflow-hidden">
+        <ul style={{
+          position:        'absolute',
+          zIndex:          50,
+          top:             '100%',
+          left:            0,
+          right:           0,
+          marginTop:       4,
+          backgroundColor: '#ede5d8',
+          border:          '0.5px solid #c4b8a8',
+          borderRadius:    8,
+          overflow:        'hidden',
+          listStyle:       'none',
+          padding:         0,
+          margin:          '4px 0 0',
+        }}>
           {predictions.map((p, i) => (
             <li
               key={p.place_id}
               onPointerDown={() => pick(p)}
-              className={cn(
-                'flex flex-col px-3 py-2.5 cursor-pointer transition-colors',
-                i !== predictions.length - 1 && 'border-b border-espresso-700',
-                highlighted === i ? 'bg-espresso-600' : 'hover:bg-espresso-700'
-              )}
+              style={{
+                display:         'flex',
+                flexDirection:   'column',
+                padding:         '8px 12px',
+                cursor:          'pointer',
+                borderBottom:    i !== predictions.length - 1 ? '0.5px solid #c4b8a8' : 'none',
+                backgroundColor: highlighted === i ? '#e8ddd3' : 'transparent',
+              }}
             >
-              <span className="text-sm text-espresso-50">{p.structured_formatting.main_text}</span>
-              <span className="text-xs text-espresso-400 mt-0.5">{p.structured_formatting.secondary_text}</span>
+              <span style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 13, color: '#3b2f27' }}>{p.structured_formatting.main_text}</span>
+              <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: '#a08070', marginTop: 2 }}>{p.structured_formatting.secondary_text}</span>
             </li>
           ))}
         </ul>

@@ -1,55 +1,65 @@
-﻿import { cn } from '@/lib/utils'
-import { STATUS_COLORS, TIER_COLORS, type RestaurantStatus, type Tier } from '@/types'
-
-interface BadgeProps {
-  children: React.ReactNode
-  variant?: 'default' | 'outline' | 'muted'
-  className?: string
-}
-
-export function Badge({ children, variant = 'default', className }: BadgeProps) {
-  return (
-    <span
-      className={cn(
-        'inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium border',
-        variant === 'default' && 'bg-espresso-700 text-espresso-200 border-espresso-600',
-        variant === 'outline' && 'bg-transparent text-espresso-300 border-espresso-500',
-        variant === 'muted' && 'bg-espresso-800 text-espresso-400 border-espresso-700',
-        className
-      )}
-    >
-      {children}
-    </span>
-  )
-}
+import type { RestaurantStatus, Tier } from '@/types'
+import { TIER_ACCENT } from '@/types'
 
 export function StatusBadge({ status }: { status: RestaurantStatus }) {
-  const labels: Record<RestaurantStatus, string> = {
-    want_to_try: 'Want to Try',
-    visited: 'Visited',
+  const styles = {
+    visited:     { bg: '#ddeedd', color: '#2a5a2a' },
+    want_to_try: { bg: '#e8e0f0', color: '#4a2a7a' },
   }
-
+  const labels = {
+    visited:     'visited',
+    want_to_try: 'want to try',
+  }
+  const s = styles[status]
   return (
-    <span
-      className={cn(
-        'inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium border',
-        STATUS_COLORS[status]
-      )}
-    >
+    <span style={{
+      display:        'inline-flex',
+      alignItems:     'center',
+      padding:        '2px 7px',
+      borderRadius:   8,
+      backgroundColor: s.bg,
+      color:          s.color,
+      fontFamily:     'var(--font-dm-mono), ui-monospace, monospace',
+      fontSize:       7,
+      fontWeight:     400,
+      letterSpacing:  '0.08em',
+      whiteSpace:     'nowrap',
+    }}>
       {labels[status]}
     </span>
   )
 }
 
 export function TierBadge({ tier }: { tier: Tier }) {
+  const accent = TIER_ACCENT[tier]
   return (
-    <span
-      className={cn(
-        'inline-flex items-center justify-center w-6 h-6 rounded text-xs font-bold border',
-        TIER_COLORS[tier]
-      )}
-    >
+    <span style={{
+      display:         'inline-flex',
+      alignItems:      'center',
+      justifyContent:  'center',
+      width:           22,
+      height:          22,
+      borderRadius:    4,
+      border:          `0.5px solid ${accent}`,
+      color:           accent,
+      backgroundColor: '#ede5d8',
+      fontFamily:      'var(--font-crimson), Georgia, serif',
+      fontStyle:       'italic',
+      fontSize:        13,
+      fontWeight:      500,
+      lineHeight:      1,
+      flexShrink:      0,
+    }}>
       {tier}
+    </span>
+  )
+}
+
+// Generic badge kept for backward compat
+export function Badge({ children, className }: { children: React.ReactNode; className?: string }) {
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-mono border border-stone text-mist bg-linen ${className ?? ''}`}>
+      {children}
     </span>
   )
 }

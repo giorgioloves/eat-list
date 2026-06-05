@@ -3,10 +3,20 @@
 import { useState, useMemo, useEffect } from 'react'
 import { Shuffle } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '@/lib/utils'
 import { RestaurantRoulette } from './restaurant-roulette'
 import { WinnerReveal } from './winner-reveal'
 import type { Restaurant, RestaurantStatus } from '@/types'
+
+const T = {
+  parchment:  '#f5f0e8',
+  linen:      '#ede5d8',
+  espresso:   '#3b2f27',
+  terracotta: '#c4927a',
+  stone:      '#c4b8a8',
+  mist:       '#a08070',
+  ghost:      '#b8a898',
+  border:     '#c4b8a8',
+}
 
 interface Filters {
   state: string
@@ -54,13 +64,12 @@ export function RandomPicker({ restaurants }: { restaurants: Restaurant[] }) {
     status: 'want_to_try',
     excludeCafesBakeriesGelaterias: false,
   })
-  const [phase, setPhase] = useState<Phase>('idle')
+  const [phase, setPhase]   = useState<Phase>('idle')
   const [winner, setWinner] = useState<Restaurant | null>(null)
   const [history, setHistory] = useState<string[]>([])
 
   const { state, cuisine, suburb, status, excludeCafesBakeriesGelaterias: excludeCafes } = filters
 
-  // Base sets for each facet
   const baseNoState = useMemo(() =>
     applyPool(restaurants, '', cuisine, suburb, status, excludeCafes),
     [restaurants, cuisine, suburb, status, excludeCafes]
@@ -74,7 +83,6 @@ export function RandomPicker({ restaurants }: { restaurants: Restaurant[] }) {
     [restaurants, state, cuisine, status, excludeCafes]
   )
 
-  // Derive available options
   const availableCities = useMemo(() => {
     const states = new Set(baseNoState.map(r => r.state).filter(Boolean) as string[])
     return Object.entries(STATE_TO_CITY)
@@ -92,10 +100,9 @@ export function RandomPicker({ restaurants }: { restaurants: Restaurant[] }) {
     [baseNoSuburb]
   )
 
-  // Auto-reset stale single-select values
   useEffect(() => {
     setFilters(prev => {
-      const stateOk  = !prev.state   || availableCities.some(c => c.value === prev.state)
+      const stateOk   = !prev.state   || availableCities.some(c => c.value === prev.state)
       const cuisineOk = !prev.cuisine || availableCuisines.includes(prev.cuisine)
       const suburbOk  = !prev.suburb  || availableSuburbs.includes(prev.suburb)
       if (stateOk && cuisineOk && suburbOk) return prev
@@ -116,8 +123,8 @@ export function RandomPicker({ restaurants }: { restaurants: Restaurant[] }) {
   function handlePick() {
     if (pool.length === 0 || phase !== 'idle') return
     const candidates = pool.filter((r) => !history.includes(r.id))
-    const available = candidates.length > 0 ? candidates : pool
-    const choice = available[Math.floor(Math.random() * available.length)]
+    const available  = candidates.length > 0 ? candidates : pool
+    const choice     = available[Math.floor(Math.random() * available.length)]
     setWinner(choice)
     setPhase('spinning')
     setHistory((h) => [choice.id, ...h].slice(0, 5))
@@ -131,63 +138,96 @@ export function RandomPicker({ restaurants }: { restaurants: Restaurant[] }) {
   const isIdle = phase === 'idle'
 
   return (
-    <div className="space-y-4">
-      {/* Filters — hide during animation */}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+
+      {/* Filters */}
       <AnimatePresence>
         {isIdle && (
           <motion.div
             initial={{ opacity: 1 }}
             exit={{ opacity: 0, height: 0, marginBottom: 0 }}
             transition={{ duration: 0.2 }}
-            className="bg-espresso-800 border border-espresso-700 rounded-2xl p-4 space-y-3 overflow-hidden"
+            style={{
+              backgroundColor: T.linen,
+              border:          `0.5px solid ${T.border}`,
+              borderRadius:    10,
+              padding:         14,
+              overflow:        'hidden',
+            }}
           >
-            <p className="text-xs font-semibold text-espresso-300 uppercase tracking-wider">Filters</p>
+            <p style={{
+              fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+              fontSize:      7,
+              color:         T.mist,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase' as const,
+              marginBottom:  12,
+            }}>filters</p>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
               <FilterSelect
-                label="Status"
+                label="status"
                 value={filters.status}
                 onChange={(v) => setFilters((f) => ({ ...f, status: v as RestaurantStatus | '' }))}
                 options={[
-                  { value: '', label: 'Any status' },
-                  { value: 'want_to_try', label: 'Want to Try' },
-                  { value: 'visited', label: 'Visited' },
+                  { value: '', label: 'any status' },
+                  { value: 'want_to_try', label: 'want to try' },
+                  { value: 'visited', label: 'visited' },
                 ]}
               />
               <FilterSelect
-                label="City"
+                label="city"
                 value={filters.state}
                 onChange={(v) => setFilters((f) => ({ ...f, state: v, suburb: '' }))}
-                options={[{ value: '', label: 'Any city' }, ...availableCities]}
+                options={[{ value: '', label: 'any city' }, ...availableCities]}
               />
               <FilterSelect
-                label="Cuisine"
+                label="cuisine"
                 value={filters.cuisine}
                 onChange={(v) => setFilters((f) => ({ ...f, cuisine: v }))}
-                options={[{ value: '', label: 'Any cuisine' }, ...availableCuisines.map((c) => ({ value: c, label: c }))]}
+                options={[{ value: '', label: 'any cuisine' }, ...availableCuisines.map((c) => ({ value: c, label: c }))]}
               />
               <FilterSelect
-                label="Suburb"
+                label="suburb"
                 value={filters.suburb}
                 onChange={(v) => setFilters((f) => ({ ...f, suburb: v }))}
-                options={[{ value: '', label: 'Any suburb' }, ...availableSuburbs.map((s) => ({ value: s, label: s }))]}
+                options={[{ value: '', label: 'any suburb' }, ...availableSuburbs.map((s) => ({ value: s, label: s }))]}
               />
-              <label className="flex items-center gap-2 cursor-pointer self-end pb-1.5">
+              <label style={{
+                display:    'flex',
+                alignItems: 'center',
+                gap:        8,
+                cursor:     'pointer',
+                gridColumn: '1 / -1',
+                marginTop:  2,
+              }}>
                 <input
                   type="checkbox"
                   checked={filters.excludeCafesBakeriesGelaterias}
                   onChange={(e) => setFilters((f) => ({ ...f, excludeCafesBakeriesGelaterias: e.target.checked }))}
-                  className="w-3.5 h-3.5 rounded accent-gold-500 cursor-pointer"
+                  style={{
+                    width:        12,
+                    height:       12,
+                    borderRadius: 3,
+                    border:       `1px solid ${T.stone}`,
+                    cursor:       'pointer',
+                    accentColor:  T.espresso,
+                    flexShrink:   0,
+                  }}
                 />
-                <span className="text-xs text-espresso-200">Exclude cafes, bakeries, gelaterias &amp; sandwiches</span>
+                <span style={{
+                  fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+                  fontSize:      8,
+                  color:         T.mist,
+                  letterSpacing: '0.04em',
+                }}>exclude cafes, bakeries, gelaterias &amp; sandwiches</span>
               </label>
             </div>
-
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Pick button */}
+      {/* CTA button */}
       <AnimatePresence>
         {isIdle && (
           <motion.button
@@ -196,39 +236,70 @@ export function RandomPicker({ restaurants }: { restaurants: Restaurant[] }) {
             transition={{ duration: 0.15 }}
             onClick={handlePick}
             disabled={pool.length === 0}
-            className={cn(
-              'w-full py-4 rounded-2xl font-bold text-base transition-all flex items-center justify-center gap-3',
-              pool.length === 0
-                ? 'bg-espresso-700 text-espresso-400 cursor-not-allowed'
-                : 'bg-gold-500 hover:bg-gold-400 text-espresso-900 active:scale-95'
-            )}
+            style={{
+              width:           '100%',
+              padding:         '14px 0',
+              borderRadius:    20,
+              border:          'none',
+              display:         'flex',
+              alignItems:      'center',
+              justifyContent:  'center',
+              gap:             10,
+              backgroundColor: pool.length === 0 ? T.stone : T.espresso,
+              color:           pool.length === 0 ? T.ghost : T.parchment,
+              cursor:          pool.length === 0 ? 'not-allowed' : 'pointer',
+              fontFamily:      'var(--font-crimson), Georgia, serif',
+              fontStyle:       'italic',
+              fontSize:        18,
+              fontWeight:      400,
+            }}
           >
-            <Shuffle className="w-5 h-5" />
-            Let&apos;s Eat!
+            <Shuffle style={{ width: 18, height: 18 }} />
+            let&apos;s eat
           </motion.button>
         )}
       </AnimatePresence>
 
       {pool.length === 0 && isIdle && (
-        <p className="text-center text-sm text-espresso-400">No restaurants match your filters.</p>
+        <p style={{
+          textAlign:     'center',
+          fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+          fontSize:      9,
+          color:         T.ghost,
+          letterSpacing: '0.08em',
+        }}>no restaurants match your filters</p>
       )}
 
-      {/* Choosing button (shown while spinning) */}
+      {/* Spinning indicator */}
       {phase === 'spinning' && (
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="w-full py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-3 bg-gold-500/20 text-gold-400 border border-gold-500/20"
+          style={{
+            width:           '100%',
+            padding:         '14px 0',
+            borderRadius:    20,
+            border:          `0.5px solid ${T.border}`,
+            backgroundColor: T.linen,
+            display:         'flex',
+            alignItems:      'center',
+            justifyContent:  'center',
+            gap:             10,
+            fontFamily:      'var(--font-crimson), Georgia, serif',
+            fontStyle:       'italic',
+            fontSize:        18,
+            color:           T.mist,
+          }}
         >
-          <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          <svg style={{ width: 18, height: 18, animation: 'spin 1s linear infinite' }} fill="none" viewBox="0 0 24 24">
+            <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
           </svg>
-          Choosing…
+          choosing…
         </motion.div>
       )}
 
-      {/* Roulette animation */}
+      {/* Roulette */}
       <AnimatePresence>
         {phase === 'spinning' && winner && (
           <motion.div
@@ -266,17 +337,48 @@ function FilterSelect({ label, value, onChange, options }: {
 }) {
   return (
     <div>
-      <label className="block text-xs text-espresso-400 mb-1">{label}</label>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full bg-espresso-700 border border-espresso-600 rounded-lg px-2.5 py-1.5 text-xs text-espresso-200
-          focus:outline-none focus:ring-1 focus:ring-gold-500 appearance-none"
-      >
-        {options.map((o) => (
-          <option key={o.value} value={o.value} className="bg-espresso-800">{o.label}</option>
-        ))}
-      </select>
+      <p style={{
+        fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+        fontSize:      7,
+        color:         T.mist,
+        letterSpacing: '0.1em',
+        textTransform: 'uppercase' as const,
+        marginBottom:  5,
+      }}>{label}</p>
+      <div style={{ position: 'relative' }}>
+        <div style={{
+          width:           '100%',
+          height:          30,
+          backgroundColor: T.parchment,
+          border:          `0.5px solid ${T.border}`,
+          borderRadius:    6,
+          padding:         '0 8px',
+          display:         'flex',
+          alignItems:      'center',
+          pointerEvents:   'none',
+          overflow:        'hidden',
+        }}>
+          <span style={{
+            fontFamily:   'var(--font-crimson), Georgia, serif',
+            fontSize:     11,
+            color:        T.espresso,
+            overflow:     'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace:   'nowrap',
+          }}>
+            {options.find(o => o.value === value)?.label ?? options[0].label}
+          </span>
+        </div>
+        <select
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          style={{ position: 'absolute', inset: 0, width: '100%', opacity: 0, cursor: 'pointer' }}
+        >
+          {options.map((o) => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
+      </div>
     </div>
   )
 }

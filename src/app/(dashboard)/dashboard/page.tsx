@@ -4,108 +4,118 @@ import Link from 'next/link'
 import { StatusBadge } from '@/components/ui/badge'
 import { PipRating } from '@/components/ui/pip-rating'
 import {
-  Plus, UtensilsCrossed, Star, BookMarked, TrendingUp,
-  ArrowRight, ChevronRight,
+  Plus, UtensilsCrossed, ChevronRight,
 } from 'lucide-react'
 import { useRestaurants } from '@/contexts/restaurants'
 import { CUISINE_EMOJI } from '@/types'
 import type { Restaurant } from '@/types'
 
-// ─── Page ────────────────────────────────────────────────────────────────────
+// tokens
+const T = {
+  parchment:  '#f5f0e8',
+  linen:      '#ede5d8',
+  espresso:   '#3b2f27',
+  terracotta: '#c4927a',
+  sage:       '#8a9e8a',
+  stone:      '#c4b8a8',
+  mist:       '#a08070',
+  ghost:      '#b8a898',
+  border:     '#c4b8a8',
+}
 
 export default function DashboardPage() {
-  const { restaurants, loading } = useRestaurants()
+  const { restaurants } = useRestaurants()
 
-  const visited    = restaurants.filter((r) => r.status === 'visited')
-  const wishlist   = restaurants.filter((r) => r.status === 'want_to_try')
-  const rated      = restaurants.filter((r) => r.rating !== null)
-  const avgRating  = rated.length > 0
+  const visited   = restaurants.filter((r) => r.status === 'visited')
+  const wishlist  = restaurants.filter((r) => r.status === 'want_to_try')
+  const rated     = restaurants.filter((r) => r.rating !== null)
+  const avgRating = rated.length > 0
     ? (rated.reduce((sum, r) => sum + (r.rating ?? 0), 0) / rated.length).toFixed(1)
     : null
-  const recent     = restaurants.slice(0, 4)
+  const recent    = restaurants.slice(0, 4)
 
   return (
-    <div className="px-4 pt-6 pb-28 max-w-lg mx-auto space-y-5">
+    <div style={{ padding: '24px 16px 112px', maxWidth: 440, margin: '0 auto' }}>
 
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 20 }}>
         <div>
-          <h1 className="text-xl font-bold text-espresso-50">Eat List</h1>
-          <p className="text-sm text-espresso-400 mt-0.5">Your restaurant list</p>
+          <h1 style={{
+            fontFamily:  'var(--font-crimson), Georgia, serif',
+            fontSize:    22,
+            fontWeight:  400,
+            color:       T.espresso,
+            lineHeight:  1.1,
+            margin:      0,
+          }}>avec</h1>
+          <p style={{
+            fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+            fontSize:      9,
+            color:         T.mist,
+            letterSpacing: '0.1em',
+            marginTop:     4,
+          }}>your restaurant list</p>
         </div>
         <Link
           href="/restaurants/add"
-          className="flex items-center justify-center w-9 h-9 bg-gold-500 hover:bg-gold-400 text-espresso-900 rounded-xl transition-colors"
           aria-label="Add restaurant"
+          style={{
+            display:         'flex',
+            alignItems:      'center',
+            justifyContent:  'center',
+            width:           34,
+            height:          34,
+            backgroundColor: T.espresso,
+            borderRadius:    8,
+            flexShrink:      0,
+            textDecoration:  'none',
+          }}
         >
-          <Plus className="w-4 h-4" />
+          <Plus style={{ width: 14, height: 14, color: T.parchment }} />
         </Link>
       </div>
 
       {/* 2×2 metric grid */}
-      <div className="grid grid-cols-2 gap-3">
-        <Link href="/stats" className="block">
-          <MetricCard
-            label="Total"
-            value={restaurants.length}
-            detail="restaurants"
-            icon={<UtensilsCrossed className="w-4 h-4 text-espresso-400" />}
-          />
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 20 }}>
+        <Link href="/stats" style={{ textDecoration: 'none' }}>
+          <MetricCard label="total" value={restaurants.length} detail="restaurants" />
         </Link>
-        <Link href="/stats" className="block">
-          <MetricCard
-            label="Visited"
-            value={visited.length}
-            detail="restaurants"
-            icon={<Star className="w-4 h-4 text-green-400" />}
-            valueColor="text-green-400"
-          />
+        <Link href="/stats" style={{ textDecoration: 'none' }}>
+          <MetricCard label="visited" value={visited.length} detail="restaurants" accent />
         </Link>
-        <Link href="/stats" className="block">
-          <MetricCard
-            label="Want to Try"
-            value={wishlist.length}
-            detail="restaurants"
-            icon={<BookMarked className="w-4 h-4 text-blue-400" />}
-            valueColor="text-blue-400"
-          />
+        <Link href="/stats" style={{ textDecoration: 'none' }}>
+          <MetricCard label="want to try" value={wishlist.length} detail="restaurants" />
         </Link>
-        <Link href="/stats" className="block">
-          <MetricCard
-            label="Avg Rating"
-            value={avgRating ?? '—'}
-            detail="out of 5"
-            icon={<TrendingUp className="w-4 h-4 text-gold-400" />}
-            valueColor="text-gold-400"
-          />
+        <Link href="/stats" style={{ textDecoration: 'none' }}>
+          <MetricCard label="avg rating" value={avgRating ?? '—'} detail="out of 5" accent italic />
         </Link>
       </div>
 
       {/* Stats preview */}
       {restaurants.length > 0 && (
-        <section>
-          <SectionHeader title="Stats" href="/stats" linkLabel="View full" />
-          <div className="space-y-3">
+        <div style={{ marginBottom: 20 }}>
+          <SectionHeader title="stats" href="/stats" linkLabel="view full" />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {rated.length > 0 && <MiniRatingDistribution rated={rated} />}
             <MiniTopCuisines restaurants={restaurants} />
             {visited.length > 0 && <MiniVisitHighlights restaurants={restaurants} visited={visited} />}
           </div>
-        </section>
+        </div>
       )}
 
       {/* Recent Activity */}
-      <section>
-        <SectionHeader title="Recent Activity" href="/restaurants" linkLabel="View all" />
+      <div>
+        <SectionHeader title="recent" href="/restaurants" linkLabel="view all" />
         {recent.length === 0 ? (
           <EmptyState />
         ) : (
-          <div className="space-y-2">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {recent.map((r) => (
               <RecentRow key={r.id} restaurant={r} />
             ))}
           </div>
         )}
-      </section>
+      </div>
 
     </div>
   )
@@ -115,14 +125,21 @@ export default function DashboardPage() {
 
 function SectionHeader({ title, href, linkLabel }: { title: string; href: string; linkLabel: string }) {
   return (
-    <div className="flex items-center justify-between mb-3">
-      <h2 className="text-sm font-semibold text-espresso-200">{title}</h2>
-      <Link
-        href={href}
-        className="flex items-center gap-1 text-xs text-gold-500 hover:text-gold-400 transition-colors"
-      >
-        {linkLabel} <ArrowRight className="w-3 h-3" />
-      </Link>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+      <span style={{
+        fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+        fontSize:      8,
+        color:         T.mist,
+        letterSpacing: '0.12em',
+        textTransform: 'uppercase' as const,
+      }}>{title}</span>
+      <Link href={href} style={{
+        fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+        fontSize:      8,
+        color:         T.terracotta,
+        letterSpacing: '0.08em',
+        textDecoration: 'none',
+      }}>{linkLabel} →</Link>
     </div>
   )
 }
@@ -130,22 +147,43 @@ function SectionHeader({ title, href, linkLabel }: { title: string; href: string
 // ─── Metric Card ──────────────────────────────────────────────────────────────
 
 function MetricCard({
-  label, value, detail, icon, valueColor,
+  label, value, detail, accent, italic,
 }: {
   label: string
   value: number | string
   detail: string
-  icon: React.ReactNode
-  valueColor?: string
+  accent?: boolean
+  italic?: boolean
 }) {
   return (
-    <div className="bg-espresso-800 border border-espresso-700/60 rounded-xl p-4 hover:border-espresso-600 active:bg-espresso-700/60 transition-colors h-full">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-xs text-espresso-400">{label}</span>
-        {icon}
-      </div>
-      <p className={`text-2xl font-bold leading-none ${valueColor ?? 'text-espresso-50'}`}>{value}</p>
-      <p className="text-xs text-espresso-500 mt-1.5">{detail}</p>
+    <div style={{
+      backgroundColor: T.linen,
+      border:          `0.5px solid ${T.border}`,
+      borderRadius:    10,
+      padding:         '14px 14px 12px',
+    }}>
+      <p style={{
+        fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+        fontSize:      8,
+        color:         T.mist,
+        letterSpacing: '0.1em',
+        marginBottom:  8,
+      }}>{label}</p>
+      <p style={{
+        fontFamily: 'var(--font-crimson), Georgia, serif',
+        fontSize:   28,
+        fontWeight: accent ? 400 : 300,
+        fontStyle:  italic ? 'italic' : 'normal',
+        color:      accent ? T.terracotta : T.espresso,
+        lineHeight:  1,
+        marginBottom: 4,
+      }}>{value}</p>
+      <p style={{
+        fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+        fontSize:      8,
+        color:         T.ghost,
+        letterSpacing: '0.06em',
+      }}>{detail}</p>
     </div>
   )
 }
@@ -160,29 +198,55 @@ function MiniRatingDistribution({ rated }: { rated: Restaurant[] }) {
   const max = Math.max(...buckets.map((b) => b.count), 1)
 
   return (
-    <div className="bg-espresso-800 border border-espresso-700/60 rounded-2xl p-4">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-xs font-semibold text-espresso-300 uppercase tracking-wide">Rating Distribution</h3>
-        <span className="text-xs text-espresso-500">{rated.length} rated</span>
+    <div style={{
+      backgroundColor: T.linen,
+      border:          `0.5px solid ${T.border}`,
+      borderRadius:    10,
+      padding:         14,
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+        <span style={{
+          fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+          fontSize:      8,
+          color:         T.mist,
+          letterSpacing: '0.1em',
+          textTransform: 'uppercase' as const,
+        }}>rating distribution</span>
+        <span style={{
+          fontFamily: 'var(--font-dm-mono), ui-monospace, monospace',
+          fontSize:   8,
+          color:      T.ghost,
+        }}>{rated.length} rated</span>
       </div>
-      <div className="space-y-2">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
         {buckets.map(({ stars, count }) => (
-          <div key={stars} className="flex items-center gap-2.5">
-            <div className="flex gap-0.5 w-14 flex-shrink-0">
+          <div key={stars} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ display: 'flex', gap: 2, width: 50, flexShrink: 0 }}>
               {Array.from({ length: 5 }, (_, i) => (
-                <div
-                  key={i}
-                  className={`w-2 h-2 rounded-full ${i < stars ? 'bg-gold-400' : 'bg-espresso-700'}`}
-                />
+                <div key={i} style={{
+                  width:           6,
+                  height:          6,
+                  borderRadius:    '50%',
+                  backgroundColor: i < stars ? T.terracotta : T.stone,
+                }} />
               ))}
             </div>
-            <div className="flex-1 h-1.5 bg-espresso-700 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gold-500/70 rounded-full transition-all duration-500"
-                style={{ width: count > 0 ? `${(count / max) * 100}%` : '0%' }}
-              />
+            <div style={{ flex: 1, height: 4, backgroundColor: T.stone, borderRadius: 2, overflow: 'hidden' }}>
+              <div style={{
+                height:          '100%',
+                backgroundColor: T.terracotta,
+                borderRadius:    2,
+                width:           count > 0 ? `${(count / max) * 100}%` : '0%',
+                transition:      'width 0.5s',
+              }} />
             </div>
-            <span className="text-xs text-espresso-500 w-5 text-right tabular-nums flex-shrink-0">{count}</span>
+            <span style={{
+              fontFamily: 'var(--font-dm-mono), ui-monospace, monospace',
+              fontSize:   8,
+              color:      T.ghost,
+              width:      14,
+              textAlign:  'right',
+            }}>{count}</span>
           </div>
         ))}
       </div>
@@ -197,30 +261,58 @@ function MiniTopCuisines({ restaurants }: { restaurants: Restaurant[] }) {
   for (const r of restaurants) {
     if (r.cuisine) counts[r.cuisine] = (counts[r.cuisine] || 0) + 1
   }
-  const top5 = Object.entries(counts)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5)
-
+  const top5 = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 5)
   if (top5.length === 0) return null
   const max = top5[0][1]
 
   return (
-    <div className="bg-espresso-800 border border-espresso-700/60 rounded-2xl p-4">
-      <h3 className="text-xs font-semibold text-espresso-300 uppercase tracking-wide mb-3">Top Cuisines</h3>
-      <div className="space-y-2.5">
+    <div style={{
+      backgroundColor: T.linen,
+      border:          `0.5px solid ${T.border}`,
+      borderRadius:    10,
+      padding:         14,
+    }}>
+      <span style={{
+        display:       'block',
+        fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+        fontSize:      8,
+        color:         T.mist,
+        letterSpacing: '0.1em',
+        textTransform: 'uppercase' as const,
+        marginBottom:  10,
+      }}>top cuisines</span>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {top5.map(([cuisine, count]) => (
-          <div key={cuisine} className="flex items-center gap-2.5">
-            <span className="text-sm w-4 text-center flex-shrink-0 leading-none">
+          <div key={cuisine} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 11, width: 16, textAlign: 'center', flexShrink: 0 }}>
               {CUISINE_EMOJI[cuisine] ?? '🍽️'}
             </span>
-            <span className="text-xs text-espresso-200 w-24 truncate flex-shrink-0">{cuisine}</span>
-            <div className="flex-1 h-1.5 bg-espresso-700 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-espresso-400/70 rounded-full transition-all duration-500"
-                style={{ width: `${(count / max) * 100}%` }}
-              />
+            <span style={{
+              fontFamily: 'var(--font-dm-mono), ui-monospace, monospace',
+              fontSize:   9,
+              color:      T.espresso,
+              width:      80,
+              flexShrink: 0,
+              overflow:   'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}>{cuisine}</span>
+            <div style={{ flex: 1, height: 4, backgroundColor: T.stone, borderRadius: 2, overflow: 'hidden' }}>
+              <div style={{
+                height:          '100%',
+                backgroundColor: T.sage,
+                borderRadius:    2,
+                width:           `${(count / max) * 100}%`,
+                transition:      'width 0.5s',
+              }} />
             </div>
-            <span className="text-xs text-espresso-500 w-5 text-right tabular-nums flex-shrink-0">{count}</span>
+            <span style={{
+              fontFamily: 'var(--font-dm-mono), ui-monospace, monospace',
+              fontSize:   8,
+              color:      T.ghost,
+              width:      14,
+              textAlign:  'right',
+            }}>{count}</span>
           </div>
         ))}
       </div>
@@ -240,25 +332,46 @@ function MiniVisitHighlights({ restaurants, visited }: { restaurants: Restaurant
     : 0
 
   return (
-    <div className="bg-espresso-800 border border-espresso-700/60 rounded-2xl p-4">
-      <h3 className="text-xs font-semibold text-espresso-300 uppercase tracking-wide mb-3">Visit Highlights</h3>
-      <div className="space-y-2.5">
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-espresso-400">Total visits logged</span>
-          <span className="text-xs font-semibold text-espresso-100 tabular-nums">{totalVisits}</span>
+    <div style={{
+      backgroundColor: T.linen,
+      border:          `0.5px solid ${T.border}`,
+      borderRadius:    10,
+      padding:         14,
+    }}>
+      <span style={{
+        display:       'block',
+        fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+        fontSize:      8,
+        color:         T.mist,
+        letterSpacing: '0.1em',
+        textTransform: 'uppercase' as const,
+        marginBottom:  10,
+      }}>visit highlights</span>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.mist }}>total visits logged</span>
+          <span style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 13, color: T.espresso }}>{totalVisits}</span>
         </div>
         {mostVisited && mostVisited.visit_count > 1 && (
-          <div className="flex items-center justify-between gap-3">
-            <span className="text-xs text-espresso-400 flex-shrink-0">Most visited</span>
-            <span className="text-xs font-semibold text-espresso-100 truncate text-right">
-              {mostVisited.name}{' '}
-              <span className="text-espresso-500 font-normal">×{mostVisited.visit_count}</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
+            <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.mist, flexShrink: 0 }}>most visited</span>
+            <span style={{
+              fontFamily: 'var(--font-crimson), Georgia, serif',
+              fontSize:   13,
+              color:      T.espresso,
+              overflow:   'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              textAlign:  'right',
+            }}>
+              {mostVisited.name.replace(/\s*\([^)]+\)\s*$/, '').trim()}{' '}
+              <span style={{ color: T.ghost, fontStyle: 'normal' }}>×{mostVisited.visit_count}</span>
             </span>
           </div>
         )}
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-espresso-400">Still to try</span>
-          <span className="text-xs font-semibold text-blue-400">{toTryPct}%</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.mist }}>still to try</span>
+          <span style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 13, color: T.terracotta, fontStyle: 'italic' }}>{toTryPct}%</span>
         </div>
       </div>
     </div>
@@ -268,23 +381,49 @@ function MiniVisitHighlights({ restaurants, visited }: { restaurants: Restaurant
 // ─── Recent Row ───────────────────────────────────────────────────────────────
 
 function RecentRow({ restaurant: r }: { restaurant: Restaurant }) {
+  const displayName = r.name.replace(/\s*\([^)]+\)\s*$/, '').trim()
   return (
     <Link
       href={`/restaurants/${r.id}`}
-      className="flex items-center gap-3 px-3 py-2.5 bg-espresso-800 border border-espresso-700/60 rounded-xl hover:border-espresso-600 hover:bg-espresso-700/40 active:bg-espresso-700/60 transition-all group"
+      style={{
+        display:         'flex',
+        alignItems:      'center',
+        gap:             10,
+        padding:         '10px 12px',
+        backgroundColor: T.linen,
+        border:          `0.5px solid ${T.border}`,
+        borderRadius:    10,
+        textDecoration:  'none',
+      }}
     >
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-sm font-medium text-espresso-50 truncate">{r.name}</span>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' as const }}>
+          <span style={{
+            fontFamily:   'var(--font-crimson), Georgia, serif',
+            fontSize:     13,
+            fontWeight:   500,
+            color:        T.espresso,
+            overflow:     'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace:   'nowrap',
+          }}>{displayName}</span>
           {r.rating !== null && <PipRating rating={r.rating} size="sm" />}
         </div>
-        <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4, flexWrap: 'wrap' as const }}>
           <StatusBadge status={r.status} />
-          {r.cuisine && <span className="text-xs text-espresso-400">{r.cuisine}</span>}
-          {r.price_level && <span className="text-xs text-espresso-500">{r.price_level}</span>}
+          {r.cuisine && <span style={{
+            fontFamily: 'var(--font-dm-mono), ui-monospace, monospace',
+            fontSize:   8,
+            color:      T.mist,
+          }}>{r.cuisine}</span>}
+          {r.price_level && <span style={{
+            fontFamily: 'var(--font-dm-mono), ui-monospace, monospace',
+            fontSize:   8,
+            color:      T.ghost,
+          }}>{r.price_level}</span>}
         </div>
       </div>
-      <ChevronRight className="w-4 h-4 text-espresso-700 group-hover:text-espresso-500 flex-shrink-0 transition-colors" />
+      <ChevronRight style={{ width: 14, height: 14, color: T.stone, flexShrink: 0 }} />
     </Link>
   )
 }
@@ -293,18 +432,39 @@ function RecentRow({ restaurant: r }: { restaurant: Restaurant }) {
 
 function EmptyState() {
   return (
-    <div className="text-center py-12 bg-espresso-800 border border-espresso-700 rounded-xl">
-      <UtensilsCrossed className="w-10 h-10 text-espresso-500 mx-auto mb-3" />
-      <p className="text-espresso-200 font-medium">No restaurants yet</p>
-      <p className="text-espresso-400 text-sm mt-1">Add your first restaurant to get started</p>
+    <div style={{
+      textAlign:       'center',
+      padding:         '40px 16px',
+      backgroundColor: T.linen,
+      border:          `0.5px solid ${T.border}`,
+      borderRadius:    10,
+    }}>
+      <UtensilsCrossed style={{ width: 28, height: 28, color: T.stone, margin: '0 auto 12px' }} />
+      <p style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 16, color: T.espresso, marginBottom: 4 }}>
+        no restaurants yet
+      </p>
+      <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.mist, marginBottom: 16 }}>
+        add your first restaurant to get started
+      </p>
       <Link
         href="/restaurants/add"
-        className="inline-flex items-center gap-2 mt-4 bg-gold-500 hover:bg-gold-400 text-espresso-900 font-semibold text-sm px-4 py-2 rounded-lg transition-colors"
+        style={{
+          display:         'inline-flex',
+          alignItems:      'center',
+          gap:             6,
+          backgroundColor: T.espresso,
+          color:           T.parchment,
+          fontFamily:      'var(--font-crimson), Georgia, serif',
+          fontStyle:       'italic',
+          fontSize:        14,
+          padding:         '8px 20px',
+          borderRadius:    20,
+          textDecoration:  'none',
+        }}
       >
-        <Plus className="w-4 h-4" />
-        Add Restaurant
+        <Plus style={{ width: 13, height: 13 }} />
+        add restaurant
       </Link>
     </div>
   )
 }
-

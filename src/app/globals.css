@@ -14,96 +14,64 @@
 
 @layer base {
   html {
-    /* Remove blue flash on tap in Safari/iOS */
     -webkit-tap-highlight-color: transparent;
-    /* Prevent font size adjustment after orientation change */
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
   }
 
-  /* Prevent iOS Safari from zooming on input focus (requires >= 16px) */
   input, textarea, select {
     font-size: max(16px, 1em);
   }
 
-  /* Remove double-tap zoom delay on interactive elements */
   button, a, [role="button"], label {
     touch-action: manipulation;
   }
 
-  :root {
-    --bg: 248 244 237;
-    --bg-secondary: 240 234 224;
-    --bg-card: 255 250 245;
-    --border: 210 200 190;
-    --text: 43 38 35;
-    --text-muted: 122 97 88;
-    --accent: 217 182 93;
-  }
-
-  .dark {
-    --bg: 43 38 35;
-    --bg-secondary: 53 46 43;
-    --bg-card: 53 46 43;
-    --border: 74 62 58;
-    --text: 248 244 237;
-    --text-muted: 160 149 144;
-    --accent: 217 182 93;
-  }
-
   * {
-    border-color: rgb(var(--border));
+    border-color: #c4b8a8;
   }
 
   body {
-    background-color: rgb(var(--bg));
-    color: rgb(var(--text));
+    background-color: #f5f0e8;
+    color: #3b2f27;
   }
 }
 
 @layer components {
-  .card {
-    @apply bg-espresso-800 border border-espresso-700 rounded-xl;
+  .input-avec {
+    width: 100%;
+    background-color: #ede5d8;
+    border: 0.5px solid #c4b8a8;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-family: var(--font-crimson), Georgia, serif;
+    font-size: 14px;
+    color: #3b2f27;
   }
-
-  .card-hover {
-    @apply hover:border-espresso-600 hover:bg-espresso-700/50 transition-all duration-200;
+  .input-avec::placeholder {
+    color: #b8a898;
   }
-
-  .input-base {
-    @apply w-full bg-espresso-800 border border-espresso-600 rounded-lg px-3 py-2 text-sm text-espresso-50 placeholder-espresso-400
-    focus:outline-none focus:ring-1 focus:ring-gold-500 focus:border-gold-500
-    transition-colors duration-150;
+  .input-avec:focus {
+    outline: none;
+    border-color: #c4927a;
   }
 }
 
-/* Tier S glow */
-.tier-s-glow {
-  box-shadow:
-    0 0 0 1px rgba(214,169,75,.7),
-    0 0 12px rgba(214,169,75,.4),
-    0 0 40px rgba(214,169,75,.25),
-    0 0 80px rgba(214,169,75,.1);
-}
-
-/* Tier page — prevent any text selection on touch */
+/* Tier page — no text selection on touch */
 .tier-page * {
   -webkit-touch-callout: none !important;
   -webkit-user-select: none !important;
   user-select: none !important;
 }
 
-/* Restaurant map pins */
+/* Map marker pins */
 .restaurant-marker {
   position: relative;
   width: 42px;
   height: 42px;
   border-radius: 999px;
-  background: #F6F2EA;
-  border: 2px solid #D6A94B;
-  box-shadow:
-    0 4px 14px rgba(0, 0, 0, 0.45),
-    0 0 0 4px rgba(214, 169, 75, 0.18);
+  background: #ede5d8;
+  border: 1.5px solid #c4927a;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -111,10 +79,7 @@
   line-height: 1;
   cursor: pointer;
   transform-origin: 50% 100%;
-  transition:
-    transform 160ms ease,
-    box-shadow 160ms ease,
-    border-color 160ms ease;
+  transition: transform 160ms ease, border-color 160ms ease;
   z-index: 10;
 }
 
@@ -125,59 +90,28 @@
   left: 50%;
   width: 12px;
   height: 12px;
-  background: #F6F2EA;
-  border-right: 2px solid #D6A94B;
-  border-bottom: 2px solid #D6A94B;
+  background: #ede5d8;
+  border-right: 1.5px solid #c4927a;
+  border-bottom: 1.5px solid #c4927a;
   transform: translateX(-50%) rotate(45deg);
   z-index: -1;
   pointer-events: none;
 }
 
-.restaurant-marker:hover {
-  transform: scale(1.12);
-  box-shadow:
-    0 6px 18px rgba(0, 0, 0, 0.55),
-    0 0 0 6px rgba(214, 169, 75, 0.25),
-    0 0 22px rgba(214, 169, 75, 0.25);
-}
-
-.restaurant-marker.selected {
-  transform: scale(1.15);
-  border-color: #F1D88A;
-  box-shadow:
-    0 8px 24px rgba(0, 0, 0, 0.6),
-    0 0 0 7px rgba(214, 169, 75, 0.28),
-    0 0 28px rgba(214, 169, 75, 0.38);
-}
+.restaurant-marker:hover   { transform: scale(1.12); }
+.restaurant-marker.selected { transform: scale(1.15); border-color: #3b2f27; }
 
 .restaurant-marker-emoji {
   position: relative;
   z-index: 2;
-  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25));
   pointer-events: none;
 }
 
-/* Safe-area bottom padding (used by bottom nav) */
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #5C4E49;
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #7A6158;
-}
+::-webkit-scrollbar       { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c4b8a8; border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: #a08070; }

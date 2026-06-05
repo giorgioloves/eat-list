@@ -6,6 +6,17 @@ import { RestaurantFilters } from '@/components/restaurants/restaurant-filters'
 import type { Restaurant, RestaurantFilters as Filters, Tier } from '@/types'
 import { TIERS } from '@/types'
 
+const T = {
+  parchment:  '#f5f0e8',
+  linen:      '#ede5d8',
+  espresso:   '#3b2f27',
+  terracotta: '#c4927a',
+  stone:      '#c4b8a8',
+  mist:       '#a08070',
+  ghost:      '#b8a898',
+  border:     '#c4b8a8',
+}
+
 const DEFAULT_FILTERS: Filters = {
   search: '',
   status: [],
@@ -15,15 +26,15 @@ const DEFAULT_FILTERS: Filters = {
   sortBy: 'newest',
 }
 
-const STATE_TO_CITY: Record<string, { label: string; color: string }> = {
-  WA:  { label: 'Perth',     color: '#59D67A' },
-  VIC: { label: 'Melbourne', color: '#B983FF' },
-  NSW: { label: 'Sydney',    color: '#5FA8FF' },
-  QLD: { label: 'Brisbane',  color: '#E8A87C' },
-  SA:  { label: 'Adelaide',  color: '#FF8FAB' },
-  TAS: { label: 'Hobart',    color: '#7AB8F5' },
-  ACT: { label: 'Canberra',  color: '#7A8A6B' },
-  NT:  { label: 'Darwin',    color: '#FF9B54' },
+const STATE_TO_CITY: Record<string, { label: string }> = {
+  WA:  { label: 'Perth'     },
+  VIC: { label: 'Melbourne' },
+  NSW: { label: 'Sydney'    },
+  QLD: { label: 'Brisbane'  },
+  SA:  { label: 'Adelaide'  },
+  TAS: { label: 'Hobart'    },
+  ACT: { label: 'Canberra'  },
+  NT:  { label: 'Darwin'    },
 }
 
 function applyFilters(
@@ -80,7 +91,7 @@ export default function RestaurantListClient({ restaurants }: { restaurants: Res
     const states = new Set(baseNoState.map(r => r.state).filter(Boolean) as string[])
     return Object.entries(STATE_TO_CITY)
       .filter(([s]) => states.has(s))
-      .map(([st, { label, color }]) => ({ state: st, label, color }))
+      .map(([st, { label }]) => ({ state: st, label }))
   }, [baseNoState])
 
   const availableSuburbs = useMemo(() =>
@@ -98,9 +109,9 @@ export default function RestaurantListClient({ restaurants }: { restaurants: Res
 
   useEffect(() => {
     setFilters(prev => {
-      const newSuburb = prev.suburb.filter(s => availableSuburbs.includes(s))
+      const newSuburb  = prev.suburb.filter(s => availableSuburbs.includes(s))
       const newCuisine = prev.cuisine.filter(c => availableCuisines.includes(c))
-      const newTier = prev.tier.filter(t => availableTiers.includes(t as Tier))
+      const newTier    = prev.tier.filter(t => availableTiers.includes(t as Tier))
       if (
         newSuburb.length === prev.suburb.length &&
         newCuisine.length === prev.cuisine.length &&
@@ -123,13 +134,13 @@ export default function RestaurantListClient({ restaurants }: { restaurants: Res
           if (!a.last_visit_date) return 1
           if (!b.last_visit_date) return -1
           return new Date(b.last_visit_date).getTime() - new Date(a.last_visit_date).getTime()
-        case 'name':         return a.name.localeCompare(b.name)
+        case 'name':  return a.name.localeCompare(b.name)
         case 'tier':
           if (!a.tier && !b.tier) return 0
           if (!a.tier) return 1
           if (!b.tier) return -1
           return tierOrder[a.tier] - tierOrder[b.tier]
-        default:             return 0
+        default: return 0
       }
     })
     return result
@@ -149,9 +160,8 @@ export default function RestaurantListClient({ restaurants }: { restaurants: Res
   }
 
   return (
-    <div className="space-y-4">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
 
-      {/* Search · Filter · Sort */}
       <RestaurantFilters
         filters={filters}
         onChange={setFilters}
@@ -160,52 +170,84 @@ export default function RestaurantListClient({ restaurants }: { restaurants: Res
         tiers={availableTiers}
       />
 
-      {/* City chips — horizontal scroll, breaks out of parent px-4 */}
+      {/* City chips */}
       {availableCities.length > 0 && (
-        <div className="-mx-4 px-4 overflow-x-auto scrollbar-none">
-          <div className="flex gap-2 pb-0.5">
-            {availableCities.map(c => (
-              <button
-                key={c.state}
-                onClick={() => setSelectedState(prev => prev === c.state ? '' : c.state)}
-                className="h-10 px-4 rounded-full text-sm font-semibold border transition-all whitespace-nowrap flex-shrink-0 min-w-[44px]"
-                style={
-                  selectedState === c.state
-                    ? { backgroundColor: `${c.color}22`, borderColor: `${c.color}70`, color: c.color }
-                    : { backgroundColor: 'transparent', borderColor: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.45)' }
-                }
-              >
-                {c.label}
-              </button>
-            ))}
+        <div style={{ margin: '0 -16px', padding: '0 16px', overflowX: 'auto' }}>
+          <div style={{ display: 'flex', gap: 6, paddingBottom: 2 }}>
+            {availableCities.map(c => {
+              const active = selectedState === c.state
+              return (
+                <button
+                  key={c.state}
+                  onClick={() => setSelectedState(prev => prev === c.state ? '' : c.state)}
+                  style={{
+                    height:          32,
+                    padding:         '0 14px',
+                    borderRadius:    16,
+                    border:          `0.5px solid ${active ? T.terracotta : T.border}`,
+                    backgroundColor: active ? T.terracotta : T.linen,
+                    color:           active ? T.parchment : T.mist,
+                    fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
+                    fontSize:        8,
+                    letterSpacing:   '0.08em',
+                    whiteSpace:      'nowrap',
+                    flexShrink:      0,
+                    cursor:          'pointer',
+                  }}
+                >
+                  {c.label}
+                </button>
+              )
+            })}
           </div>
         </div>
       )}
 
       {/* Result count + clear */}
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-espresso-500">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span style={{
+          fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+          fontSize:      8,
+          color:         T.ghost,
+          letterSpacing: '0.06em',
+        }}>
           {filtered.length === restaurants.length
             ? `${restaurants.length} restaurants`
             : `${filtered.length} of ${restaurants.length}`}
-        </p>
+        </span>
         {hasActiveFilters && (
           <button
             onClick={clearAll}
-            className="text-sm font-semibold text-gold-400 hover:text-gold-300 transition-colors"
+            style={{
+              fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+              fontSize:      8,
+              color:         T.terracotta,
+              letterSpacing: '0.08em',
+              background:    'none',
+              border:        'none',
+              cursor:        'pointer',
+              padding:       0,
+            }}
           >
-            Clear
+            clear all
           </button>
         )}
       </div>
 
       {/* Cards */}
       {filtered.length === 0 ? (
-        <div className="text-center py-12 text-espresso-500 text-sm">
-          No restaurants match your filters
+        <div style={{
+          textAlign:     'center',
+          padding:       '48px 16px',
+          fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+          fontSize:      9,
+          color:         T.ghost,
+          letterSpacing: '0.08em',
+        }}>
+          no restaurants match your filters
         </div>
       ) : (
-        <div className="space-y-3">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {filtered.map(r => (
             <RestaurantCard key={r.id} restaurant={r} />
           ))}

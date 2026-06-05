@@ -3,21 +3,51 @@
 import { TierBoardDynamic } from './tier-board-dynamic'
 import { useRestaurants } from '@/contexts/restaurants'
 
+const T = {
+  linen:   '#ede5d8',
+  espresso: '#3b2f27',
+  stone:   '#c4b8a8',
+  mist:    '#a08070',
+  border:  '#c4b8a8',
+}
+
 export default function TiersPage() {
   const { restaurants } = useRestaurants()
-
   const visited = restaurants.filter((r) => r.status === 'visited')
 
   return (
-    <div className="tier-page p-4 sm:p-6 max-w-3xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-xl font-bold text-espresso-50">Tier List</h1>
-        <p className="text-sm text-espresso-300 mt-0.5">Drag restaurants between tiers · saves automatically</p>
+    <div style={{ padding: '24px 16px 112px', maxWidth: 680, margin: '0 auto' }}>
+      <div style={{ marginBottom: 20 }}>
+        <h1 style={{
+          fontFamily: 'var(--font-crimson), Georgia, serif',
+          fontSize:   26,
+          fontWeight: 400,
+          color:      T.espresso,
+          lineHeight: 1.1,
+          margin:     0,
+        }}>tier list</h1>
+        <p style={{
+          fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+          fontSize:      9,
+          color:         T.mist,
+          letterSpacing: '0.1em',
+          marginTop:     4,
+        }}>drag restaurants between tiers · saves automatically</p>
       </div>
 
       {visited.length === 0 ? (
-        <div className="text-center py-16 bg-espresso-800 border border-espresso-700 rounded-2xl">
-          <p className="text-espresso-300">Add some restaurants first to build your tier list</p>
+        <div style={{
+          textAlign:       'center',
+          padding:         '48px 16px',
+          backgroundColor: T.linen,
+          border:          `0.5px solid ${T.border}`,
+          borderRadius:    10,
+          fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
+          fontSize:        9,
+          color:           T.mist,
+          letterSpacing:   '0.08em',
+        }}>
+          add some visited restaurants first to build your tier list
         </div>
       ) : (
         <TierBoardDynamic restaurants={visited} />

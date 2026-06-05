@@ -1,8 +1,16 @@
-﻿'use client'
+'use client'
 
 import { useEffect } from 'react'
 import { X } from 'lucide-react'
-import { cn } from '@/lib/utils'
+
+const T = {
+  parchment:  '#f5f0e8',
+  linen:      '#ede5d8',
+  espresso:   '#3b2f27',
+  stone:      '#c4b8a8',
+  mist:       '#a08070',
+  border:     '#c4b8a8',
+}
 
 interface ModalProps {
   open: boolean
@@ -10,19 +18,12 @@ interface ModalProps {
   title?: string
   children: React.ReactNode
   size?: 'sm' | 'md' | 'lg'
-  className?: string
 }
 
-export function Modal({ open, onClose, title, children, size = 'md', className }: ModalProps) {
+export function Modal({ open, onClose, title, children, size = 'md' }: ModalProps) {
   useEffect(() => {
-    if (open) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = ''
-    }
-    return () => {
-      document.body.style.overflow = ''
-    }
+    document.body.style.overflow = open ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
   }, [open])
 
   useEffect(() => {
@@ -35,33 +36,36 @@ export function Modal({ open, onClose, title, children, size = 'md', className }
 
   if (!open) return null
 
+  const maxWidth = size === 'sm' ? 380 : size === 'lg' ? 640 : 480
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
       <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(59,47,39,0.5)' }}
         onClick={onClose}
       />
-      <div
-        className={cn(
-          'relative bg-espresso-800 border border-espresso-600 rounded-2xl shadow-2xl w-full animate-slide-up',
-          size === 'sm' && 'max-w-sm',
-          size === 'md' && 'max-w-md',
-          size === 'lg' && 'max-w-2xl',
-          className
-        )}
-      >
+      <div style={{
+        position:        'relative',
+        backgroundColor: T.parchment,
+        border:          `0.5px solid ${T.border}`,
+        borderRadius:    10,
+        width:           '100%',
+        maxWidth,
+      }}>
         {title && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-espresso-700">
-            <h2 className="text-base font-semibold text-espresso-50">{title}</h2>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', borderBottom: `0.5px solid ${T.border}` }}>
+            <h2 style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 16, fontWeight: 400, color: T.espresso, margin: 0 }}>
+              {title}
+            </h2>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg hover:bg-espresso-700 text-espresso-300 hover:text-espresso-100 transition-colors"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 26, height: 26, borderRadius: 6, border: `0.5px solid ${T.border}`, backgroundColor: T.linen, cursor: 'pointer', color: T.mist }}
             >
-              <X className="w-4 h-4" />
+              <X style={{ width: 12, height: 12 }} />
             </button>
           </div>
         )}
-        <div className="p-6">{children}</div>
+        <div style={{ padding: 18 }}>{children}</div>
       </div>
     </div>
   )
@@ -79,30 +83,49 @@ interface ConfirmModalProps {
 }
 
 export function ConfirmModal({
-  open, onClose, onConfirm, title, message, confirmLabel = 'Confirm', danger, loading
+  open, onClose, onConfirm, title, message, confirmLabel = 'confirm', danger, loading,
 }: ConfirmModalProps) {
   return (
     <Modal open={open} onClose={onClose} title={title} size="sm">
-      <div className="space-y-4">
-        <p className="text-sm text-espresso-300">{message}</p>
-        <div className="flex gap-3 justify-end">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.mist, letterSpacing: '0.04em', lineHeight: 1.6 }}>
+          {message}
+        </p>
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm text-espresso-300 hover:text-espresso-100 hover:bg-espresso-700 rounded-lg transition-colors"
+            style={{
+              padding:         '7px 14px',
+              fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
+              fontSize:        8,
+              color:           T.mist,
+              backgroundColor: T.linen,
+              border:          `0.5px solid ${T.border}`,
+              borderRadius:    7,
+              cursor:          'pointer',
+              letterSpacing:   '0.06em',
+            }}
           >
-            Cancel
+            cancel
           </button>
           <button
             onClick={onConfirm}
             disabled={loading}
-            className={cn(
-              'px-4 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50',
-              danger
-                ? 'bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20'
-                : 'bg-gold-500 hover:bg-gold-400 text-espresso-900 font-semibold'
-            )}
+            style={{
+              padding:         '7px 14px',
+              fontFamily:      danger ? 'var(--font-dm-mono), ui-monospace, monospace' : 'var(--font-crimson), Georgia, serif',
+              fontStyle:       danger ? 'normal' : 'italic',
+              fontSize:        danger ? 8 : 13,
+              color:           danger ? '#c47a7a' : T.parchment,
+              backgroundColor: danger ? 'transparent' : T.espresso,
+              border:          danger ? '0.5px solid #c47a7a' : 'none',
+              borderRadius:    7,
+              cursor:          loading ? 'not-allowed' : 'pointer',
+              opacity:         loading ? 0.6 : 1,
+              letterSpacing:   danger ? '0.06em' : undefined,
+            }}
           >
-            {loading ? 'Loading…' : confirmLabel}
+            {loading ? '…' : confirmLabel}
           </button>
         </div>
       </div>

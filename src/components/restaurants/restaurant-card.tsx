@@ -1,93 +1,116 @@
 'use client'
 
 import Link from 'next/link'
-import { MapPin, ChevronRight } from 'lucide-react'
-import { TierBadge } from '@/components/ui/badge'
+import { ChevronRight } from 'lucide-react'
+import { StatusBadge, TierBadge } from '@/components/ui/badge'
+import { PipRating } from '@/components/ui/pip-rating'
 import { CUISINE_EMOJI } from '@/types'
 import type { Restaurant, Tier } from '@/types'
 
-function StatusPill({ status }: { status: 'want_to_try' | 'visited' }) {
-  const isVisited = status === 'visited'
-  return (
-    <span
-      className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border flex-shrink-0 whitespace-nowrap ${
-        isVisited
-          ? 'bg-green-500/10 text-green-400 border-green-500/30'
-          : 'bg-blue-500/10 text-blue-400 border-blue-500/30'
-      }`}
-    >
-      {isVisited ? 'Visited' : 'Want to Try'}
-    </span>
-  )
+const T = {
+  parchment:  '#f5f0e8',
+  linen:      '#ede5d8',
+  espresso:   '#3b2f27',
+  terracotta: '#c4927a',
+  stone:      '#c4b8a8',
+  mist:       '#a08070',
+  ghost:      '#b8a898',
+  border:     '#c4b8a8',
 }
 
 export function RestaurantCard({ restaurant: r }: { restaurant: Restaurant }) {
-  const emoji = CUISINE_EMOJI[r.cuisine ?? ''] ?? '🍽️'
-  const isLowRating = r.rating !== null && r.rating <= 2
+  const emoji       = CUISINE_EMOJI[r.cuisine ?? ''] ?? '🍽️'
+  const displayName = r.name.replace(/\s*\([^)]+\)\s*$/, '').trim()
 
   return (
     <Link
       href={`/restaurants/${r.id}`}
-      className="block bg-espresso-800 border border-espresso-700/60 rounded-2xl overflow-hidden hover:border-espresso-600 hover:bg-espresso-800/80 active:bg-espresso-700/40 transition-all"
+      style={{
+        display:         'block',
+        backgroundColor: T.linen,
+        border:          `0.5px solid ${T.border}`,
+        borderRadius:    10,
+        textDecoration:  'none',
+        overflow:        'hidden',
+      }}
     >
-      <div className="flex items-start gap-3.5 p-4">
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '12px 12px 12px 14px' }}>
 
-        {/* Cuisine emoji circle */}
-        <div className="w-11 h-11 rounded-full bg-gold-500/10 border border-gold-500/20 flex items-center justify-center flex-shrink-0 text-xl leading-none mt-0.5">
+        {/* Cuisine emoji */}
+        <div style={{
+          width:           36,
+          height:          36,
+          borderRadius:    8,
+          backgroundColor: T.parchment,
+          border:          `0.5px solid ${T.border}`,
+          display:         'flex',
+          alignItems:      'center',
+          justifyContent:  'center',
+          flexShrink:      0,
+          fontSize:        17,
+          lineHeight:      1,
+          marginTop:       2,
+        }}>
           {emoji}
         </div>
 
         {/* Main content */}
-        <div className="flex-1 min-w-0">
+        <div style={{ flex: 1, minWidth: 0 }}>
 
           {/* Name + status */}
-          <div className="flex items-start justify-between gap-2 mb-1">
-            <h3 className="text-[15px] font-bold text-espresso-50 leading-snug flex-1 min-w-0">
-              {r.name}
-            </h3>
-            <StatusPill status={r.status} />
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 3 }}>
+            <span style={{
+              fontFamily:   'var(--font-crimson), Georgia, serif',
+              fontSize:     14,
+              fontWeight:   500,
+              color:        T.espresso,
+              lineHeight:   1.25,
+              flex:         1,
+              minWidth:     0,
+            }}>{displayName}</span>
+            <StatusBadge status={r.status} />
           </div>
 
           {/* Cuisine */}
           {r.cuisine && (
-            <p className="text-sm text-espresso-400 mb-1.5 truncate">{r.cuisine}</p>
+            <p style={{
+              fontFamily:   'var(--font-dm-mono), ui-monospace, monospace',
+              fontSize:     8,
+              color:        T.mist,
+              letterSpacing: '0.06em',
+              marginBottom: 4,
+              overflow:     'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace:   'nowrap',
+            }}>{r.cuisine}</p>
           )}
 
-          {/* Address */}
-          {(r.suburb || r.address) && (
-            <div className="flex items-center gap-1 mb-2.5">
-              <MapPin className="w-3 h-3 text-espresso-600 flex-shrink-0" />
-              <p className="text-xs text-espresso-500 truncate">
-                {r.suburb ?? r.address}
-              </p>
-            </div>
+          {/* Location + price */}
+          {(r.suburb || r.address || r.price_level) && (
+            <p style={{
+              fontFamily:   'var(--font-dm-mono), ui-monospace, monospace',
+              fontSize:     8,
+              color:        T.ghost,
+              letterSpacing: '0.06em',
+              marginBottom: 6,
+              overflow:     'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace:   'nowrap',
+            }}>
+              {[r.suburb ?? r.address, r.price_level].filter(Boolean).join(' · ')}
+            </p>
           )}
 
           {/* Footer chips */}
-          {(r.rating !== null || r.tier || r.price_level) && (
-            <div className="flex items-center gap-2 flex-wrap">
-              {r.rating !== null && (
-                <div className={`inline-flex items-center gap-1 rounded-lg px-2 py-0.5 border text-xs font-bold ${
-                  isLowRating
-                    ? 'bg-red-500/10 border-red-500/25 text-red-400'
-                    : 'bg-espresso-700/60 border-espresso-600/50 text-espresso-100'
-                }`}>
-                  <span className={isLowRating ? 'text-red-400' : 'text-gold-400'}>★</span>
-                  {r.rating.toFixed(1)}
-                </div>
-              )}
+          {(r.rating !== null || r.tier) && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' as const }}>
+              {r.rating !== null && <PipRating rating={r.rating} size="sm" />}
               {r.tier && <TierBadge tier={r.tier as Tier} />}
-              {r.price_level && (
-                <span className="inline-flex items-center text-xs font-semibold text-espresso-400 bg-espresso-700/40 border border-espresso-600/40 rounded-lg px-2 py-0.5">
-                  {r.price_level}
-                </span>
-              )}
             </div>
           )}
         </div>
 
-        {/* Chevron */}
-        <ChevronRight className="w-4 h-4 text-espresso-700 flex-shrink-0 mt-1" />
+        <ChevronRight style={{ width: 13, height: 13, color: T.stone, flexShrink: 0, marginTop: 4 }} />
       </div>
     </Link>
   )

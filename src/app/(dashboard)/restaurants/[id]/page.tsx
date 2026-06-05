@@ -9,6 +9,17 @@ import { NoteLog } from './note-log'
 import { WouldGoAgainToggle } from './would-go-again'
 import type { Restaurant, RestaurantVisit, RestaurantNote } from '@/types'
 
+const T = {
+  parchment:  '#f5f0e8',
+  linen:      '#ede5d8',
+  espresso:   '#3b2f27',
+  terracotta: '#c4927a',
+  stone:      '#c4b8a8',
+  mist:       '#a08070',
+  ghost:      '#b8a898',
+  border:     '#c4b8a8',
+}
+
 export default async function RestaurantDetailPage({
   params,
 }: {
@@ -26,72 +37,129 @@ export default async function RestaurantDetailPage({
     sql`SELECT * FROM restaurant_notes WHERE restaurant_id = ${id} ORDER BY created_at DESC`,
   ])
 
+  const displayName = r.name.replace(/\s*\([^)]+\)\s*$/, '').trim()
+
   return (
-    <div className="p-4 sm:p-6 max-w-xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
+    <div style={{ padding: '16px 16px 112px', maxWidth: 540, margin: '0 auto' }}>
+
+      {/* Top nav */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <Link
             href="/restaurants"
-            className="p-1.5 rounded-lg text-espresso-300 hover:text-espresso-50 hover:bg-espresso-700 transition-colors"
+            style={{
+              display:         'flex',
+              alignItems:      'center',
+              justifyContent:  'center',
+              width:           30,
+              height:          30,
+              borderRadius:    7,
+              border:          `0.5px solid ${T.border}`,
+              backgroundColor: T.linen,
+              color:           T.mist,
+              textDecoration:  'none',
+              flexShrink:      0,
+            }}
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft style={{ width: 14, height: 14 }} />
           </Link>
-          <h1 className="text-xl font-bold text-espresso-50 truncate">{r.name}</h1>
+          <h1 style={{
+            fontFamily:   'var(--font-crimson), Georgia, serif',
+            fontSize:     18,
+            fontWeight:   400,
+            color:        T.espresso,
+            overflow:     'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace:   'nowrap',
+          }}>{displayName}</h1>
         </div>
         <Link
           href={`/restaurants/${r.id}/edit`}
-          className="flex items-center gap-1.5 text-sm text-espresso-300 hover:text-espresso-50 border border-espresso-600 hover:border-espresso-500 px-3 py-1.5 rounded-lg transition-colors"
+          style={{
+            display:         'flex',
+            alignItems:      'center',
+            gap:             5,
+            fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
+            fontSize:        8,
+            color:           T.mist,
+            border:          `0.5px solid ${T.border}`,
+            backgroundColor: T.linen,
+            padding:         '6px 10px',
+            borderRadius:    7,
+            textDecoration:  'none',
+            letterSpacing:   '0.06em',
+          }}
         >
-          <Pencil className="w-3.5 h-3.5" />
-          Edit
+          <Pencil style={{ width: 11, height: 11 }} />
+          edit
         </Link>
       </div>
 
-      <div className="space-y-3">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+
         {/* Header card */}
-        <div className="bg-espresso-800 border border-espresso-700 rounded-2xl p-5">
-          <div className="flex items-start justify-between gap-3 mb-3">
-            <div>
-              <h2 className="text-2xl font-bold text-espresso-50">{r.name}</h2>
-              {r.cuisine && <p className="text-espresso-300 mt-0.5">{r.cuisine}</p>}
+        <div style={{
+          backgroundColor: T.linen,
+          border:          `0.5px solid ${T.border}`,
+          borderRadius:    10,
+          padding:         18,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 12 }}>
+            <div style={{ minWidth: 0 }}>
+              <h2 style={{
+                fontFamily: 'var(--font-crimson), Georgia, serif',
+                fontSize:   22,
+                fontWeight: 400,
+                color:      T.espresso,
+                margin:     0,
+              }}>{displayName}</h2>
+              {r.cuisine && (
+                <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.mist, marginTop: 4 }}>
+                  {r.cuisine}
+                </p>
+              )}
               {(r.address || r.suburb) && (
-                <div className="flex items-center gap-1.5 text-sm text-espresso-400 mt-1">
-                  <MapPin className="w-3.5 h-3.5" />
-                  {[r.address, r.suburb].filter(Boolean).join(', ')}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 6 }}>
+                  <MapPin style={{ width: 11, height: 11, color: T.stone, flexShrink: 0 }} />
+                  <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: T.ghost }}>
+                    {[r.address, r.suburb].filter(Boolean).join(', ')}
+                  </span>
                   <a
                     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([r.name, r.address, r.suburb].filter(Boolean).join(', '))}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gold-500 hover:text-gold-400 ml-1"
+                    style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: T.terracotta, textDecoration: 'none', marginLeft: 2 }}
                   >
                     ↗
                   </a>
                 </div>
               )}
             </div>
-            <div className="flex flex-col items-end gap-2 flex-shrink-0">
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, flexShrink: 0 }}>
               {r.tier && <TierBadge tier={r.tier} />}
               <PipRating rating={r.rating} />
               {r.price_level && (
-                <span className="text-xs text-espresso-400 font-medium">{r.price_level}</span>
+                <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: T.ghost }}>
+                  {r.price_level}
+                </span>
               )}
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6 }}>
             <StatusBadge status={r.status} />
           </div>
 
           {(r.website || r.instagram) && (
-            <div className="flex flex-wrap items-center gap-3 mt-3 pt-3 border-t border-espresso-700">
+            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10, marginTop: 12, paddingTop: 12, borderTop: `0.5px solid ${T.border}` }}>
               {r.website && (
                 <a
                   href={r.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-sm text-gold-400 hover:text-gold-300 transition-colors"
+                  style={{ display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: T.terracotta, textDecoration: 'none' }}
                 >
-                  <Globe className="w-3.5 h-3.5" />
+                  <Globe style={{ width: 11, height: 11 }} />
                   {r.website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '').split('/')[0]}
                 </a>
               )}
@@ -100,9 +168,9 @@ export default async function RestaurantDetailPage({
                   href={`https://www.instagram.com/${r.instagram.replace(/^@/, '')}/`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-sm text-espresso-300 hover:text-espresso-50 transition-colors"
+                  style={{ display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: T.mist, textDecoration: 'none' }}
                 >
-                  <Instagram className="w-3.5 h-3.5" />
+                  <Instagram style={{ width: 11, height: 11 }} />
                   @{r.instagram.replace(/^@/, '')}
                 </a>
               )}
@@ -110,24 +178,16 @@ export default async function RestaurantDetailPage({
           )}
 
           {r.status === 'visited' && (
-            <div className="mt-3 pt-3 border-t border-espresso-700">
-              <p className="text-xs text-espresso-400 mb-2">Would go again?</p>
+            <div style={{ marginTop: 12, paddingTop: 12, borderTop: `0.5px solid ${T.border}` }}>
+              <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 7, color: T.mist, letterSpacing: '0.1em', marginBottom: 8 }}>would go again?</p>
               <WouldGoAgainToggle restaurantId={r.id} current={r.would_go_again} />
             </div>
           )}
         </div>
 
-        {/* Visit log */}
-        <VisitLog
-          restaurantId={r.id}
-          visits={visits as unknown as RestaurantVisit[]}
-        />
+        <VisitLog restaurantId={r.id} visits={visits as unknown as RestaurantVisit[]} />
+        <NoteLog  restaurantId={r.id} notes={notes  as unknown as RestaurantNote[]} />
 
-        {/* Note log */}
-        <NoteLog
-          restaurantId={r.id}
-          notes={notes as unknown as RestaurantNote[]}
-        />
       </div>
     </div>
   )

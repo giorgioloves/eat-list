@@ -6,17 +6,28 @@ import { addNote, deleteNote } from './actions'
 import { formatDate } from '@/lib/utils'
 import type { RestaurantNote } from '@/types'
 
+const T = {
+  parchment:  '#f5f0e8',
+  linen:      '#ede5d8',
+  espresso:   '#3b2f27',
+  terracotta: '#c4927a',
+  stone:      '#c4b8a8',
+  mist:       '#a08070',
+  ghost:      '#b8a898',
+  border:     '#c4b8a8',
+}
+
 interface NoteLogProps {
   restaurantId: string
   notes: RestaurantNote[]
 }
 
 export function NoteLog({ restaurantId, notes }: NoteLogProps) {
-  const [showForm, setShowForm] = useState(false)
-  const [content, setContent] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [showForm, setShowForm]     = useState(false)
+  const [content, setContent]       = useState('')
+  const [loading, setLoading]       = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
-  const [error, setError] = useState('')
+  const [error, setError]           = useState('')
 
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault()
@@ -24,12 +35,7 @@ export function NoteLog({ restaurantId, notes }: NoteLogProps) {
     setError('')
     setLoading(true)
     const result = await addNote(restaurantId, content)
-    if (result.error) {
-      setError(result.error)
-    } else {
-      setContent('')
-      setShowForm(false)
-    }
+    if (result.error) { setError(result.error) } else { setContent(''); setShowForm(false) }
     setLoading(false)
   }
 
@@ -40,76 +46,122 @@ export function NoteLog({ restaurantId, notes }: NoteLogProps) {
   }
 
   return (
-    <div className="bg-espresso-800 border border-espresso-700 rounded-2xl p-5">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-espresso-200">
-          Notes
+    <div style={{
+      backgroundColor: T.linen,
+      border:          `0.5px solid ${T.border}`,
+      borderRadius:    10,
+      padding:         '14px 16px',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+          <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 7, color: T.mist, letterSpacing: '0.12em', textTransform: 'uppercase' as const }}>
+            notes
+          </span>
           {notes.length > 0 && (
-            <span className="ml-2 text-xs text-espresso-400 font-normal">{notes.length}</span>
+            <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 7, color: T.ghost }}>
+              {notes.length}
+            </span>
           )}
-        </h3>
+        </div>
         <button
-          onClick={() => setShowForm((v) => !v)}
-          className="flex items-center gap-1.5 text-xs px-2.5 py-1.5 bg-gold-500 hover:bg-gold-400 text-espresso-900 font-semibold rounded-lg transition-colors"
+          onClick={() => setShowForm(v => !v)}
+          style={{
+            display:         'flex',
+            alignItems:      'center',
+            gap:             4,
+            fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
+            fontSize:        7,
+            letterSpacing:   '0.08em',
+            color:           T.parchment,
+            backgroundColor: T.espresso,
+            border:          'none',
+            padding:         '5px 9px',
+            borderRadius:    6,
+            cursor:          'pointer',
+          }}
         >
-          <Plus className="w-3.5 h-3.5" />
-          Add Note
+          <Plus style={{ width: 10, height: 10 }} />
+          add note
         </button>
       </div>
 
       {showForm && (
-        <form
-          onSubmit={handleAdd}
-          className="mb-4 p-4 bg-espresso-700 border border-espresso-600 rounded-xl space-y-3"
-        >
+        <form onSubmit={handleAdd} style={{
+          marginBottom:    12,
+          padding:         12,
+          backgroundColor: T.parchment,
+          border:          `0.5px solid ${T.border}`,
+          borderRadius:    8,
+          display:         'flex',
+          flexDirection:   'column',
+          gap:             8,
+        }}>
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder="Write a note…"
+            placeholder="write a note…"
             rows={3}
             required
-            className="w-full bg-espresso-800 border border-espresso-500 rounded-lg px-2.5 py-1.5 text-sm text-espresso-50 placeholder-espresso-400 focus:outline-none focus:ring-1 focus:ring-gold-500 focus:border-gold-500 transition-colors resize-none"
+            style={{
+              width:           '100%',
+              backgroundColor: T.linen,
+              border:          `0.5px solid ${T.border}`,
+              borderRadius:    6,
+              padding:         '8px 10px',
+              fontFamily:      'var(--font-crimson), Georgia, serif',
+              fontSize:        13,
+              color:           T.espresso,
+              outline:         'none',
+              resize:          'none',
+              boxSizing:       'border-box',
+            }}
           />
-          {error && <p className="text-xs text-red-400">{error}</p>}
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => { setShowForm(false); setContent(''); setError('') }}
-              className="px-3 py-1.5 text-xs text-espresso-300 border border-espresso-500 rounded-lg hover:bg-espresso-600 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading || !content.trim()}
-              className="flex-1 py-1.5 text-xs font-semibold bg-gold-500 hover:bg-gold-400 text-espresso-900 rounded-lg transition-colors disabled:opacity-50"
-            >
-              {loading ? 'Saving…' : 'Save Note'}
+          {error && <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: '#c47a7a' }}>{error}</p>}
+          <div style={{ display: 'flex', gap: 6 }}>
+            <button type="button" onClick={() => { setShowForm(false); setContent(''); setError('') }} style={{
+              padding: '6px 12px', fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 7,
+              color: T.mist, backgroundColor: T.linen, border: `0.5px solid ${T.border}`, borderRadius: 6, cursor: 'pointer',
+            }}>cancel</button>
+            <button type="submit" disabled={loading || !content.trim()} style={{
+              flex: 1, padding: '6px 0', fontFamily: 'var(--font-crimson), Georgia, serif', fontStyle: 'italic', fontSize: 13,
+              color: T.parchment, backgroundColor: T.espresso, border: 'none', borderRadius: 6,
+              cursor: loading || !content.trim() ? 'not-allowed' : 'pointer', opacity: loading || !content.trim() ? 0.6 : 1,
+            }}>
+              {loading ? 'saving…' : 'save note'}
             </button>
           </div>
         </form>
       )}
 
       {notes.length === 0 ? (
-        <p className="text-sm text-espresso-400 py-2">No notes yet.</p>
+        <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.ghost, padding: '6px 0' }}>no notes yet</p>
       ) : (
-        <div className="space-y-2">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           {notes.map((n) => (
-            <div
-              key={n.id}
-              className="flex items-start gap-3 p-3 bg-espresso-700/50 rounded-lg group"
-            >
-              <MessageSquare className="w-3.5 h-3.5 text-espresso-400 mt-0.5 flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm text-espresso-100 leading-relaxed">{n.content}</p>
-                <p className="text-xs text-espresso-500 mt-1">{formatDate(n.created_at)}</p>
+            <div key={n.id} style={{
+              display:         'flex',
+              alignItems:      'flex-start',
+              gap:             10,
+              padding:         '9px 10px',
+              backgroundColor: T.parchment,
+              border:          `0.5px solid ${T.border}`,
+              borderRadius:    7,
+            }}>
+              <MessageSquare style={{ width: 11, height: 11, color: T.stone, marginTop: 2, flexShrink: 0 }} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 13, color: T.espresso, lineHeight: 1.5 }}>
+                  {n.content}
+                </p>
+                <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 7, color: T.ghost, marginTop: 4 }}>
+                  {formatDate(n.created_at)}
+                </p>
               </div>
               <button
                 onClick={() => handleDelete(n.id)}
                 disabled={deletingId === n.id}
-                className="opacity-0 group-hover:opacity-100 p-1 text-espresso-500 hover:text-red-400 transition-all disabled:opacity-50 flex-shrink-0"
+                style={{ padding: 3, color: T.stone, background: 'none', border: 'none', cursor: 'pointer', opacity: deletingId === n.id ? 0.4 : 1, flexShrink: 0 }}
               >
-                <Trash2 className="w-3.5 h-3.5" />
+                <Trash2 style={{ width: 12, height: 12 }} />
               </button>
             </div>
           ))}

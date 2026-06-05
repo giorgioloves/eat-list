@@ -1,15 +1,23 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
+import { Crimson_Pro, DM_Mono } from 'next/font/google'
 import './globals.css'
 
-const inter = Inter({
+const crimsonPro = Crimson_Pro({
   subsets: ['latin'],
-  variable: '--font-inter',
+  weight: ['300', '400', '500'],
+  style:  ['normal', 'italic'],
+  variable: '--font-crimson',
+})
+
+const dmMono = DM_Mono({
+  subsets: ['latin'],
+  weight: ['300', '400'],
+  variable: '--font-dm-mono',
 })
 
 export const metadata: Metadata = {
-  title: 'Eat List — Your Shared Restaurant Tracker',
-  description: 'Track, rate, and discover restaurants with your partner.',
+  title: 'avec',
+  description: 'Your personal restaurant list.',
 }
 
 export const viewport: Viewport = {
@@ -18,14 +26,14 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-AU" className="dark" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased bg-espresso-900 text-espresso-50 min-h-[100dvh]`}>
+    <html
+      lang="en-AU"
+      className={`${crimsonPro.variable} ${dmMono.variable}`}
+      suppressHydrationWarning
+    >
+      <body className="font-sans antialiased bg-parchment text-espresso min-h-[100dvh]">
         {children}
       </body>
     </html>

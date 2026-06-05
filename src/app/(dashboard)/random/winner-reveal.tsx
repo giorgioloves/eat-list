@@ -10,6 +10,17 @@ import { GoldSparkles } from './gold-sparkles'
 import { CUISINE_EMOJI } from '@/types'
 import type { Restaurant, Tier } from '@/types'
 
+const T = {
+  parchment:  '#f5f0e8',
+  linen:      '#ede5d8',
+  espresso:   '#3b2f27',
+  terracotta: '#c4927a',
+  stone:      '#c4b8a8',
+  mist:       '#a08070',
+  ghost:      '#b8a898',
+  border:     '#c4b8a8',
+}
+
 interface WinnerRevealProps {
   restaurant: Restaurant
   onPickAgain: () => void
@@ -24,10 +35,11 @@ export function WinnerReveal({ restaurant: r, onPickAgain }: WinnerRevealProps) 
     return () => { clearTimeout(t1); clearTimeout(t2) }
   }, [])
 
-  const emoji = CUISINE_EMOJI[r.cuisine ?? ''] ?? '🍽️'
+  const emoji       = CUISINE_EMOJI[r.cuisine ?? ''] ?? '🍽️'
+  const displayName = r.name.replace(/\s*\([^)]+\)\s*$/, '').trim()
 
   return (
-    <div className="relative">
+    <div style={{ position: 'relative' }}>
       <GoldSparkles active={sparklesActive} />
 
       <motion.div
@@ -35,16 +47,10 @@ export function WinnerReveal({ restaurant: r, onPickAgain }: WinnerRevealProps) 
         animate={{ scale: 1, opacity: 1, y: 0 }}
         transition={{ type: 'spring', stiffness: 280, damping: 24 }}
         style={{
-          background: 'linear-gradient(135deg, #2F2825 0%, #1E1A18 100%)',
-          border: '1px solid rgba(217,182,93,0.4)',
-          boxShadow: `
-            0 0 0 1px rgba(217,182,93,0.2),
-            0 0 20px rgba(217,182,93,0.15),
-            0 0 60px rgba(217,182,93,0.07),
-            0 20px 40px rgba(0,0,0,0.4)
-          `,
-          borderRadius: '1rem',
-          padding: '1.5rem',
+          backgroundColor: T.linen,
+          border:          `0.5px solid ${T.terracotta}`,
+          borderRadius:    10,
+          padding:         24,
         }}
       >
         {/* Tonight's Pick label */}
@@ -52,10 +58,17 @@ export function WinnerReveal({ restaurant: r, onPickAgain }: WinnerRevealProps) 
           initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05 }}
-          className="text-xs font-semibold uppercase tracking-widest text-center mb-4"
-          style={{ color: '#D9B65D' }}
+          style={{
+            fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+            fontSize:      7,
+            letterSpacing: '0.14em',
+            textTransform: 'uppercase' as const,
+            textAlign:     'center',
+            color:         T.terracotta,
+            marginBottom:  16,
+          }}
         >
-          Tonight&apos;s Pick
+          tonight&apos;s pick
         </motion.p>
 
         {/* Emoji */}
@@ -63,7 +76,7 @@ export function WinnerReveal({ restaurant: r, onPickAgain }: WinnerRevealProps) 
           initial={{ scale: 0.4, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.1, type: 'spring', stiffness: 350, damping: 18 }}
-          className="text-center text-6xl leading-none mb-4 select-none"
+          style={{ textAlign: 'center', fontSize: 52, lineHeight: 1, marginBottom: 14, userSelect: 'none' }}
         >
           {emoji}
         </motion.div>
@@ -73,9 +86,16 @@ export function WinnerReveal({ restaurant: r, onPickAgain }: WinnerRevealProps) 
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.16 }}
-          className="text-2xl font-black text-center text-espresso-50 mb-1"
+          style={{
+            fontFamily: 'var(--font-crimson), Georgia, serif',
+            fontSize:   24,
+            fontWeight: 400,
+            color:      T.espresso,
+            textAlign:  'center',
+            marginBottom: 4,
+          }}
         >
-          {r.name}
+          {displayName}
         </motion.h2>
 
         {/* Cuisine */}
@@ -84,7 +104,14 @@ export function WinnerReveal({ restaurant: r, onPickAgain }: WinnerRevealProps) 
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.21 }}
-            className="text-center text-espresso-300 text-sm mb-4"
+            style={{
+              fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+              fontSize:      9,
+              color:         T.mist,
+              letterSpacing: '0.06em',
+              textAlign:     'center',
+              marginBottom:  14,
+            }}
           >
             {r.cuisine}
           </motion.p>
@@ -95,7 +122,7 @@ export function WinnerReveal({ restaurant: r, onPickAgain }: WinnerRevealProps) 
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.26 }}
-          className="flex items-center justify-center gap-3 mb-3 flex-wrap"
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 10, flexWrap: 'wrap' as const }}
         >
           {r.tier && <TierBadge tier={r.tier as Tier} />}
           <PipRating rating={r.rating} />
@@ -106,17 +133,17 @@ export function WinnerReveal({ restaurant: r, onPickAgain }: WinnerRevealProps) 
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="flex items-center justify-center gap-3 mb-5 flex-wrap"
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 18, flexWrap: 'wrap' as const }}
         >
           {(r.address || r.suburb) && (
-            <span className="flex items-center gap-1 text-xs text-espresso-400">
-              <MapPin className="w-3 h-3" />
+            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: T.mist }}>
+              <MapPin style={{ width: 10, height: 10 }} />
               {[r.address, r.suburb].filter(Boolean).join(', ')}
             </span>
           )}
           {r.visit_count > 1 && (
-            <span className="flex items-center gap-1 text-xs text-espresso-500">
-              <RotateCcw className="w-3 h-3" />
+            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: T.ghost }}>
+              <RotateCcw style={{ width: 10, height: 10 }} />
               {r.visit_count} visits
             </span>
           )}
@@ -127,13 +154,24 @@ export function WinnerReveal({ restaurant: r, onPickAgain }: WinnerRevealProps) 
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.34 }}
-          className="flex gap-2"
+          style={{ display: 'flex', gap: 8 }}
         >
           <Link
             href={`/restaurants/${r.id}`}
-            className="flex-1 text-center text-sm py-2 bg-espresso-700 hover:bg-espresso-600 text-espresso-100 rounded-xl transition-colors font-medium"
+            style={{
+              flex:            1,
+              textAlign:       'center',
+              fontFamily:      'var(--font-crimson), Georgia, serif',
+              fontSize:        13,
+              color:           T.espresso,
+              padding:         '9px 0',
+              backgroundColor: T.parchment,
+              border:          `0.5px solid ${T.border}`,
+              borderRadius:    8,
+              textDecoration:  'none',
+            }}
           >
-            View details
+            view details
           </Link>
           {(r.suburb || r.city) && (
             <a
@@ -142,19 +180,42 @@ export function WinnerReveal({ restaurant: r, onPickAgain }: WinnerRevealProps) 
               )}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 text-sm py-2 px-3 rounded-xl transition-colors"
-              style={{ background: 'rgba(217,182,93,0.1)', color: '#D9B65D' }}
+              style={{
+                display:         'flex',
+                alignItems:      'center',
+                gap:             5,
+                fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
+                fontSize:        8,
+                color:           T.mist,
+                padding:         '9px 12px',
+                backgroundColor: T.parchment,
+                border:          `0.5px solid ${T.border}`,
+                borderRadius:    8,
+                textDecoration:  'none',
+              }}
             >
-              <ExternalLink className="w-3.5 h-3.5" />
-              Maps
+              <ExternalLink style={{ width: 11, height: 11 }} />
+              maps
             </a>
           )}
           <button
             onClick={onPickAgain}
-            className="flex items-center gap-1.5 text-sm py-2 px-3 bg-espresso-700 hover:bg-espresso-600 text-espresso-300 rounded-xl transition-colors"
+            style={{
+              display:         'flex',
+              alignItems:      'center',
+              gap:             5,
+              fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
+              fontSize:        8,
+              color:           T.mist,
+              padding:         '9px 12px',
+              backgroundColor: T.parchment,
+              border:          `0.5px solid ${T.border}`,
+              borderRadius:    8,
+              cursor:          'pointer',
+            }}
           >
-            <Shuffle className="w-3.5 h-3.5" />
-            Again
+            <Shuffle style={{ width: 11, height: 11 }} />
+            again
           </button>
         </motion.div>
       </motion.div>

@@ -4,25 +4,48 @@ import { useState } from 'react'
 import { Plus, Trash2, Pencil } from 'lucide-react'
 import { logVisit, deleteVisit, updateVisit, rateVisit } from './actions'
 import { formatDate } from '@/lib/utils'
-import { cn } from '@/lib/utils'
 import { PipRating, PipSelector } from '@/components/ui/pip-rating'
 import type { RestaurantVisit } from '@/types'
+
+const T = {
+  parchment:  '#f5f0e8',
+  linen:      '#ede5d8',
+  espresso:   '#3b2f27',
+  terracotta: '#c4927a',
+  stone:      '#c4b8a8',
+  mist:       '#a08070',
+  ghost:      '#b8a898',
+  border:     '#c4b8a8',
+}
 
 interface VisitLogProps {
   restaurantId: string
   visits: RestaurantVisit[]
 }
 
+const inputStyle: React.CSSProperties = {
+  width:           '100%',
+  backgroundColor: T.parchment,
+  border:          `0.5px solid ${T.border}`,
+  borderRadius:    6,
+  padding:         '6px 10px',
+  fontFamily:      'var(--font-crimson), Georgia, serif',
+  fontSize:        13,
+  color:           T.espresso,
+  outline:         'none',
+  boxSizing:       'border-box',
+}
+
 export function VisitLog({ restaurantId, visits }: VisitLogProps) {
-  const [showForm, setShowForm] = useState(false)
-  const [date, setDate] = useState('')
-  const [cost, setCost] = useState('')
-  const [myRating, setMyRating] = useState<number | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [deletingId, setDeletingId] = useState<string | null>(null)
-  const [editingId, setEditingId] = useState<string | null>(null)
+  const [showForm, setShowForm]       = useState(false)
+  const [date, setDate]               = useState('')
+  const [cost, setCost]               = useState('')
+  const [myRating, setMyRating]       = useState<number | null>(null)
+  const [loading, setLoading]         = useState(false)
+  const [deletingId, setDeletingId]   = useState<string | null>(null)
+  const [editingId, setEditingId]     = useState<string | null>(null)
   const [ratingVisitId, setRatingVisitId] = useState<string | null>(null)
-  const [error, setError] = useState('')
+  const [error, setError]             = useState('')
 
   function resetForm() {
     setShowForm(false)
@@ -37,11 +60,7 @@ export function VisitLog({ restaurantId, visits }: VisitLogProps) {
     setError('')
     setLoading(true)
     const result = await logVisit(restaurantId, date || null, cost ? parseFloat(cost) : null, myRating)
-    if (result.error) {
-      setError(result.error)
-    } else {
-      resetForm()
-    }
+    if (result.error) { setError(result.error) } else { resetForm() }
     setLoading(false)
   }
 
@@ -52,58 +71,108 @@ export function VisitLog({ restaurantId, visits }: VisitLogProps) {
   }
 
   return (
-    <div className="bg-espresso-800 border border-espresso-700 rounded-2xl p-5">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-espresso-200">
-          Visit History
+    <div style={{
+      backgroundColor: T.linen,
+      border:          `0.5px solid ${T.border}`,
+      borderRadius:    10,
+      padding:         '14px 16px',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+          <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 7, color: T.mist, letterSpacing: '0.12em', textTransform: 'uppercase' as const }}>
+            visit history
+          </span>
           {visits.length > 0 && (
-            <span className="ml-2 text-xs text-espresso-400 font-normal">
-              {visits.length} visit{visits.length !== 1 ? 's' : ''}
+            <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 7, color: T.ghost }}>
+              {visits.length}
             </span>
           )}
-        </h3>
+        </div>
         <button
-          onClick={() => setShowForm((v) => !v)}
-          className="flex items-center gap-1.5 text-xs px-2.5 py-1.5 bg-gold-500 hover:bg-gold-400 text-espresso-900 font-semibold rounded-lg transition-colors"
+          onClick={() => setShowForm(v => !v)}
+          style={{
+            display:         'flex',
+            alignItems:      'center',
+            gap:             4,
+            fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
+            fontSize:        7,
+            letterSpacing:   '0.08em',
+            color:           T.parchment,
+            backgroundColor: T.espresso,
+            border:          'none',
+            padding:         '5px 9px',
+            borderRadius:    6,
+            cursor:          'pointer',
+          }}
         >
-          <Plus className="w-3.5 h-3.5" />
-          Log Visit
+          <Plus style={{ width: 10, height: 10 }} />
+          log visit
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={handleLog} className="mb-4 p-4 bg-espresso-700 border border-espresso-600 rounded-xl space-y-4">
-          <div className="grid grid-cols-2 gap-3">
+        <form onSubmit={handleLog} style={{
+          marginBottom:    12,
+          padding:         12,
+          backgroundColor: T.parchment,
+          border:          `0.5px solid ${T.border}`,
+          borderRadius:    8,
+          display:         'flex',
+          flexDirection:   'column',
+          gap:             10,
+        }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             <div>
-              <label className="block text-xs text-espresso-400 mb-1.5">Date</label>
-              <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={inputCls} />
+              <label style={{ display: 'block', fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 7, color: T.mist, letterSpacing: '0.1em', marginBottom: 5 }}>date</label>
+              <input type="date" value={date} onChange={(e) => setDate(e.target.value)} style={inputStyle} />
             </div>
             <div>
-              <label className="block text-xs text-espresso-400 mb-1.5">Spent</label>
-              <div className="relative">
-                <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-espresso-400 text-sm">$</span>
-                <input type="number" min="0" step="0.50" value={cost} onChange={(e) => setCost(e.target.value)} placeholder="0.00" className={cn(inputCls, 'pl-6')} />
+              <label style={{ display: 'block', fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 7, color: T.mist, letterSpacing: '0.1em', marginBottom: 5 }}>spent</label>
+              <div style={{ position: 'relative' }}>
+                <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: T.mist, fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 13 }}>$</span>
+                <input type="number" min="0" step="0.50" value={cost} onChange={(e) => setCost(e.target.value)} placeholder="0.00" style={{ ...inputStyle, paddingLeft: 22 }} />
               </div>
             </div>
           </div>
           <div>
-            <label className="block text-xs text-espresso-400 mb-2">Rating</label>
+            <label style={{ display: 'block', fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 7, color: T.mist, letterSpacing: '0.1em', marginBottom: 8 }}>rating</label>
             <PipSelector value={myRating} onChange={setMyRating} />
           </div>
-          {error && <p className="text-xs text-red-400">{error}</p>}
-          <div className="flex gap-2">
-            <button type="button" onClick={resetForm} className="px-3 py-1.5 text-xs text-espresso-300 border border-espresso-500 rounded-lg hover:bg-espresso-600 transition-colors">Cancel</button>
-            <button type="submit" disabled={loading} className="flex-1 py-1.5 text-xs font-semibold bg-gold-500 hover:bg-gold-400 text-espresso-900 rounded-lg transition-colors disabled:opacity-50">
-              {loading ? 'Saving…' : 'Save Visit'}
+          {error && <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: '#c47a7a' }}>{error}</p>}
+          <div style={{ display: 'flex', gap: 6 }}>
+            <button type="button" onClick={resetForm} style={{
+              padding:         '6px 12px',
+              fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
+              fontSize:        7,
+              color:           T.mist,
+              backgroundColor: T.linen,
+              border:          `0.5px solid ${T.border}`,
+              borderRadius:    6,
+              cursor:          'pointer',
+            }}>cancel</button>
+            <button type="submit" disabled={loading} style={{
+              flex:            1,
+              padding:         '6px 0',
+              fontFamily:      'var(--font-crimson), Georgia, serif',
+              fontStyle:       'italic',
+              fontSize:        13,
+              color:           T.parchment,
+              backgroundColor: T.espresso,
+              border:          'none',
+              borderRadius:    6,
+              cursor:          loading ? 'not-allowed' : 'pointer',
+              opacity:         loading ? 0.6 : 1,
+            }}>
+              {loading ? 'saving…' : 'save visit'}
             </button>
           </div>
         </form>
       )}
 
       {visits.length === 0 ? (
-        <p className="text-sm text-espresso-400 py-2">No visits logged yet.</p>
+        <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.ghost, padding: '6px 0' }}>no visits logged yet</p>
       ) : (
-        <div className="space-y-2">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           {visits.map((v) => (
             editingId === v.id ? (
               <EditVisitRow
@@ -113,16 +182,25 @@ export function VisitLog({ restaurantId, visits }: VisitLogProps) {
                 onDone={() => setEditingId(null)}
               />
             ) : (
-              <div key={v.id} className="p-3 bg-espresso-700/50 rounded-lg group">
-                <div className="flex items-start gap-3">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-sm text-espresso-200">{formatDate(v.visited_at)}</span>
+              <div key={v.id} style={{
+                padding:         '8px 10px',
+                backgroundColor: T.parchment,
+                border:          `0.5px solid ${T.border}`,
+                borderRadius:    7,
+              }} className="group">
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' as const }}>
+                      <span style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 13, color: T.espresso }}>
+                        {formatDate(v.visited_at)}
+                      </span>
                       {v.cost !== null && (
-                        <span className="text-xs text-espresso-300 font-medium">${v.cost.toFixed(2)}</span>
+                        <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: T.mist }}>
+                          ${v.cost.toFixed(2)}
+                        </span>
                       )}
                     </div>
-                    <div className="mt-1.5">
+                    <div style={{ marginTop: 6 }}>
                       {ratingVisitId === v.id ? (
                         <InlineRater
                           visitId={v.id}
@@ -133,35 +211,47 @@ export function VisitLog({ restaurantId, visits }: VisitLogProps) {
                       ) : v.rating !== null ? (
                         <button
                           onClick={() => setRatingVisitId(v.id)}
-                          className="flex items-center gap-2 hover:bg-espresso-700 rounded px-1 -mx-1 transition-colors"
+                          style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
                         >
                           <PipRating rating={v.rating} size="sm" />
-                          <Pencil className="w-3 h-3 text-espresso-500" />
+                          <Pencil style={{ width: 10, height: 10, color: T.stone }} />
                         </button>
                       ) : (
                         <button
                           onClick={() => setRatingVisitId(v.id)}
-                          className="flex items-center gap-1.5 text-xs text-espresso-500 hover:text-gold-400 transition-colors"
+                          style={{
+                            display:     'flex',
+                            alignItems:  'center',
+                            gap:         4,
+                            fontFamily:  'var(--font-dm-mono), ui-monospace, monospace',
+                            fontSize:    7,
+                            color:       T.terracotta,
+                            background:  'none',
+                            border:      'none',
+                            cursor:      'pointer',
+                            padding:     0,
+                            letterSpacing: '0.06em',
+                          }}
                         >
-                          <Plus className="w-3 h-3" />
-                          Add rating
+                          <Plus style={{ width: 9, height: 9 }} />
+                          add rating
                         </button>
                       )}
                     </div>
                   </div>
-                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-all flex-shrink-0">
+                  <div style={{ display: 'flex', gap: 2, flexShrink: 0 }}>
                     <button
                       onClick={() => setEditingId(v.id)}
-                      className="p-1 text-espresso-500 hover:text-espresso-200 transition-colors"
+                      style={{ padding: 4, color: T.stone, background: 'none', border: 'none', cursor: 'pointer' }}
                     >
-                      <Pencil className="w-3.5 h-3.5" />
+                      <Pencil style={{ width: 12, height: 12 }} />
                     </button>
                     <button
                       onClick={() => handleDelete(v.id)}
                       disabled={deletingId === v.id}
-                      className="p-1 text-espresso-500 hover:text-red-400 transition-colors disabled:opacity-50"
+                      style={{ padding: 4, color: T.stone, background: 'none', border: 'none', cursor: 'pointer', opacity: deletingId === v.id ? 0.4 : 1 }}
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 style={{ width: 12, height: 12 }} />
                     </button>
                   </div>
                 </div>
@@ -180,62 +270,51 @@ function InlineRater({ visitId, restaurantId, initialRating, onDone }: {
   initialRating: number | null
   onDone: () => void
 }) {
-  const [rating, setRating] = useState<number | null>(initialRating)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
+  const [rating, setRating]   = useState<number | null>(initialRating)
+  const [saving, setSaving]   = useState(false)
+  const [error, setError]     = useState('')
 
   async function handleSave() {
     if (rating === null) return
     setSaving(true)
     setError('')
     const result = await rateVisit(visitId, restaurantId, rating)
-    if (result.error) {
-      setError(result.error)
-      setSaving(false)
-    } else {
-      onDone()
-    }
+    if (result.error) { setError(result.error); setSaving(false) } else { onDone() }
   }
 
   async function handleRemove() {
     setSaving(true)
     setError('')
     const result = await rateVisit(visitId, restaurantId, null)
-    if (result.error) {
-      setError(result.error)
-      setSaving(false)
-    } else {
-      onDone()
-    }
+    if (result.error) { setError(result.error); setSaving(false) } else { onDone() }
+  }
+
+  const btnBase: React.CSSProperties = {
+    padding:    '4px 10px',
+    fontFamily: 'var(--font-dm-mono), ui-monospace, monospace',
+    fontSize:   7,
+    borderRadius: 5,
+    cursor:     saving ? 'not-allowed' : 'pointer',
+    border:     'none',
+    letterSpacing: '0.06em',
   }
 
   return (
-    <div className="mt-2 space-y-1.5">
-      {error && <p className="text-xs text-red-400">{error}</p>}
-      <div className="flex items-center gap-2 flex-wrap">
+    <div style={{ marginTop: 6, display: 'flex', flexDirection: 'column', gap: 6 }}>
+      {error && <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: '#c47a7a' }}>{error}</p>}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' as const }}>
         <PipSelector value={rating} onChange={setRating} />
-        <div className="flex gap-1.5">
-          <button
-            onClick={handleSave}
-            disabled={saving || rating === null}
-            className="px-2.5 py-1 text-xs font-semibold bg-gold-500 hover:bg-gold-400 text-espresso-900 rounded-lg transition-colors disabled:opacity-50"
-          >
-            {saving ? '…' : 'Save'}
+        <div style={{ display: 'flex', gap: 5 }}>
+          <button onClick={handleSave} disabled={saving || rating === null} style={{ ...btnBase, backgroundColor: T.espresso, color: T.parchment, opacity: saving || rating === null ? 0.5 : 1 }}>
+            {saving ? '…' : 'save'}
           </button>
           {initialRating !== null && (
-            <button
-              onClick={handleRemove}
-              disabled={saving}
-              className="px-2.5 py-1 text-xs text-red-400 border border-red-400/30 rounded-lg hover:bg-red-400/10 transition-colors disabled:opacity-50"
-            >
-              Remove
+            <button onClick={handleRemove} disabled={saving} style={{ ...btnBase, backgroundColor: T.linen, color: '#c47a7a', border: `0.5px solid #c47a7a` }}>
+              remove
             </button>
           )}
-          <button
-            onClick={onDone}
-            className="px-2.5 py-1 text-xs text-espresso-400 border border-espresso-600 rounded-lg hover:bg-espresso-700 transition-colors"
-          >
-            Cancel
+          <button onClick={onDone} style={{ ...btnBase, backgroundColor: T.linen, color: T.mist, border: `0.5px solid ${T.border}` }}>
+            cancel
           </button>
         </div>
       </div>
@@ -248,48 +327,55 @@ function EditVisitRow({ visit, restaurantId, onDone }: {
   restaurantId: string
   onDone: () => void
 }) {
-  const [date, setDate] = useState(visit.visited_at ?? '')
-  const [cost, setCost] = useState(visit.cost != null ? String(visit.cost) : '')
+  const [date, setDate]     = useState(visit.visited_at ?? '')
+  const [cost, setCost]     = useState(visit.cost != null ? String(visit.cost) : '')
   const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
+  const [error, setError]   = useState('')
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault()
     setSaving(true)
     const result = await updateVisit(visit.id, restaurantId, date || null, cost ? parseFloat(cost) : null)
-    if (result.error) {
-      setError(result.error)
-      setSaving(false)
-    } else {
-      onDone()
-    }
+    if (result.error) { setError(result.error); setSaving(false) } else { onDone() }
   }
 
   return (
-    <form onSubmit={handleSave} className="p-3 bg-espresso-700 border border-gold-500/30 rounded-lg space-y-3">
-      <div className="grid grid-cols-2 gap-3">
+    <form onSubmit={handleSave} style={{
+      padding:         10,
+      backgroundColor: T.parchment,
+      border:          `0.5px solid ${T.terracotta}`,
+      borderRadius:    7,
+      display:         'flex',
+      flexDirection:   'column',
+      gap:             8,
+    }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
         <div>
-          <label className="block text-xs text-espresso-400 mb-1">Date</label>
-          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={inputCls} />
+          <label style={{ display: 'block', fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 7, color: T.mist, letterSpacing: '0.1em', marginBottom: 4 }}>date</label>
+          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} style={inputStyle} />
         </div>
         <div>
-          <label className="block text-xs text-espresso-400 mb-1">Spent</label>
-          <div className="relative">
-            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-espresso-400 text-sm">$</span>
-            <input type="number" min="0" step="0.50" value={cost} onChange={(e) => setCost(e.target.value)} placeholder="0.00" className={cn(inputCls, 'pl-6')} />
+          <label style={{ display: 'block', fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 7, color: T.mist, letterSpacing: '0.1em', marginBottom: 4 }}>spent</label>
+          <div style={{ position: 'relative' }}>
+            <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: T.mist, fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 13 }}>$</span>
+            <input type="number" min="0" step="0.50" value={cost} onChange={(e) => setCost(e.target.value)} placeholder="0.00" style={{ ...inputStyle, paddingLeft: 22 }} />
           </div>
         </div>
       </div>
-      {error && <p className="text-xs text-red-400">{error}</p>}
-      <div className="flex gap-2">
-        <button type="button" onClick={onDone} className="px-3 py-1.5 text-xs text-espresso-300 border border-espresso-500 rounded-lg hover:bg-espresso-600 transition-colors">Cancel</button>
-        <button type="submit" disabled={saving} className="flex-1 py-1.5 text-xs font-semibold bg-gold-500 hover:bg-gold-400 text-espresso-900 rounded-lg transition-colors disabled:opacity-50">
-          {saving ? 'Saving…' : 'Save'}
+      {error && <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: '#c47a7a' }}>{error}</p>}
+      <div style={{ display: 'flex', gap: 6 }}>
+        <button type="button" onClick={onDone} style={{
+          padding: '6px 12px', fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 7,
+          color: T.mist, backgroundColor: T.linen, border: `0.5px solid ${T.border}`, borderRadius: 6, cursor: 'pointer',
+        }}>cancel</button>
+        <button type="submit" disabled={saving} style={{
+          flex: 1, padding: '6px 0', fontFamily: 'var(--font-crimson), Georgia, serif', fontStyle: 'italic', fontSize: 13,
+          color: T.parchment, backgroundColor: T.espresso, border: 'none', borderRadius: 6,
+          cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.6 : 1,
+        }}>
+          {saving ? 'saving…' : 'save'}
         </button>
       </div>
     </form>
   )
 }
-
-const inputCls =
-  'w-full bg-espresso-800 border border-espresso-500 rounded-lg px-2.5 py-1.5 text-sm text-espresso-50 placeholder-espresso-400 focus:outline-none focus:ring-1 focus:ring-gold-500 focus:border-gold-500 transition-colors'

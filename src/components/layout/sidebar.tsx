@@ -9,25 +9,37 @@ import {
 import { cn } from '@/lib/utils'
 
 const navItems = [
-  { href: '/dashboard',   label: 'Dashboard',   icon: LayoutDashboard },
-  { href: '/restaurants', label: 'Restaurants',  icon: List },
-  { href: '/tiers',       label: 'Tier List',    icon: Layers },
-  { href: '/map',         label: 'Map',          icon: Map },
-  { href: '/stats',       label: 'Stats',        icon: BarChart3 },
-  { href: '/random',      label: 'Random Pick',  icon: Shuffle },
+  { href: '/dashboard',   label: 'home',        icon: LayoutDashboard },
+  { href: '/restaurants', label: 'list',         icon: List            },
+  { href: '/tiers',       label: 'tiers',        icon: Layers          },
+  { href: '/map',         label: 'map',          icon: Map             },
+  { href: '/stats',       label: 'stats',        icon: BarChart3       },
+  { href: '/random',      label: 'random pick',  icon: Shuffle         },
 ]
 
 export function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="hidden lg:flex flex-col fixed left-0 top-0 bottom-0 w-56 bg-espresso-900 border-r border-espresso-700 z-30">
-      <div className="p-4 border-b border-espresso-700">
+    <aside className="hidden lg:flex flex-col fixed left-0 top-0 bottom-0 w-52 bg-parchment border-r z-30" style={{ borderRightColor: '#c4b8a8', borderRightWidth: '0.5px' }}>
+      {/* Logo */}
+      <div className="p-4" style={{ borderBottom: '0.5px solid #c4b8a8' }}>
         <Link href="/dashboard" className="flex items-center gap-2.5">
-          <div className="w-8 h-8 bg-gold-500 rounded-xl flex items-center justify-center flex-shrink-0">
-            <UtensilsCrossed className="w-4 h-4 text-espresso-900" />
+          <div style={{
+            width: 28, height: 28,
+            backgroundColor: '#3b2f27',
+            borderRadius: 7,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            flexShrink: 0,
+          }}>
+            <UtensilsCrossed style={{ width: 13, height: 13, color: '#f5f0e8' }} />
           </div>
-          <span className="font-bold text-espresso-50 text-sm">Eat List</span>
+          <span style={{
+            fontFamily: 'var(--font-crimson), Georgia, serif',
+            fontSize: 18,
+            color: '#3b2f27',
+            fontWeight: 400,
+          }}>avec</span>
         </Link>
       </div>
 
@@ -39,15 +51,21 @@ export function Sidebar() {
               key={href}
               href={href}
               className={cn(
-                'flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-100',
-                'active:scale-95 active:bg-gold-500/20 active:text-gold-300',
+                'flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all duration-100',
+                'active:scale-95',
                 active
-                  ? 'bg-gold-500/10 text-gold-400 font-medium'
-                  : 'text-espresso-300 hover:text-espresso-50 hover:bg-espresso-700'
+                  ? 'bg-espresso text-parchment'
+                  : 'text-mist hover:text-espresso hover:bg-linen'
               )}
             >
-              <Icon className="w-4 h-4 flex-shrink-0" />
-              {label}
+              <Icon className="w-3.5 h-3.5 flex-shrink-0" />
+              <span style={{
+                fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+                fontSize:      11,
+                letterSpacing: '0.06em',
+              }}>
+                {label}
+              </span>
             </Link>
           )
         })}

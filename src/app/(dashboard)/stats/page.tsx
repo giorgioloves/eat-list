@@ -4,9 +4,22 @@ import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
 import { TierBadge } from '@/components/ui/badge'
+import { PipRating } from '@/components/ui/pip-rating'
 import { RatingDistributionChart, CuisineBarList } from './stats-charts'
 import { useRestaurants } from '@/contexts/restaurants'
 import type { Restaurant, Tier } from '@/types'
+
+const T = {
+  parchment:  '#f5f0e8',
+  linen:      '#ede5d8',
+  espresso:   '#3b2f27',
+  terracotta: '#c4927a',
+  sage:       '#8a9e8a',
+  stone:      '#c4b8a8',
+  mist:       '#a08070',
+  ghost:      '#b8a898',
+  border:     '#c4b8a8',
+}
 
 type TimeFilter = 'all' | 'year' | 'month'
 
@@ -21,20 +34,17 @@ function bottomScore(r: Restaurant) {
 
 // ─── Progress Ring ────────────────────────────────────────────────────────────
 
-function ProgressRing({ pct, size = 96, stroke = 7 }: { pct: number; size?: number; stroke?: number }) {
-  const r = (size - stroke) / 2
+function ProgressRing({ pct, size = 80, stroke = 6 }: { pct: number; size?: number; stroke?: number }) {
+  const r    = (size - stroke) / 2
   const circ = 2 * Math.PI * r
   const offset = circ - (Math.min(pct, 100) / 100) * circ
 
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ transform: 'rotate(-90deg)' }}>
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={T.stone} strokeWidth={stroke} />
       <circle
         cx={size / 2} cy={size / 2} r={r}
-        fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth={stroke}
-      />
-      <circle
-        cx={size / 2} cy={size / 2} r={r}
-        fill="none" stroke="#22c55e" strokeWidth={stroke}
+        fill="none" stroke={T.sage} strokeWidth={stroke}
         strokeLinecap="round"
         strokeDasharray={circ}
         strokeDashoffset={offset}
@@ -47,23 +57,39 @@ function ProgressRing({ pct, size = 96, stroke = 7 }: { pct: number; size?: numb
 // ─── Segmented Control ────────────────────────────────────────────────────────
 
 const SEGMENTS: { id: TimeFilter; label: string }[] = [
-  { id: 'all',   label: 'All Time'   },
-  { id: 'year',  label: 'This Year'  },
-  { id: 'month', label: 'This Month' },
+  { id: 'all',   label: 'all time'   },
+  { id: 'year',  label: 'this year'  },
+  { id: 'month', label: 'this month' },
 ]
 
 function SegmentedControl({ value, onChange }: { value: TimeFilter; onChange: (v: TimeFilter) => void }) {
   return (
-    <div className="flex bg-espresso-800 border border-espresso-700/60 rounded-xl p-1 gap-1">
+    <div style={{
+      display:         'flex',
+      backgroundColor: T.linen,
+      border:          `0.5px solid ${T.border}`,
+      borderRadius:    10,
+      padding:         3,
+      gap:             3,
+    }}>
       {SEGMENTS.map(seg => (
         <button
           key={seg.id}
           onClick={() => onChange(seg.id)}
-          className={`flex-1 text-xs font-semibold py-2.5 px-2 rounded-lg transition-all duration-200 min-h-[44px] ${
-            value === seg.id
-              ? 'bg-espresso-600 text-espresso-50 shadow-sm'
-              : 'text-espresso-400 hover:text-espresso-200'
-          }`}
+          style={{
+            flex:            1,
+            padding:         '8px 6px',
+            borderRadius:    7,
+            border:          'none',
+            backgroundColor: value === seg.id ? T.espresso : 'transparent',
+            color:           value === seg.id ? T.parchment : T.mist,
+            fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
+            fontSize:        8,
+            letterSpacing:   '0.06em',
+            cursor:          'pointer',
+            transition:      'all 0.15s',
+            minHeight:       32,
+          }}
         >
           {seg.label}
         </button>
@@ -78,23 +104,48 @@ function HeroCard({ total, visited, wishlist, visitedPct }: {
   total: number; visited: number; wishlist: number; visitedPct: number
 }) {
   return (
-    <div className="bg-espresso-800 border border-espresso-700/60 rounded-2xl p-5">
-      <div className="flex items-center justify-between gap-4">
-        <div className="min-w-0">
-          <p className="text-5xl font-black tracking-tight text-espresso-50 leading-none">{total}</p>
-          <p className="text-sm text-espresso-400 mt-2">restaurants tracked</p>
-          <div className="flex items-center gap-2 mt-3 flex-wrap">
-            <span className="text-sm font-semibold text-green-400">{visited} visited</span>
-            <span className="text-espresso-600 text-xs">·</span>
-            <span className="text-sm font-semibold text-blue-400">{wishlist} to try</span>
+    <div style={{
+      backgroundColor: T.linen,
+      border:          `0.5px solid ${T.border}`,
+      borderRadius:    10,
+      padding:         '18px 18px 14px',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+        <div style={{ minWidth: 0 }}>
+          <p style={{
+            fontFamily: 'var(--font-crimson), Georgia, serif',
+            fontSize:   48,
+            fontWeight: 300,
+            color:      T.espresso,
+            lineHeight: 1,
+          }}>{total}</p>
+          <p style={{
+            fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+            fontSize:      8,
+            color:         T.mist,
+            letterSpacing: '0.08em',
+            marginTop:     6,
+          }}>restaurants tracked</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10, flexWrap: 'wrap' as const }}>
+            <span style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 14, color: T.sage }}>
+              {visited} visited
+            </span>
+            <span style={{ color: T.stone, fontSize: 8 }}>·</span>
+            <span style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 14, color: T.terracotta }}>
+              {wishlist} to try
+            </span>
           </div>
         </div>
-        <div className="relative flex-shrink-0">
+        <div style={{ position: 'relative', flexShrink: 0 }}>
           <ProgressRing pct={visitedPct} />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center">
-              <p className="text-sm font-black text-espresso-50">{visitedPct}%</p>
-              <p className="text-[9px] text-espresso-500 leading-tight mt-px">visited</p>
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ textAlign: 'center' }}>
+              <p style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 16, fontWeight: 400, color: T.espresso, lineHeight: 1 }}>
+                {visitedPct}%
+              </p>
+              <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 6, color: T.mist, marginTop: 1 }}>
+                visited
+              </p>
             </div>
           </div>
         </div>
@@ -105,38 +156,34 @@ function HeroCard({ total, visited, wishlist, visitedPct }: {
 
 // ─── Metric Card ─────────────────────────────────────────────────────────────
 
-function MetricCard({ icon, label, value, sub, valueColor }: {
-  icon: string
-  label: string
-  value: string | number
-  sub: string
-  valueColor?: string
+function MetricCard({ icon, label, value, sub, accent }: {
+  icon: string; label: string; value: string | number; sub: string; accent?: boolean
 }) {
   return (
-    <div className="bg-espresso-800 border border-espresso-700/60 rounded-2xl p-4">
-      <div className="flex items-center gap-2 mb-3">
-        <span className="text-base leading-none">{icon}</span>
-        <p className="text-xs text-espresso-400 font-medium">{label}</p>
+    <div style={{
+      backgroundColor: T.linen,
+      border:          `0.5px solid ${T.border}`,
+      borderRadius:    10,
+      padding:         '14px 14px 12px',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+        <span style={{ fontSize: 13, lineHeight: 1 }}>{icon}</span>
+        <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 7, color: T.mist, letterSpacing: '0.1em', textTransform: 'uppercase' as const }}>{label}</p>
       </div>
-      <p className={`text-2xl font-black leading-none ${valueColor ?? 'text-espresso-50'}`}>{value}</p>
-      <p className="text-xs text-espresso-500 mt-1.5">{sub}</p>
+      <p style={{
+        fontFamily: 'var(--font-crimson), Georgia, serif',
+        fontSize:   24,
+        fontWeight: 300,
+        color:      accent ? T.terracotta : T.espresso,
+        fontStyle:  accent ? 'italic' : 'normal',
+        lineHeight: 1,
+      }}>{value}</p>
+      <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 7, color: T.ghost, marginTop: 5 }}>{sub}</p>
     </div>
   )
 }
 
-// ─── Rating Badge ─────────────────────────────────────────────────────────────
-
-function RatingBadge({ rating, isLow }: { rating: number; isLow?: boolean }) {
-  return (
-    <span className={`text-xs font-bold px-2 py-0.5 rounded-md tabular-nums ${
-      isLow ? 'bg-red-500/15 text-red-400' : 'bg-gold-500/15 text-gold-400'
-    }`}>
-      {rating.toFixed(1)}
-    </span>
-  )
-}
-
-// ─── Ranked Row ───────────────────────────────────────────────────────────────
+// ─── Rank Row ─────────────────────────────────────────────────────────────────
 
 function RestaurantRankRow({ restaurant: r, rank, isBottom }: {
   restaurant: Restaurant; rank: number; isBottom?: boolean
@@ -144,36 +191,65 @@ function RestaurantRankRow({ restaurant: r, rank, isBottom }: {
   return (
     <Link
       href={`/restaurants/${r.id}`}
-      className="flex items-center gap-3 px-5 py-4 hover:bg-white/[0.03] active:bg-white/[0.05] transition-colors min-h-[56px]"
+      style={{
+        display:        'flex',
+        alignItems:     'center',
+        gap:            10,
+        padding:        '12px 16px',
+        textDecoration: 'none',
+      }}
     >
-      <span className={`text-xs font-black w-5 text-center flex-shrink-0 ${
-        isBottom ? 'text-red-400/70' : 'text-gold-500/70'
-      }`}>
-        {rank}
-      </span>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-espresso-50 truncate">{r.name}</p>
-        <div className="flex items-center gap-2 mt-0.5">
+      <span style={{
+        fontFamily: 'var(--font-dm-mono), ui-monospace, monospace',
+        fontSize:   9,
+        color:      isBottom ? '#c47a7a' : T.terracotta,
+        width:      16,
+        textAlign:  'center',
+        flexShrink: 0,
+      }}>{rank}</span>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <p style={{
+          fontFamily:   'var(--font-crimson), Georgia, serif',
+          fontSize:     13,
+          fontWeight:   400,
+          color:        T.espresso,
+          overflow:     'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace:   'nowrap',
+        }}>{r.name.replace(/\s*\([^)]+\)\s*$/, '').trim()}</p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
           {r.cuisine && (
-            <span className="text-xs text-espresso-400 truncate">{r.cuisine}</span>
+            <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: T.mist }}>{r.cuisine}</span>
           )}
           {r.tier && <TierBadge tier={r.tier as Tier} />}
         </div>
       </div>
-      <div className="flex items-center gap-2 flex-shrink-0">
-        {r.rating !== null && <RatingBadge rating={r.rating} isLow={isBottom} />}
-        <ChevronRight className="w-4 h-4 text-espresso-700" />
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+        {r.rating !== null && <PipRating rating={r.rating} size="sm" />}
+        <ChevronRight style={{ width: 12, height: 12, color: T.stone }} />
       </div>
     </Link>
   )
 }
 
-// ─── Reusable Card Wrappers ───────────────────────────────────────────────────
+// ─── Card Wrappers ────────────────────────────────────────────────────────────
 
 function ChartCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-espresso-800 border border-espresso-700/60 rounded-2xl p-5">
-      <h3 className="text-sm font-semibold text-espresso-200 mb-4">{title}</h3>
+    <div style={{
+      backgroundColor: T.linen,
+      border:          `0.5px solid ${T.border}`,
+      borderRadius:    10,
+      padding:         16,
+    }}>
+      <p style={{
+        fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+        fontSize:      7,
+        color:         T.mist,
+        letterSpacing: '0.12em',
+        textTransform: 'uppercase' as const,
+        marginBottom:  14,
+      }}>{title}</p>
       {children}
     </div>
   )
@@ -183,13 +259,26 @@ function RankedListCard({ title, restaurants, isBottom }: {
   title: string; restaurants: Restaurant[]; isBottom?: boolean
 }) {
   return (
-    <div className="bg-espresso-800 border border-espresso-700/60 rounded-2xl overflow-hidden">
-      <div className="px-5 pt-5 pb-3">
-        <h3 className="text-sm font-semibold text-espresso-200">{title}</h3>
+    <div style={{
+      backgroundColor: T.linen,
+      border:          `0.5px solid ${T.border}`,
+      borderRadius:    10,
+      overflow:        'hidden',
+    }}>
+      <div style={{ padding: '14px 16px 10px' }}>
+        <p style={{
+          fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+          fontSize:      7,
+          color:         T.mist,
+          letterSpacing: '0.12em',
+          textTransform: 'uppercase' as const,
+        }}>{title}</p>
       </div>
-      <div className="divide-y divide-white/[0.05]">
+      <div>
         {restaurants.map((r, i) => (
-          <RestaurantRankRow key={r.id} restaurant={r} rank={i + 1} isBottom={isBottom} />
+          <div key={r.id} style={{ borderTop: `0.5px solid ${T.border}` }}>
+            <RestaurantRankRow restaurant={r} rank={i + 1} isBottom={isBottom} />
+          </div>
         ))}
       </div>
     </div>
@@ -223,9 +312,9 @@ export default function StatsPage() {
 
   if (restaurants.length === 0) {
     return (
-      <div className="px-4 pt-8 pb-24">
-        <h1 className="text-3xl font-black tracking-tight text-espresso-50">Stats</h1>
-        <p className="text-sm text-espresso-400 mt-1.5">Add restaurants to see your stats.</p>
+      <div style={{ padding: '24px 16px 112px' }}>
+        <h1 style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 26, fontWeight: 400, color: T.espresso, margin: 0 }}>stats</h1>
+        <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.mist, marginTop: 6 }}>add restaurants to see your stats</p>
       </div>
     )
   }
@@ -266,22 +355,19 @@ export default function StatsPage() {
     count: rated.filter(r => r.rating === n).length,
   }))
 
-  const fmt = (n: number) =>
-    n.toLocaleString('en-AU', { maximumFractionDigits: 0 })
+  const fmt = (n: number) => n.toLocaleString('en-AU', { maximumFractionDigits: 0 })
 
   return (
-    <div className="px-4 pt-8 pb-28 max-w-lg mx-auto space-y-4">
+    <div style={{ padding: '24px 16px 112px', maxWidth: 440, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 12 }}>
 
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-black tracking-tight text-espresso-50">Stats</h1>
-        <p className="text-sm text-espresso-400 mt-1">Your restaurant journey in numbers</p>
+        <h1 style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 26, fontWeight: 400, color: T.espresso, lineHeight: 1.1, margin: 0 }}>stats</h1>
+        <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.mist, letterSpacing: '0.1em', marginTop: 4 }}>your restaurant journey in numbers</p>
       </div>
 
-      {/* Time filter */}
       <SegmentedControl value={timeFilter} onChange={setTimeFilter} />
 
-      {/* Hero */}
       <HeroCard
         total={filtered.length}
         visited={visited.length}
@@ -289,59 +375,31 @@ export default function StatsPage() {
         visitedPct={visitedPct}
       />
 
-      {/* 2×2 metric grid */}
-      <div className="grid grid-cols-2 gap-3">
-        <MetricCard
-          icon="🍽️"
-          label="Total Visits"
-          value={totalVisits}
-          sub={`across ${filtered.length} place${filtered.length !== 1 ? 's' : ''}`}
-        />
-        <MetricCard
-          icon="⭐"
-          label="Avg Rating"
-          value={avgRating !== null ? `${avgRating.toFixed(1)}/5` : '—'}
-          sub={rated.length > 0 ? `${rated.length} rated` : 'none rated yet'}
-          valueColor="text-gold-400"
-        />
-        <MetricCard
-          icon="💰"
-          label="Total Spend"
-          value={spendEntries.length > 0 ? `$${fmt(totalSpend)}` : '—'}
-          sub={spendEntries.length > 0
-            ? `${spendEntries.length} visit${spendEntries.length !== 1 ? 's' : ''} logged`
-            : 'no spend logged'}
-        />
-        <MetricCard
-          icon="📊"
-          label="Avg Spend"
-          value={avgSpend !== null ? `$${fmt(avgSpend)}` : '—'}
-          sub="per visit"
-        />
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+        <MetricCard icon="🍽️" label="total visits" value={totalVisits} sub={`across ${filtered.length} place${filtered.length !== 1 ? 's' : ''}`} />
+        <MetricCard icon="⭐" label="avg rating" value={avgRating !== null ? `${avgRating.toFixed(1)}/5` : '—'} sub={rated.length > 0 ? `${rated.length} rated` : 'none rated yet'} accent />
+        <MetricCard icon="💰" label="total spend" value={spendEntries.length > 0 ? `$${fmt(totalSpend)}` : '—'} sub={spendEntries.length > 0 ? `${spendEntries.length} visit${spendEntries.length !== 1 ? 's' : ''} logged` : 'no spend logged'} />
+        <MetricCard icon="📊" label="avg spend" value={avgSpend !== null ? `$${fmt(avgSpend)}` : '—'} sub="per visit" />
       </div>
 
-      {/* Rating distribution */}
       {rated.length > 0 && (
-        <ChartCard title="Rating Distribution">
+        <ChartCard title="rating distribution">
           <RatingDistributionChart buckets={ratingBuckets} />
         </ChartCard>
       )}
 
-      {/* Top cuisines */}
       {cuisineData.length > 0 && (
-        <ChartCard title="Top Cuisines">
+        <ChartCard title="top cuisines">
           <CuisineBarList data={cuisineData} />
         </ChartCard>
       )}
 
-      {/* Top rated */}
       {top5.length > 0 && (
-        <RankedListCard title="Top Rated" restaurants={top5} />
+        <RankedListCard title="top rated" restaurants={top5} />
       )}
 
-      {/* Lowest rated */}
       {bottom5.length >= 3 && (
-        <RankedListCard title="Lowest Rated" restaurants={bottom5} isBottom />
+        <RankedListCard title="lowest rated" restaurants={bottom5} isBottom />
       )}
 
     </div>
