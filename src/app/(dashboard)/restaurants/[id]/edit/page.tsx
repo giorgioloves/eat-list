@@ -1,7 +1,6 @@
-﻿import { redirect, notFound } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
-import { getAuthUser, getListId } from '@/lib/auth'
+import sql from '@/lib/db'
 import { RestaurantForm } from '@/components/restaurants/restaurant-form'
 import { ArrowLeft } from 'lucide-react'
 import type { Restaurant } from '@/types'
@@ -12,19 +11,8 @@ export default async function EditRestaurantPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const user = await getAuthUser()
-  if (!user) redirect('/login')
-
-  const listId = await getListId(user.id)
-  if (!listId) redirect('/dashboard')
-
-  const supabase = await createClient()
-  const { data: restaurant } = await supabase
-    .from('restaurants')
-    .select('*')
-    .eq('id', id)
-    .single()
-
+  const rows = await sql`SELECT * FROM restaurants WHERE id = ${id}`
+  const restaurant = rows[0]
   if (!restaurant) notFound()
 
   return (
@@ -38,16 +26,12 @@ export default async function EditRestaurantPage({
         </Link>
         <div>
           <h1 className="text-xl font-bold text-espresso-50">Edit Restaurant</h1>
-          <p className="text-sm text-espresso-300 mt-0.5">{(restaurant as Restaurant).name}</p>
+          <p className="text-sm text-espresso-300 mt-0.5">{(restaurant as unknown as Restaurant).name}</p>
         </div>
       </div>
 
       <div className="bg-espresso-800 border border-espresso-700 rounded-2xl p-4 sm:p-6">
-        <RestaurantForm
-          listId={listId}
-          userId={user.id}
-          restaurant={restaurant as Restaurant}
-        />
+        <RestaurantForm restaurant={restaurant as unknown as Restaurant} />
       </div>
     </div>
   )

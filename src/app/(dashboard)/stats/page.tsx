@@ -3,7 +3,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
 import { TierBadge } from '@/components/ui/badge'
 import { RatingDistributionChart, CuisineBarList } from './stats-charts'
 import { useRestaurants } from '@/contexts/restaurants'
@@ -216,11 +215,10 @@ export default function StatsPage() {
 
   useEffect(() => {
     if (filtered.length === 0) { setVisitSpends([]); return }
-    createClient()
-      .from('restaurant_visits')
-      .select('cost')
-      .in('restaurant_id', filtered.map(r => r.id))
-      .then(({ data }) => setVisitSpends(data ?? []))
+    const ids = filtered.map(r => r.id).join(',')
+    fetch(`/api/visits?ids=${ids}`)
+      .then(res => res.json())
+      .then(data => setVisitSpends(data ?? []))
   }, [filtered])
 
   if (restaurants.length === 0) {

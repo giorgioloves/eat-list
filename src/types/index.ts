@@ -1,52 +1,11 @@
-﻿export const RESTAURANT_STATUSES = ['want_to_try', 'visited'] as const
+export const RESTAURANT_STATUSES = ['want_to_try', 'visited'] as const
 export type RestaurantStatus = typeof RESTAURANT_STATUSES[number]
 export type WouldGoAgain = 'definitely' | 'maybe' | 'no'
 export const TIERS = ['S', 'A', 'B', 'C', 'D', 'E', 'F'] as const
 export type Tier = typeof TIERS[number]
-export type MemberRole = 'owner' | 'member'
-export type InvitationStatus = 'pending' | 'accepted' | 'declined'
-
-export interface Profile {
-  id: string
-  email: string
-  name: string | null
-  avatar_url: string | null
-  created_at: string
-  updated_at: string
-}
-
-export interface SharedList {
-  id: string
-  name: string
-  created_by: string
-  invite_code: string
-  created_at: string
-  updated_at: string
-}
-
-export interface SharedListMember {
-  id: string
-  list_id: string
-  user_id: string
-  role: MemberRole
-  joined_at: string
-  profiles?: Profile
-}
-
-export interface Invitation {
-  id: string
-  list_id: string
-  invited_email: string
-  invited_by: string
-  status: InvitationStatus
-  created_at: string
-  shared_lists?: SharedList
-  profiles?: Profile
-}
 
 export interface Restaurant {
   id: string
-  list_id: string
   name: string
   cuisine: string | null
   address: string | null
@@ -67,7 +26,6 @@ export interface Restaurant {
   tags: string[]
   latitude: number | null
   longitude: number | null
-  created_by: string
   created_at: string
   updated_at: string
 }
@@ -75,32 +33,18 @@ export interface Restaurant {
 export interface RestaurantNote {
   id: string
   restaurant_id: string
-  added_by: string | null
   content: string
   created_at: string
-  profiles?: Profile
-}
-
-export interface VisitRating {
-  id: string
-  visit_id: string
-  user_id: string
-  rating: number
-  created_at: string
-  profiles?: { name: string | null }
 }
 
 export interface RestaurantVisit {
   id: string
   restaurant_id: string
-  visited_by: string
   visited_at: string | null
   notes: string | null
-  rating: number | null  // avg of visit_ratings
-  cost: number | null    // $ spend
+  rating: number | null
+  cost: number | null
   created_at: string
-  profiles?: Profile
-  visit_ratings?: VisitRating[]
 }
 
 export interface RestaurantFilters {
@@ -147,7 +91,6 @@ export const TIER_BG_COLORS: Record<Tier, string> = {
   F: 'bg-[#4A2323] border-[#FF6B6B]/30',
 }
 
-
 export const CUISINE_EMOJI: Record<string, string> = {
   'Modern Australian': '🇦🇺',
   'Italian':           '🇮🇹',
@@ -190,4 +133,3 @@ export const CUISINE_EMOJI: Record<string, string> = {
 }
 
 export const CUISINES = Object.keys(CUISINE_EMOJI)
-

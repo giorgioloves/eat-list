@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 import { geocodeAddress } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { CUISINES, type Restaurant } from '@/types'
@@ -10,10 +9,9 @@ import { Trash2 } from 'lucide-react'
 import { RestaurantAutocomplete } from '@/components/ui/restaurant-autocomplete'
 import { ConfirmModal } from '@/components/ui/modal'
 import { useRestaurants } from '@/contexts/restaurants'
+import { addRestaurant, updateRestaurant, deleteRestaurant } from '@/app/(dashboard)/restaurants/actions'
 
 interface RestaurantFormProps {
-  listId: string
-  userId: string
   restaurant?: Restaurant
 }
 
@@ -22,8 +20,8 @@ interface FormData {
   cuisine: string
   address: string
   suburb: string
-  city: string    // not shown — used for geocoding
-  state: string   // not shown — derived from Google Places, drives city filter
+  city: string
+  state: string
   lat: number | null
   lng: number | null
   priceLevel: string | null
@@ -31,10 +29,9 @@ interface FormData {
   instagram: string
 }
 
-export function RestaurantForm({ listId, userId, restaurant }: RestaurantFormProps) {
+export function RestaurantForm({ restaurant }: RestaurantFormProps) {
   const router = useRouter()
   const { refresh } = useRestaurants()
-  const supabase = createClient()
 
   const [form, setForm] = useState<FormData>({
     name: restaurant?.name || '',
@@ -67,13 +64,12 @@ export function RestaurantForm({ listId, userId, restaurant }: RestaurantFormPro
     let lat = form.lat
     let lng = form.lng
 
-    // Only geocode if we don't have coords from Place selection
     if ((!lat || !lng) && (form.address || form.suburb)) {
       const coords = await geocodeAddress(form.address, form.suburb, form.city)
       if (coords) { lat = coords.lat; lng = coords.lng }
     }
 
-    const basePayload = {
+    const payload = {
       name: form.name.trim(),
       cuisine: form.cuisine || null,
       address: form.address || null,
@@ -87,25 +83,12 @@ export function RestaurantForm({ listId, userId, restaurant }: RestaurantFormPro
       instagram: form.instagram || null,
     }
 
-    let err
-    if (restaurant) {
-      const result = await supabase
-        .from('restaurants')
-        .update({ ...basePayload, updated_at: new Date().toISOString() })
-        .eq('id', restaurant.id)
-      err = result.error
-    } else {
-      const result = await supabase.from('restaurants').insert({
-        ...basePayload,
-        list_id: listId,
-        created_by: userId,
-        status: 'want_to_try',
-      })
-      err = result.error
-    }
+    const result = restaurant
+      ? await updateRestaurant(restaurant.id, payload)
+      : await addRestaurant(payload)
 
-    if (err) {
-      setError(err.message)
+    if (result.error) {
+      setError(result.error)
       setLoading(false)
     } else {
       await refresh()
@@ -115,9 +98,9 @@ export function RestaurantForm({ listId, userId, restaurant }: RestaurantFormPro
 
   async function handleDelete() {
     setDeleteLoading(true)
-    const { error } = await supabase.from('restaurants').delete().eq('id', restaurant!.id)
-    if (error) {
-      setError(error.message)
+    const result = await deleteRestaurant(restaurant!.id)
+    if (result.error) {
+      setError(result.error)
       setDeleteLoading(false)
       setShowDelete(false)
     } else {
@@ -189,7 +172,6 @@ export function RestaurantForm({ listId, userId, restaurant }: RestaurantFormPro
               className={inputCls}
             />
           </Field>
-
         </div>
 
         {error && (

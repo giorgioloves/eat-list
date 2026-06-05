@@ -20,7 +20,7 @@ import {
   rectSortingStrategy,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { createClient } from '@/lib/supabase/client'
+import { updateTier } from '@/app/(dashboard)/tiers/actions'
 import { TIERS, TIER_COLORS, TIER_BG_COLORS, STATUS_LABELS } from '@/types'
 import type { Restaurant, Tier } from '@/types'
 
@@ -45,7 +45,6 @@ function groupByTier(restaurants: Restaurant[]): TierGroup {
 }
 
 export function TierBoard({ restaurants }: TierBoardProps) {
-  const supabase = createClient()
   const [groups, setGroups] = useState<TierGroup>(() => groupByTier(restaurants))
 
   useEffect(() => {
@@ -122,10 +121,7 @@ export function TierBoard({ restaurants }: TierBoardProps) {
     if (restaurant.tier === newTier) return
 
     setSaving(active.id as string)
-    await supabase
-      .from('restaurants')
-      .update({ tier: newTier, updated_at: new Date().toISOString() })
-      .eq('id', active.id as string)
+    await updateTier(active.id as string, newTier)
     setSaving(null)
   }
 

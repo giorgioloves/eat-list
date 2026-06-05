@@ -23,9 +23,7 @@ export function NoteLog({ restaurantId, notes }: NoteLogProps) {
     if (!content.trim()) return
     setError('')
     setLoading(true)
-
     const result = await addNote(restaurantId, content)
-
     if (result.error) {
       setError(result.error)
     } else {
@@ -47,9 +45,7 @@ export function NoteLog({ restaurantId, notes }: NoteLogProps) {
         <h3 className="text-sm font-semibold text-espresso-200">
           Notes
           {notes.length > 0 && (
-            <span className="ml-2 text-xs text-espresso-400 font-normal">
-              {notes.length}
-            </span>
+            <span className="ml-2 text-xs text-espresso-400 font-normal">{notes.length}</span>
           )}
         </h3>
         <button
@@ -106,11 +102,7 @@ export function NoteLog({ restaurantId, notes }: NoteLogProps) {
               <MessageSquare className="w-3.5 h-3.5 text-espresso-400 mt-0.5 flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-espresso-100 leading-relaxed">{n.content}</p>
-                <p className="text-xs text-espresso-500 mt-1">
-                  {(n.profiles as any)?.name || 'Someone'}
-                  {' · '}
-                  {formatDate(n.created_at)}
-                </p>
+                <p className="text-xs text-espresso-500 mt-1">{formatDate(n.created_at)}</p>
               </div>
               <button
                 onClick={() => handleDelete(n.id)}

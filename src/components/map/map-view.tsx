@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from 'react'
 import { GoogleMap, useJsApiLoader, OverlayViewF } from '@react-google-maps/api'
 import Link from 'next/link'
 import { Instagram, Globe } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
 import { CUISINE_EMOJI, TIER_COLORS } from '@/types'
 import { PipRating } from '@/components/ui/pip-rating'
 import { formatDate } from '@/lib/utils'
@@ -74,14 +73,10 @@ export function MapView({ restaurants }: MapViewProps) {
   useEffect(() => {
     if (!selected || selected.visit_count === 0) { setVisits([]); return }
     setVisitsLoading(true)
-    const supabase = createClient()
-    supabase
-      .from('restaurant_visits')
-      .select('*, profiles(name)')
-      .eq('restaurant_id', selected.id)
-      .order('visited_at', { ascending: false })
-      .then(({ data }) => {
-        setVisits((data ?? []) as RestaurantVisit[])
+    fetch(`/api/visits?ids=${selected.id}`)
+      .then(res => res.json())
+      .then((data: RestaurantVisit[]) => {
+        setVisits(data.sort((a, b) => (b.visited_at ?? '').localeCompare(a.visited_at ?? '')))
         setVisitsLoading(false)
       })
   }, [selected?.id])
@@ -225,16 +220,11 @@ export function MapView({ restaurants }: MapViewProps) {
                         </span>
                         {v.rating !== null && <PipRating rating={v.rating} size="sm" />}
                       </div>
-                      <div className="flex items-center gap-3 mt-0.5">
-                        {(v.profiles as any)?.name && (
-                          <span className="text-xs text-espresso-500">{(v.profiles as any).name}</span>
-                        )}
-                        {v.cost !== null && (
-                          <span className="text-xs text-espresso-400">
-                            ${v.cost.toFixed(0)}
-                          </span>
-                        )}
-                      </div>
+                      {v.cost !== null && (
+                        <div className="mt-0.5">
+                          <span className="text-xs text-espresso-400">${v.cost.toFixed(0)}</span>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

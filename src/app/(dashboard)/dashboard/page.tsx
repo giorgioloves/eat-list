@@ -8,18 +8,13 @@ import {
   ArrowRight, ChevronRight,
 } from 'lucide-react'
 import { useRestaurants } from '@/contexts/restaurants'
-import OnboardingClient from './onboarding-client'
 import { CUISINE_EMOJI } from '@/types'
 import type { Restaurant } from '@/types'
 
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
-  const { restaurants, loading, listId, listName } = useRestaurants()
-
-  if (!loading && !listId) {
-    return <OnboardingPage />
-  }
+  const { restaurants, loading } = useRestaurants()
 
   const visited    = restaurants.filter((r) => r.status === 'visited')
   const wishlist   = restaurants.filter((r) => r.status === 'want_to_try')
@@ -35,8 +30,8 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-espresso-50">{listName ?? 'Your List'}</h1>
-          <p className="text-sm text-espresso-400 mt-0.5">Your shared restaurant list</p>
+          <h1 className="text-xl font-bold text-espresso-50">Eat List</h1>
+          <p className="text-sm text-espresso-400 mt-0.5">Your restaurant list</p>
         </div>
         <Link
           href="/restaurants/add"
@@ -313,21 +308,3 @@ function EmptyState() {
   )
 }
 
-// ─── Onboarding ───────────────────────────────────────────────────────────────
-
-function OnboardingPage() {
-  return (
-    <div className="flex items-center justify-center min-h-screen p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gold-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <UtensilsCrossed className="w-8 h-8 text-espresso-900" />
-          </div>
-          <h1 className="text-2xl font-bold text-espresso-50">Welcome to Eat List</h1>
-          <p className="text-espresso-300 mt-2">Create or join a shared list to get started</p>
-        </div>
-        <OnboardingClient />
-      </div>
-    </div>
-  )
-}

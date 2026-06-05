@@ -11,11 +11,9 @@ import type { RestaurantVisit } from '@/types'
 interface VisitLogProps {
   restaurantId: string
   visits: RestaurantVisit[]
-  currentUserId: string
-  profileNames: Record<string, string>
 }
 
-export function VisitLog({ restaurantId, visits, currentUserId, profileNames }: VisitLogProps) {
+export function VisitLog({ restaurantId, visits }: VisitLogProps) {
   const [showForm, setShowForm] = useState(false)
   const [date, setDate] = useState('')
   const [cost, setCost] = useState('')
@@ -73,7 +71,6 @@ export function VisitLog({ restaurantId, visits, currentUserId, profileNames }: 
         </button>
       </div>
 
-      {/* Add visit form */}
       {showForm && (
         <form onSubmit={handleLog} className="mb-4 p-4 bg-espresso-700 border border-espresso-600 rounded-xl space-y-4">
           <div className="grid grid-cols-2 gap-3">
@@ -90,7 +87,7 @@ export function VisitLog({ restaurantId, visits, currentUserId, profileNames }: 
             </div>
           </div>
           <div>
-            <label className="block text-xs text-espresso-400 mb-2">My Rating</label>
+            <label className="block text-xs text-espresso-400 mb-2">Rating</label>
             <PipSelector value={myRating} onChange={setMyRating} />
           </div>
           {error && <p className="text-xs text-red-400">{error}</p>}
@@ -103,15 +100,12 @@ export function VisitLog({ restaurantId, visits, currentUserId, profileNames }: 
         </form>
       )}
 
-      {/* Visit list */}
       {visits.length === 0 ? (
         <p className="text-sm text-espresso-400 py-2">No visits logged yet.</p>
       ) : (
         <div className="space-y-2">
-          {visits.map((v) => {
-            const myExistingRating = v.visit_ratings?.find(r => r.user_id === currentUserId)
-
-            return editingId === v.id ? (
+          {visits.map((v) => (
+            editingId === v.id ? (
               <EditVisitRow
                 key={v.id}
                 visit={v}
@@ -128,35 +122,20 @@ export function VisitLog({ restaurantId, visits, currentUserId, profileNames }: 
                         <span className="text-xs text-espresso-300 font-medium">${v.cost.toFixed(2)}</span>
                       )}
                     </div>
-                    {/* Other users' ratings */}
-                    {v.visit_ratings && v.visit_ratings.filter(r => r.user_id !== currentUserId).length > 0 && (
-                      <div className="mt-1.5 space-y-1">
-                        {v.visit_ratings.filter(r => r.user_id !== currentUserId).map((r) => (
-                          <div key={r.id} className="flex items-center gap-2">
-                            <span className="text-xs text-espresso-400 w-20 truncate">
-                              {profileNames[r.user_id] ?? 'Unknown'}
-                            </span>
-                            <PipRating rating={r.rating} size="sm" />
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    {/* Current user's rating — always visible */}
                     <div className="mt-1.5">
                       {ratingVisitId === v.id ? (
                         <InlineRater
                           visitId={v.id}
                           restaurantId={restaurantId}
-                          initialRating={myExistingRating?.rating ?? null}
+                          initialRating={v.rating}
                           onDone={() => setRatingVisitId(null)}
                         />
-                      ) : myExistingRating ? (
+                      ) : v.rating !== null ? (
                         <button
                           onClick={() => setRatingVisitId(v.id)}
                           className="flex items-center gap-2 hover:bg-espresso-700 rounded px-1 -mx-1 transition-colors"
                         >
-                          <span className="text-xs text-espresso-400 w-20 truncate">You</span>
-                          <PipRating rating={myExistingRating.rating} size="sm" />
+                          <PipRating rating={v.rating} size="sm" />
                           <Pencil className="w-3 h-3 text-espresso-500" />
                         </button>
                       ) : (
@@ -165,7 +144,7 @@ export function VisitLog({ restaurantId, visits, currentUserId, profileNames }: 
                           className="flex items-center gap-1.5 text-xs text-espresso-500 hover:text-gold-400 transition-colors"
                         >
                           <Plus className="w-3 h-3" />
-                          Add your rating
+                          Add rating
                         </button>
                       )}
                     </div>
@@ -188,7 +167,7 @@ export function VisitLog({ restaurantId, visits, currentUserId, profileNames }: 
                 </div>
               </div>
             )
-          })}
+          ))}
         </div>
       )}
     </div>
@@ -234,31 +213,31 @@ function InlineRater({ visitId, restaurantId, initialRating, onDone }: {
     <div className="mt-2 space-y-1.5">
       {error && <p className="text-xs text-red-400">{error}</p>}
       <div className="flex items-center gap-2 flex-wrap">
-      <PipSelector value={rating} onChange={setRating} />
-      <div className="flex gap-1.5">
-        <button
-          onClick={handleSave}
-          disabled={saving || rating === null}
-          className="px-2.5 py-1 text-xs font-semibold bg-gold-500 hover:bg-gold-400 text-espresso-900 rounded-lg transition-colors disabled:opacity-50"
-        >
-          {saving ? '…' : 'Save'}
-        </button>
-        {initialRating !== null && (
+        <PipSelector value={rating} onChange={setRating} />
+        <div className="flex gap-1.5">
           <button
-            onClick={handleRemove}
-            disabled={saving}
-            className="px-2.5 py-1 text-xs text-red-400 border border-red-400/30 rounded-lg hover:bg-red-400/10 transition-colors disabled:opacity-50"
+            onClick={handleSave}
+            disabled={saving || rating === null}
+            className="px-2.5 py-1 text-xs font-semibold bg-gold-500 hover:bg-gold-400 text-espresso-900 rounded-lg transition-colors disabled:opacity-50"
           >
-            Remove
+            {saving ? '…' : 'Save'}
           </button>
-        )}
-        <button
-          onClick={onDone}
-          className="px-2.5 py-1 text-xs text-espresso-400 border border-espresso-600 rounded-lg hover:bg-espresso-700 transition-colors"
-        >
-          Cancel
-        </button>
-      </div>
+          {initialRating !== null && (
+            <button
+              onClick={handleRemove}
+              disabled={saving}
+              className="px-2.5 py-1 text-xs text-red-400 border border-red-400/30 rounded-lg hover:bg-red-400/10 transition-colors disabled:opacity-50"
+            >
+              Remove
+            </button>
+          )}
+          <button
+            onClick={onDone}
+            className="px-2.5 py-1 text-xs text-espresso-400 border border-espresso-600 rounded-lg hover:bg-espresso-700 transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
       </div>
     </div>
   )

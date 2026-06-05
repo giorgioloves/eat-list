@@ -1,7 +1,6 @@
-﻿import { redirect, notFound } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
-import { getAuthUser } from '@/lib/auth'
+import sql from '@/lib/db'
 import { StatusBadge, TierBadge } from '@/components/ui/badge'
 import { PipRating } from '@/components/ui/pip-rating'
 import { ArrowLeft, Pencil, MapPin, Globe, Instagram } from 'lucide-react'
@@ -16,43 +15,16 @@ export default async function RestaurantDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const user = await getAuthUser()
-  if (!user) redirect('/login')
 
-  const supabase = await createClient()
-
-  const { data: restaurant } = await supabase
-    .from('restaurants')
-    .select('*')
-    .eq('id', id)
-    .single()
-
+  const [restaurant] = await sql`SELECT * FROM restaurants WHERE id = ${id}`
   if (!restaurant) notFound()
 
-  const r = restaurant as Restaurant
+  const r = restaurant as unknown as Restaurant
 
-  const [{ data: visits }, { data: memberRows }, { data: notes }] = await Promise.all([
-    supabase
-      .from('restaurant_visits')
-      .select('*, profiles(name, email), visit_ratings(id, user_id, rating)')
-      .eq('restaurant_id', id)
-      .order('visited_at', { ascending: false }),
-    // Fetch list member names separately — avoids a 3-level nested join that PostgREST can drop silently
-    supabase
-      .from('shared_list_members')
-      .select('user_id, profiles(name)')
-      .eq('list_id', r.list_id),
-    supabase
-      .from('restaurant_notes')
-      .select('*, profiles(name, email)')
-      .eq('restaurant_id', id)
-      .order('created_at', { ascending: false }),
+  const [visits, notes] = await Promise.all([
+    sql`SELECT * FROM restaurant_visits WHERE restaurant_id = ${id} ORDER BY visited_at DESC NULLS LAST`,
+    sql`SELECT * FROM restaurant_notes WHERE restaurant_id = ${id} ORDER BY created_at DESC`,
   ])
-
-  const profileNames: Record<string, string> = {}
-  memberRows?.forEach((m: any) => {
-    if (m.user_id && m.profiles?.name) profileNames[m.user_id] = m.profiles.name
-  })
 
   return (
     <div className="p-4 sm:p-6 max-w-xl mx-auto">
@@ -148,15 +120,13 @@ export default async function RestaurantDetailPage({
         {/* Visit log */}
         <VisitLog
           restaurantId={r.id}
-          visits={(visits || []) as RestaurantVisit[]}
-          currentUserId={user.id}
-          profileNames={profileNames}
+          visits={visits as unknown as RestaurantVisit[]}
         />
 
         {/* Note log */}
         <NoteLog
           restaurantId={r.id}
-          notes={(notes || []) as RestaurantNote[]}
+          notes={notes as unknown as RestaurantNote[]}
         />
       </div>
     </div>

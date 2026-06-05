@@ -1,56 +1,38 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import type { Restaurant } from '@/types'
 
 interface RestaurantContextType {
   restaurants: Restaurant[]
   loading: boolean
-  listId: string | null
-  listName: string | null
   refresh: () => Promise<void>
 }
 
 const RestaurantContext = createContext<RestaurantContextType>({
   restaurants: [],
   loading: true,
-  listId: null,
-  listName: null,
   refresh: async () => {},
 })
 
-export function RestaurantProvider({
-  listId,
-  listName,
-  children,
-}: {
-  listId: string | null
-  listName: string | null
-  children: React.ReactNode
-}) {
+export function RestaurantProvider({ children }: { children: React.ReactNode }) {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([])
   const [loading, setLoading] = useState(true)
 
   const refresh = useCallback(async () => {
-    if (!listId) { setLoading(false); return }
-    const supabase = createClient()
     try {
-      const { data, error } = await supabase
-        .from('restaurants')
-        .select('*')
-        .eq('list_id', listId)
-        .order('created_at', { ascending: false })
-      if (!error) setRestaurants((data ?? []) as Restaurant[])
+      const res = await fetch('/api/restaurants')
+      const data = await res.json()
+      setRestaurants(data)
     } finally {
       setLoading(false)
     }
-  }, [listId])
+  }, [])
 
   useEffect(() => { refresh() }, [refresh])
 
   return (
-    <RestaurantContext.Provider value={{ restaurants, loading, listId, listName, refresh }}>
+    <RestaurantContext.Provider value={{ restaurants, loading, refresh }}>
       {children}
     </RestaurantContext.Provider>
   )
