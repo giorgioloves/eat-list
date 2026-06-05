@@ -21,7 +21,6 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { updateTier } from '@/app/(dashboard)/tiers/actions'
-import { useRestaurants } from '@/contexts/restaurants'
 import { TIERS, TIER_ACCENT } from '@/types'
 import type { Restaurant, Tier } from '@/types'
 
@@ -57,7 +56,6 @@ function groupByTier(restaurants: Restaurant[]): TierGroup {
 }
 
 export function TierBoard({ restaurants }: TierBoardProps) {
-  const { refresh } = useRestaurants()
   const [groups, setGroups] = useState<TierGroup>(() => groupByTier(restaurants))
 
   useEffect(() => {
@@ -130,7 +128,6 @@ export function TierBoard({ restaurants }: TierBoardProps) {
     setSaving(active.id as string)
     try {
       await updateTier(active.id as string, newTier)
-      await refresh()
     } catch (e) {
       console.error('Failed to save tier:', e)
     } finally {
