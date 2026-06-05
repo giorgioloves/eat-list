@@ -10,9 +10,13 @@ export async function GET(request: Request) {
   if (idList.length === 0) return NextResponse.json([])
 
   const rows = await sql`
-    SELECT id, restaurant_id, cost
+    SELECT id, restaurant_id, visited_at, rating, cost, created_at
     FROM restaurant_visits
     WHERE restaurant_id = ANY(${idList}::uuid[])
   `
-  return NextResponse.json(rows)
+  return NextResponse.json(rows.map(v => ({
+    ...v,
+    rating: v.rating !== null ? parseFloat(v.rating as string) : null,
+    cost:   v.cost   !== null ? parseFloat(v.cost   as string) : null,
+  })))
 }

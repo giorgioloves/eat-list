@@ -3,14 +3,24 @@
 import { useState, useRef, useEffect } from 'react'
 import { GoogleMap, useJsApiLoader, OverlayViewF } from '@react-google-maps/api'
 import Link from 'next/link'
-import { Instagram, Globe } from 'lucide-react'
-import { CUISINE_EMOJI, TIER_COLORS } from '@/types'
+import { Instagram, Globe, X } from 'lucide-react'
+import { CUISINE_EMOJI, TIER_ACCENT } from '@/types'
 import { PipRating } from '@/components/ui/pip-rating'
 import { formatDate } from '@/lib/utils'
-import type { Restaurant, RestaurantVisit } from '@/types'
+import type { Restaurant, RestaurantVisit, Tier } from '@/types'
+
+const T = {
+  parchment:  '#f5f0e8',
+  linen:      '#ede5d8',
+  espresso:   '#3b2f27',
+  terracotta: '#c4927a',
+  stone:      '#c4b8a8',
+  mist:       '#a08070',
+  ghost:      '#b8a898',
+  border:     '#c4b8a8',
+}
 
 const markerOffset = () => ({ x: -21, y: -50 })
-
 
 const MAP_STYLES = [
   { elementType: 'geometry', stylers: [{ color: '#2B2623' }] },
@@ -36,27 +46,22 @@ interface MapViewProps {
 
 export function MapView({ restaurants }: MapViewProps) {
   const [selected, setSelected] = useState<Restaurant | null>(null)
-  const [visits, setVisits] = useState<RestaurantVisit[]>([])
+  const [visits, setVisits]     = useState<RestaurantVisit[]>([])
   const [visitsLoading, setVisitsLoading] = useState(false)
-  const mapRef = useRef<google.maps.Map | null>(null)
+  const mapRef      = useRef<google.maps.Map | null>(null)
   const animationRef = useRef<number | null>(null)
 
   function flyTo(target: google.maps.LatLngLiteral, targetZoom: number) {
     if (!mapRef.current) return
-
     if (animationRef.current !== null) {
       clearTimeout(animationRef.current)
       animationRef.current = null
     }
-
     const map = mapRef.current
     map.setCenter(target)
-
     const startZoom = map.getZoom() ?? 4
     if (startZoom >= targetZoom) return
-
     let current = startZoom
-
     function step() {
       current++
       map.setZoom(current)
@@ -66,7 +71,6 @@ export function MapView({ restaurants }: MapViewProps) {
         animationRef.current = null
       }
     }
-
     animationRef.current = window.setTimeout(step, 100)
   }
 
@@ -86,16 +90,18 @@ export function MapView({ restaurants }: MapViewProps) {
   })
 
   const withCoords = restaurants.filter((r) => r.latitude && r.longitude)
-
-  // Fixed to centre of Australia — hooks must be above early returns
-  const centerRef = useRef({ lat: -25.2744, lng: 133.7751 })
+  const centerRef  = useRef({ lat: -25.2744, lng: 133.7751 })
 
   if (withCoords.length === 0) {
     return (
-      <div className="h-full flex flex-col items-center justify-center bg-espresso-800 border border-espresso-700 rounded-2xl gap-2">
-        <p className="text-espresso-200 font-medium">No location data yet</p>
-        <p className="text-espresso-400 text-sm text-center max-w-xs">
-          Restaurants with a suburb and city will be geocoded automatically when you save them.
+      <div style={{
+        height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
+        justifyContent: 'center', backgroundColor: T.linen, border: `0.5px solid ${T.border}`,
+        borderRadius: 10, gap: 8,
+      }}>
+        <p style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 15, color: T.espresso }}>No location data yet</p>
+        <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.mist, letterSpacing: '0.06em', textAlign: 'center', maxWidth: 280 }}>
+          restaurants with a suburb and city will be geocoded automatically when you save them
         </p>
       </div>
     )
@@ -103,16 +109,19 @@ export function MapView({ restaurants }: MapViewProps) {
 
   if (!isLoaded) {
     return (
-      <div className="h-full flex items-center justify-center bg-espresso-800 border border-espresso-700 rounded-2xl">
-        <p className="text-espresso-400 text-sm">Loading map…</p>
+      <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: T.linen, border: `0.5px solid ${T.border}`, borderRadius: 10 }}>
+        <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.mist, letterSpacing: '0.06em' }}>loading map…</p>
       </div>
     )
   }
 
+  const displayName = selected ? selected.name.replace(/\s*\([^)]+\)\s*$/, '').trim() : ''
+  const tierAccent  = selected?.tier ? TIER_ACCENT[selected.tier as Tier] : null
+
   return (
-    <div className="relative h-full rounded-2xl overflow-hidden border border-espresso-700">
+    <div style={{ position: 'relative', height: '100%', borderRadius: 10, overflow: 'hidden', border: `0.5px solid ${T.border}` }}>
       <GoogleMap
-        mapContainerClassName="absolute inset-0"
+        mapContainerStyle={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
         center={centerRef.current}
         zoom={4}
         options={{
@@ -150,51 +159,91 @@ export function MapView({ restaurants }: MapViewProps) {
         ))}
       </GoogleMap>
 
-{/* Selected restaurant panel — bottom on mobile, top-right on desktop */}
       {selected && (
-        <div className="absolute bottom-20 left-2 right-2 sm:bottom-auto sm:top-3 sm:left-auto sm:right-3 sm:w-80 bg-espresso-900/97 backdrop-blur border border-espresso-600 rounded-2xl z-[1000] shadow-2xl flex flex-col max-h-[48vh] sm:max-h-[calc(100%-1.5rem)] overflow-hidden">
+        <div style={{
+          position:        'absolute',
+          bottom:          80,
+          left:            8,
+          right:           8,
+          backgroundColor: T.parchment,
+          border:          `0.5px solid ${T.border}`,
+          borderRadius:    10,
+          zIndex:          1000,
+          display:         'flex',
+          flexDirection:   'column',
+          maxHeight:       '48vh',
+          overflow:        'hidden',
+        }}
+          className="sm:bottom-auto sm:top-3 sm:left-auto sm:right-3 sm:w-72"
+        >
           {/* Header */}
-          <div className="p-4 pb-3 flex-shrink-0">
+          <div style={{ padding: '14px 14px 10px', flexShrink: 0, position: 'relative' }}>
             <button
               onClick={() => setSelected(null)}
-              className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center text-espresso-400 hover:text-espresso-200 transition-colors text-xl leading-none rounded-lg hover:bg-espresso-700"
+              style={{
+                position:        'absolute',
+                top:             8,
+                right:           8,
+                width:           26,
+                height:          26,
+                display:         'flex',
+                alignItems:      'center',
+                justifyContent:  'center',
+                backgroundColor: T.linen,
+                border:          `0.5px solid ${T.border}`,
+                borderRadius:    6,
+                cursor:          'pointer',
+                color:           T.mist,
+              }}
             >
-              ×
+              <X style={{ width: 12, height: 12 }} />
             </button>
-            <p className="font-bold text-espresso-50 pr-6 text-base leading-tight">{selected.name}</p>
+
+            <p style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 16, fontWeight: 400, color: T.espresso, paddingRight: 32, margin: 0, lineHeight: 1.2 }}>
+              {displayName}
+            </p>
             {selected.cuisine && (
-              <p className="text-sm text-espresso-300 mt-0.5">{selected.cuisine}</p>
+              <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: T.mist, marginTop: 4, letterSpacing: '0.06em' }}>
+                {selected.cuisine}
+              </p>
             )}
             {(selected.address || selected.suburb) && (
-              <p className="text-sm text-espresso-500 mt-0.5">
+              <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: T.ghost, marginTop: 2, letterSpacing: '0.04em' }}>
                 {[selected.address, selected.suburb].filter(Boolean).join(', ')}
               </p>
             )}
-            {selected.website && (
-              <a
-                href={selected.website}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 text-sm text-gold-400 hover:text-gold-300 transition-colors truncate mt-1"
-              >
-                <Globe className="w-3.5 h-3.5 flex-shrink-0" />
-                {selected.website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}
-              </a>
+
+            {(selected.website || selected.instagram) && (
+              <div style={{ display: 'flex', gap: 8, marginTop: 6, flexWrap: 'wrap' }}>
+                {selected.website && (
+                  <a href={selected.website} target="_blank" rel="noopener noreferrer"
+                    style={{ display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: T.terracotta, letterSpacing: '0.04em', textDecoration: 'none' }}>
+                    <Globe style={{ width: 10, height: 10, flexShrink: 0 }} />
+                    {selected.website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '').slice(0, 28)}
+                  </a>
+                )}
+                {selected.instagram && (
+                  <a href={`https://www.instagram.com/${selected.instagram.replace(/^@/, '')}/`} target="_blank" rel="noopener noreferrer"
+                    style={{ display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: T.mist, letterSpacing: '0.04em', textDecoration: 'none' }}>
+                    <Instagram style={{ width: 10, height: 10, flexShrink: 0 }} />
+                    @{selected.instagram.replace(/^@/, '')}
+                  </a>
+                )}
+              </div>
             )}
-            {selected.instagram && (
-              <a
-                href={`https://www.instagram.com/${selected.instagram.replace(/^@/, '')}/`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 text-sm text-espresso-400 hover:text-espresso-200 transition-colors mt-0.5"
-              >
-                <Instagram className="w-3.5 h-3.5 flex-shrink-0" />
-                @{selected.instagram.replace(/^@/, '')}
-              </a>
-            )}
-            <div className="flex items-center gap-2 mt-2 flex-wrap">
-              {selected.tier && (
-                <span className={`text-xs px-1.5 py-0.5 rounded border ${TIER_COLORS[selected.tier]}`}>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
+              {tierAccent && (
+                <span style={{
+                  fontFamily:      'var(--font-crimson), Georgia, serif',
+                  fontStyle:       'italic',
+                  fontSize:        13,
+                  color:           tierAccent,
+                  border:          `0.5px solid ${tierAccent}`,
+                  backgroundColor: T.linen,
+                  padding:         '1px 7px',
+                  borderRadius:    5,
+                }}>
                   {selected.tier}
                 </span>
               )}
@@ -202,28 +251,28 @@ export function MapView({ restaurants }: MapViewProps) {
             </div>
           </div>
 
+          {/* Visit history */}
           {selected.visit_count > 0 && (visitsLoading || visits.length > 0) && (
-            <div className="border-t border-espresso-700 flex-1 overflow-y-auto">
-              <p className="text-xs font-semibold text-espresso-400 uppercase tracking-wider px-4 pt-3 pb-2">
-                Visit History
-                {visits.length > 0 && <span className="ml-1.5 font-normal normal-case">· {visits.length}</span>}
+            <div style={{ borderTop: `0.5px solid ${T.border}`, flex: 1, overflowY: 'auto' }}>
+              <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 7, color: T.mist, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '10px 14px 6px' }}>
+                visits{visits.length > 0 ? ` · ${visits.length}` : ''}
               </p>
               {visitsLoading ? (
-                <p className="text-xs text-espresso-500 px-4 pb-3">Loading…</p>
+                <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: T.ghost, padding: '0 14px 12px' }}>loading…</p>
               ) : (
-                <div className="space-y-0 divide-y divide-espresso-800">
-                  {visits.map((v) => (
-                    <div key={v.id} className="px-4 py-2.5">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-xs text-espresso-300">
+                <div>
+                  {visits.map((v, i) => (
+                    <div key={v.id} style={{ padding: '6px 14px', borderTop: i > 0 ? `0.5px solid ${T.border}` : 'none' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                        <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: T.mist, letterSpacing: '0.04em' }}>
                           {formatDate(v.visited_at)}
                         </span>
                         {v.rating !== null && <PipRating rating={v.rating} size="sm" />}
                       </div>
                       {v.cost !== null && (
-                        <div className="mt-0.5">
-                          <span className="text-xs text-espresso-400">${v.cost.toFixed(0)}</span>
-                        </div>
+                        <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: T.ghost, letterSpacing: '0.04em' }}>
+                          ${Number(v.cost).toFixed(0)}
+                        </span>
                       )}
                     </div>
                   ))}
@@ -233,12 +282,25 @@ export function MapView({ restaurants }: MapViewProps) {
           )}
 
           {/* Actions */}
-          <div className="flex gap-2 p-3 pt-2 border-t border-espresso-700 flex-shrink-0">
+          <div style={{ display: 'flex', gap: 6, padding: '10px 12px', borderTop: `0.5px solid ${T.border}`, flexShrink: 0 }}>
             <Link
               href={`/restaurants/${selected.id}`}
-              className="flex-1 text-center text-sm py-1.5 bg-espresso-700 hover:bg-espresso-600 text-espresso-100 rounded-lg transition-colors"
+              style={{
+                flex:            1,
+                textAlign:       'center',
+                fontFamily:      'var(--font-crimson), Georgia, serif',
+                fontStyle:       'italic',
+                fontSize:        14,
+                color:           T.parchment,
+                backgroundColor: T.espresso,
+                border:          'none',
+                borderRadius:    20,
+                padding:         '6px 0',
+                textDecoration:  'none',
+                display:         'block',
+              }}
             >
-              View details
+              view details
             </Link>
             {(selected.address || selected.suburb) && (
               <a
@@ -247,9 +309,21 @@ export function MapView({ restaurants }: MapViewProps) {
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm py-1.5 px-2.5 bg-gold-500/10 hover:bg-gold-500/20 text-gold-400 rounded-lg transition-colors"
+                style={{
+                  fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
+                  fontSize:        8,
+                  color:           T.terracotta,
+                  backgroundColor: T.linen,
+                  border:          `0.5px solid ${T.border}`,
+                  borderRadius:    20,
+                  padding:         '6px 12px',
+                  textDecoration:  'none',
+                  letterSpacing:   '0.06em',
+                  display:         'flex',
+                  alignItems:      'center',
+                }}
               >
-                Maps
+                ↗ maps
               </a>
             )}
           </div>

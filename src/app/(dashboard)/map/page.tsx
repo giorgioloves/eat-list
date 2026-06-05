@@ -8,7 +8,10 @@ export default async function MapPage() {
     FROM restaurants
   `
 
-  const all = restaurants as unknown as Restaurant[]
+  const all = (restaurants as unknown as Restaurant[]).map(r => ({
+    ...r,
+    rating: r.rating !== null ? parseFloat(r.rating as unknown as string) : null,
+  }))
   const mapped = all.filter((r) => r.latitude && r.longitude).length
 
   return (
