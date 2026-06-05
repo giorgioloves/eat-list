@@ -166,9 +166,7 @@ export function TierBoard({ restaurants }: TierBoardProps) {
       </div>
 
       <DragOverlay>
-        {activeRestaurant && (
-          <RestaurantDragCard restaurant={activeRestaurant} isDragging />
-        )}
+        {activeRestaurant && <DragCard restaurant={activeRestaurant} />}
       </DragOverlay>
     </DndContext>
   )
@@ -239,7 +237,7 @@ function TierRow({
           ) : (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
               {items.map((r) => (
-                <RestaurantDragCard
+                <SortableCard
                   key={r.id}
                   restaurant={r}
                   isSaving={savingId === r.id}
@@ -253,14 +251,9 @@ function TierRow({
   )
 }
 
-function RestaurantDragCard({
-  restaurant, isDragging, isSaving,
-}: {
-  restaurant: Restaurant
-  isDragging?: boolean
-  isSaving?: boolean
-}) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging: isSortableDragging } = useSortable({
+// Used in tier rows — has dnd-kit sortable hooks
+function SortableCard({ restaurant, isSaving }: { restaurant: Restaurant; isSaving?: boolean }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: restaurant.id,
   })
 
@@ -270,31 +263,31 @@ function RestaurantDragCard({
     <div
       ref={setNodeRef}
       style={{
-        transform:       isDragging ? `${CSS.Transform.toString(transform)} rotate(1deg)` : CSS.Transform.toString(transform),
+        transform:       CSS.Transform.toString(transform),
         transition,
-        opacity:         isSortableDragging ? 0.35 : isSaving ? 0.6 : 1,
-        WebkitTouchCallout: 'none',
+        opacity:         isDragging ? 0.35 : isSaving ? 0.6 : 1,
+        WebkitTouchCallout: 'none' as React.CSSProperties['WebkitTouchCallout'],
         display:         'inline-flex',
         alignItems:      'center',
         gap:             4,
         padding:         '4px 10px',
-        backgroundColor: isDragging ? T.parchment : T.chipBg,
-        border:          `0.5px solid ${isDragging ? '#c4927a' : T.border}`,
+        backgroundColor: T.chipBg,
+        border:          `0.5px solid ${T.border}`,
         borderRadius:    6,
-        cursor:          isDragging ? 'grabbing' : 'grab',
+        cursor:          'grab',
         userSelect:      'none',
         touchAction:     'none',
-      } as React.CSSProperties}
+      }}
       {...attributes}
       {...listeners}
     >
       <span style={{
-        fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
-        fontSize:        7,
-        color:           T.chipText,
-        letterSpacing:   '0.04em',
-        pointerEvents:   'none',
-        whiteSpace:      'nowrap',
+        fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+        fontSize:      7,
+        color:         T.chipText,
+        letterSpacing: '0.04em',
+        pointerEvents: 'none',
+        whiteSpace:    'nowrap',
       }}>{displayName}</span>
 
       {isSaving && (
@@ -303,6 +296,35 @@ function RestaurantDragCard({
           <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
         </svg>
       )}
+    </div>
+  )
+}
+
+// Used in DragOverlay — no dnd-kit hooks, pure display
+function DragCard({ restaurant }: { restaurant: Restaurant }) {
+  const displayName = restaurant.name.replace(/\s*\([^)]+\)\s*$/, '').trim()
+
+  return (
+    <div style={{
+      display:         'inline-flex',
+      alignItems:      'center',
+      gap:             4,
+      padding:         '4px 10px',
+      backgroundColor: T.parchment,
+      border:          `0.5px solid #c4927a`,
+      borderRadius:    6,
+      cursor:          'grabbing',
+      userSelect:      'none',
+      transform:       'rotate(1deg)',
+      boxShadow:       '0 2px 8px rgba(59,47,39,0.12)',
+    }}>
+      <span style={{
+        fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+        fontSize:      7,
+        color:         T.chipText,
+        letterSpacing: '0.04em',
+        whiteSpace:    'nowrap',
+      }}>{displayName}</span>
     </div>
   )
 }
