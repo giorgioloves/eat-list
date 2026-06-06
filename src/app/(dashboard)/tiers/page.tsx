@@ -26,7 +26,7 @@ export default function TiersPage() {
         <div>
           <h1 style={{
             fontFamily: 'var(--font-crimson), Georgia, serif',
-            fontSize: 30,
+            fontSize: 32,
             fontWeight: 400,
             color:      T.espresso,
             lineHeight: 1.1,
@@ -34,7 +34,7 @@ export default function TiersPage() {
           }}>tier list</h1>
           <p style={{
             fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-            fontSize: 11,
+            fontSize: 12,
             color:         editing ? T.terracotta : T.mist,
             letterSpacing: '0.1em',
             marginTop:     4,
@@ -50,7 +50,7 @@ export default function TiersPage() {
             alignItems:      'center',
             gap:             6,
             fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
-            fontSize:        11,
+            fontSize: 12,
             letterSpacing:   '0.08em',
             padding:         '7px 12px',
             borderRadius:    8,
@@ -79,7 +79,7 @@ export default function TiersPage() {
           border:          `0.5px solid ${T.border}`,
           borderRadius:    10,
           fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
-          fontSize: 11,
+          fontSize: 12,
           color:           T.mist,
           letterSpacing:   '0.08em',
         }}>

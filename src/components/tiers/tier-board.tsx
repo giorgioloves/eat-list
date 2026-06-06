@@ -164,7 +164,7 @@ export function TierBoard({ restaurants, editing = false }: TierBoardProps) {
           <div style={{ marginTop: 16 }}>
             <p style={{
               fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-              fontSize: 9,
+              fontSize: 10,
               color:         T.mist,
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
@@ -218,7 +218,7 @@ function TierRow({
         }}>
           <span style={{
             fontFamily: 'var(--font-crimson), Georgia, serif',
-            fontSize: 24,
+            fontSize: 26,
             fontStyle:  'italic',
             fontWeight: 400,
             color:      accent,
@@ -238,7 +238,7 @@ function TierRow({
               border:          `0.5px dashed ${isOver ? accent : T.stone}`,
               borderRadius:    6,
               fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
-              fontSize: 10,
+              fontSize: 11,
               color:           isOver ? accent : T.ghost,
               letterSpacing:   '0.06em',
               transition:      'all 0.12s',
@@ -294,7 +294,7 @@ function SortableCard({ restaurant, isSaving, editing }: { restaurant: Restauran
     >
       <span style={{
         fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-        fontSize: 9,
+        fontSize: 10,
         color:         T.chipText,
         letterSpacing: '0.04em',
         pointerEvents: 'none',
@@ -331,7 +331,7 @@ function DragCard({ restaurant }: { restaurant: Restaurant }) {
     }}>
       <span style={{
         fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-        fontSize: 9,
+        fontSize: 10,
         color:         T.chipText,
         letterSpacing: '0.04em',
         whiteSpace:    'nowrap',

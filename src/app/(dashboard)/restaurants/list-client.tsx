@@ -188,7 +188,7 @@ export default function RestaurantListClient({ restaurants }: { restaurants: Res
                     backgroundColor: active ? T.terracotta : T.linen,
                     color:           active ? T.parchment : T.mist,
                     fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
-                    fontSize: 10,
+                    fontSize: 11,
                     letterSpacing:   '0.08em',
                     whiteSpace:      'nowrap',
                     flexShrink:      0,
@@ -207,7 +207,7 @@ export default function RestaurantListClient({ restaurants }: { restaurants: Res
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <span style={{
           fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-          fontSize: 10,
+          fontSize: 11,
           color:         T.ghost,
           letterSpacing: '0.06em',
         }}>
@@ -220,7 +220,7 @@ export default function RestaurantListClient({ restaurants }: { restaurants: Res
             onClick={clearAll}
             style={{
               fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-              fontSize: 10,
+              fontSize: 11,
               color:         T.terracotta,
               letterSpacing: '0.08em',
               background:    'none',
@@ -240,7 +240,7 @@ export default function RestaurantListClient({ restaurants }: { restaurants: Res
           textAlign:     'center',
           padding:       '48px 16px',
           fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-          fontSize: 11,
+          fontSize: 12,
           color:         T.ghost,
           letterSpacing: '0.08em',
         }}>

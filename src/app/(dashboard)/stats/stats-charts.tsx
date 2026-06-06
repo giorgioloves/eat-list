@@ -34,7 +34,7 @@ export function RatingDistributionChart({ buckets }: { buckets: RatingBucket[] }
           <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
             <span style={{
               fontFamily: 'var(--font-dm-mono), ui-monospace, monospace',
-              fontSize: 10,
+              fontSize: 11,
               color:      T.mist,
               height:     14,
               lineHeight: 1,
@@ -51,10 +51,10 @@ export function RatingDistributionChart({ buckets }: { buckets: RatingBucket[] }
               }} />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-              <span style={{ fontSize: 10, color: T.terracotta, opacity: 0.7 }}>{'●'.repeat(i + 1)}</span>
+              <span style={{ fontSize: 11, color: T.terracotta, opacity: 0.7 }}>{'●'.repeat(i + 1)}</span>
               <span style={{
                 fontFamily: 'var(--font-dm-mono), ui-monospace, monospace',
-                fontSize: 10,
+                fontSize: 11,
                 color:      T.ghost,
               }}>{bucket.label}</span>
             </div>
@@ -76,12 +76,12 @@ export function CuisineBarList({ data }: { data: CuisineEntry[] }) {
 
         return (
           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 14, width: 18, textAlign: 'center', flexShrink: 0, lineHeight: 1 }}>{emoji}</span>
+            <span style={{ fontSize: 15, width: 18, textAlign: 'center', flexShrink: 0, lineHeight: 1 }}>{emoji}</span>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
                 <span style={{
                   fontFamily:   'var(--font-dm-mono), ui-monospace, monospace',
-                  fontSize: 10,
+                  fontSize: 11,
                   color:        T.espresso,
                   overflow:     'hidden',
                   textOverflow: 'ellipsis',
@@ -89,7 +89,7 @@ export function CuisineBarList({ data }: { data: CuisineEntry[] }) {
                 }}>{item.name}</span>
                 <span style={{
                   fontFamily: 'var(--font-dm-mono), ui-monospace, monospace',
-                  fontSize: 10,
+                  fontSize: 11,
                   color:      T.ghost,
                   marginLeft: 8,
                   flexShrink: 0,

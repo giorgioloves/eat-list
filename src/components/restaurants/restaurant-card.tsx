@@ -38,16 +38,16 @@ export function RestaurantCard({ restaurant: r }: { restaurant: Restaurant }) {
 
         {/* Cuisine emoji */}
         <div style={{
-          width:           38,
-          height:          38,
-          borderRadius:    9,
+          width:           40,
+          height:          40,
+          borderRadius:    10,
           backgroundColor: T.parchment,
           border:          `0.5px solid ${T.border}`,
           display:         'flex',
           alignItems:      'center',
           justifyContent:  'center',
           flexShrink:      0,
-          fontSize: 19,
+          fontSize: 20,
           lineHeight:      1,
           marginTop:       2,
         }}>
@@ -61,7 +61,7 @@ export function RestaurantCard({ restaurant: r }: { restaurant: Restaurant }) {
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 3 }}>
             <span style={{
               fontFamily:   'var(--font-crimson), Georgia, serif',
-              fontSize: 16,
+              fontSize: 17,
               fontWeight:   500,
               color:        T.espresso,
               lineHeight:   1.25,
@@ -75,7 +75,7 @@ export function RestaurantCard({ restaurant: r }: { restaurant: Restaurant }) {
           {r.cuisine && (
             <p style={{
               fontFamily:   'var(--font-dm-mono), ui-monospace, monospace',
-              fontSize: 10,
+              fontSize: 11,
               color:        T.mist,
               letterSpacing: '0.06em',
               marginBottom: 4,
@@ -89,7 +89,7 @@ export function RestaurantCard({ restaurant: r }: { restaurant: Restaurant }) {
           {(r.suburb || r.address || r.price_level) && (
             <p style={{
               fontFamily:   'var(--font-dm-mono), ui-monospace, monospace',
-              fontSize: 10,
+              fontSize: 11,
               color:        T.ghost,
               letterSpacing: '0.06em',
               marginBottom: 6,
@@ -110,7 +110,7 @@ export function RestaurantCard({ restaurant: r }: { restaurant: Restaurant }) {
           )}
         </div>
 
-        <ChevronRight style={{ width: 14, height: 14, color: T.stone, flexShrink: 0, marginTop: 4 }} />
+        <ChevronRight style={{ width: 15, height: 15, color: T.stone, flexShrink: 0, marginTop: 4 }} />
       </div>
     </Link>
   )

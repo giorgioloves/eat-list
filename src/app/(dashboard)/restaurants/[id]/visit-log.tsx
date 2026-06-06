@@ -30,7 +30,7 @@ const inputStyle: React.CSSProperties = {
   borderRadius:    6,
   padding:         '6px 10px',
   fontFamily:      'var(--font-crimson), Georgia, serif',
-  fontSize: 15,
+  fontSize: 16,
   color:           T.espresso,
   outline:         'none',
   boxSizing:       'border-box',
@@ -79,11 +79,11 @@ export function VisitLog({ restaurantId, visits }: VisitLogProps) {
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-          <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.mist, letterSpacing: '0.12em', textTransform: 'uppercase' as const }}>
+          <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.mist, letterSpacing: '0.12em', textTransform: 'uppercase' as const }}>
             visit history
           </span>
           {visits.length > 0 && (
-            <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.ghost }}>
+            <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.ghost }}>
               {visits.length}
             </span>
           )}
@@ -95,7 +95,7 @@ export function VisitLog({ restaurantId, visits }: VisitLogProps) {
             alignItems:      'center',
             gap:             4,
             fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
-            fontSize: 9,
+            fontSize: 10,
             letterSpacing:   '0.08em',
             color:           T.parchment,
             backgroundColor: T.espresso,
@@ -123,27 +123,27 @@ export function VisitLog({ restaurantId, visits }: VisitLogProps) {
         }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             <div>
-              <label style={{ display: 'block', fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.mist, letterSpacing: '0.1em', marginBottom: 5 }}>date</label>
+              <label style={{ display: 'block', fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.mist, letterSpacing: '0.1em', marginBottom: 5 }}>date</label>
               <input type="date" value={date} onChange={(e) => setDate(e.target.value)} style={inputStyle} />
             </div>
             <div>
-              <label style={{ display: 'block', fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.mist, letterSpacing: '0.1em', marginBottom: 5 }}>spent</label>
+              <label style={{ display: 'block', fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.mist, letterSpacing: '0.1em', marginBottom: 5 }}>spent</label>
               <div style={{ position: 'relative' }}>
-                <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: T.mist, fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 15 }}>$</span>
+                <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: T.mist, fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 16 }}>$</span>
                 <input type="number" min="0" step="0.50" value={cost} onChange={(e) => setCost(e.target.value)} placeholder="0.00" style={{ ...inputStyle, paddingLeft: 22 }} />
               </div>
             </div>
           </div>
           <div>
-            <label style={{ display: 'block', fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.mist, letterSpacing: '0.1em', marginBottom: 8 }}>rating</label>
+            <label style={{ display: 'block', fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.mist, letterSpacing: '0.1em', marginBottom: 8 }}>rating</label>
             <PipSelector value={myRating} onChange={setMyRating} />
           </div>
-          {error && <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: '#c47a7a' }}>{error}</p>}
+          {error && <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: '#c47a7a' }}>{error}</p>}
           <div style={{ display: 'flex', gap: 6 }}>
             <button type="button" onClick={resetForm} style={{
               padding:         '6px 12px',
               fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
-              fontSize: 9,
+              fontSize: 10,
               color:           T.mist,
               backgroundColor: T.linen,
               border:          `0.5px solid ${T.border}`,
@@ -155,7 +155,7 @@ export function VisitLog({ restaurantId, visits }: VisitLogProps) {
               padding:         '6px 0',
               fontFamily:      'var(--font-crimson), Georgia, serif',
               fontStyle:       'italic',
-              fontSize: 15,
+              fontSize: 16,
               color:           T.parchment,
               backgroundColor: T.espresso,
               border:          'none',
@@ -170,7 +170,7 @@ export function VisitLog({ restaurantId, visits }: VisitLogProps) {
       )}
 
       {visits.length === 0 ? (
-        <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: T.ghost, padding: '6px 0' }}>no visits logged yet</p>
+        <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 12, color: T.ghost, padding: '6px 0' }}>no visits logged yet</p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           {visits.map((v) => (
@@ -191,11 +191,11 @@ export function VisitLog({ restaurantId, visits }: VisitLogProps) {
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' as const }}>
-                      <span style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 15, color: T.espresso }}>
+                      <span style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 16, color: T.espresso }}>
                         {formatDate(v.visited_at)}
                       </span>
                       {v.cost !== null && (
-                        <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.mist }}>
+                        <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: T.mist }}>
                           ${v.cost.toFixed(2)}
                         </span>
                       )}
@@ -224,7 +224,7 @@ export function VisitLog({ restaurantId, visits }: VisitLogProps) {
                             alignItems:  'center',
                             gap:         4,
                             fontFamily:  'var(--font-dm-mono), ui-monospace, monospace',
-                            fontSize: 9,
+                            fontSize: 10,
                             color:       T.terracotta,
                             background:  'none',
                             border:      'none',
@@ -292,7 +292,7 @@ function InlineRater({ visitId, restaurantId, initialRating, onDone }: {
   const btnBase: React.CSSProperties = {
     padding:    '4px 10px',
     fontFamily: 'var(--font-dm-mono), ui-monospace, monospace',
-    fontSize: 9,
+    fontSize: 10,
     borderRadius: 5,
     cursor:     saving ? 'not-allowed' : 'pointer',
     border:     'none',
@@ -301,7 +301,7 @@ function InlineRater({ visitId, restaurantId, initialRating, onDone }: {
 
   return (
     <div style={{ marginTop: 6, display: 'flex', flexDirection: 'column', gap: 6 }}>
-      {error && <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: '#c47a7a' }}>{error}</p>}
+      {error && <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: '#c47a7a' }}>{error}</p>}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' as const }}>
         <PipSelector value={rating} onChange={setRating} />
         <div style={{ display: 'flex', gap: 5 }}>
@@ -351,25 +351,25 @@ function EditVisitRow({ visit, restaurantId, onDone }: {
     }}>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
         <div>
-          <label style={{ display: 'block', fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.mist, letterSpacing: '0.1em', marginBottom: 4 }}>date</label>
+          <label style={{ display: 'block', fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.mist, letterSpacing: '0.1em', marginBottom: 4 }}>date</label>
           <input type="date" value={date} onChange={(e) => setDate(e.target.value)} style={inputStyle} />
         </div>
         <div>
-          <label style={{ display: 'block', fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.mist, letterSpacing: '0.1em', marginBottom: 4 }}>spent</label>
+          <label style={{ display: 'block', fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.mist, letterSpacing: '0.1em', marginBottom: 4 }}>spent</label>
           <div style={{ position: 'relative' }}>
-            <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: T.mist, fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 15 }}>$</span>
+            <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: T.mist, fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 16 }}>$</span>
             <input type="number" min="0" step="0.50" value={cost} onChange={(e) => setCost(e.target.value)} placeholder="0.00" style={{ ...inputStyle, paddingLeft: 22 }} />
           </div>
         </div>
       </div>
-      {error && <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: '#c47a7a' }}>{error}</p>}
+      {error && <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: '#c47a7a' }}>{error}</p>}
       <div style={{ display: 'flex', gap: 6 }}>
         <button type="button" onClick={onDone} style={{
-          padding: '6px 12px', fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9,
+          padding: '6px 12px', fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10,
           color: T.mist, backgroundColor: T.linen, border: `0.5px solid ${T.border}`, borderRadius: 6, cursor: 'pointer',
         }}>cancel</button>
         <button type="submit" disabled={saving} style={{
-          flex: 1, padding: '6px 0', fontFamily: 'var(--font-crimson), Georgia, serif', fontStyle: 'italic', fontSize: 15,
+          flex: 1, padding: '6px 0', fontFamily: 'var(--font-crimson), Georgia, serif', fontStyle: 'italic', fontSize: 16,
           color: T.parchment, backgroundColor: T.espresso, border: 'none', borderRadius: 6,
           cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.6 : 1,
         }}>

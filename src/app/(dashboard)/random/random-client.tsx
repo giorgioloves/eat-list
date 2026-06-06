@@ -157,7 +157,7 @@ export function RandomPicker({ restaurants }: { restaurants: Restaurant[] }) {
           >
             <p style={{
               fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-              fontSize: 9,
+              fontSize: 10,
               color:         T.mist,
               letterSpacing: '0.12em',
               textTransform: 'uppercase' as const,
@@ -217,7 +217,7 @@ export function RandomPicker({ restaurants }: { restaurants: Restaurant[] }) {
                 />
                 <span style={{
                   fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-                  fontSize: 10,
+                  fontSize: 11,
                   color:         T.mist,
                   letterSpacing: '0.04em',
                 }}>exclude cafes, bakeries, gelaterias &amp; sandwiches</span>
@@ -250,7 +250,7 @@ export function RandomPicker({ restaurants }: { restaurants: Restaurant[] }) {
               cursor:          pool.length === 0 ? 'not-allowed' : 'pointer',
               fontFamily:      'var(--font-crimson), Georgia, serif',
               fontStyle:       'italic',
-              fontSize: 19,
+              fontSize: 20,
               fontWeight:      400,
             }}
           >
@@ -264,7 +264,7 @@ export function RandomPicker({ restaurants }: { restaurants: Restaurant[] }) {
         <p style={{
           textAlign:     'center',
           fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-          fontSize: 11,
+          fontSize: 12,
           color:         T.ghost,
           letterSpacing: '0.08em',
         }}>no restaurants match your filters</p>
@@ -287,7 +287,7 @@ export function RandomPicker({ restaurants }: { restaurants: Restaurant[] }) {
             gap:             10,
             fontFamily:      'var(--font-crimson), Georgia, serif',
             fontStyle:       'italic',
-            fontSize: 19,
+            fontSize: 20,
             color:           T.mist,
           }}
         >
@@ -339,7 +339,7 @@ function FilterSelect({ label, value, onChange, options }: {
     <div>
       <p style={{
         fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-        fontSize: 9,
+        fontSize: 10,
         color:         T.mist,
         letterSpacing: '0.1em',
         textTransform: 'uppercase' as const,
@@ -360,7 +360,7 @@ function FilterSelect({ label, value, onChange, options }: {
         }}>
           <span style={{
             fontFamily:   'var(--font-crimson), Georgia, serif',
-            fontSize: 13,
+            fontSize: 14,
             color:        T.espresso,
             overflow:     'hidden',
             textOverflow: 'ellipsis',

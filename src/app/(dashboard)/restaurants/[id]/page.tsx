@@ -75,7 +75,7 @@ export default async function RestaurantDetailPage({
           </Link>
           <h1 style={{
             fontFamily:   'var(--font-crimson), Georgia, serif',
-            fontSize: 19,
+            fontSize: 20,
             fontWeight:   400,
             color:        T.espresso,
             overflow:     'hidden',
@@ -90,7 +90,7 @@ export default async function RestaurantDetailPage({
             alignItems:      'center',
             gap:             5,
             fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
-            fontSize: 10,
+            fontSize: 11,
             color:           T.mist,
             border:          `0.5px solid ${T.border}`,
             backgroundColor: T.linen,
@@ -118,27 +118,27 @@ export default async function RestaurantDetailPage({
             <div style={{ minWidth: 0 }}>
               <h2 style={{
                 fontFamily: 'var(--font-crimson), Georgia, serif',
-                fontSize: 26,
+                fontSize: 28,
                 fontWeight: 400,
                 color:      T.espresso,
                 margin:     0,
               }}>{displayName}</h2>
               {r.cuisine && (
-                <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: T.mist, marginTop: 4 }}>
+                <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 12, color: T.mist, marginTop: 4 }}>
                   {r.cuisine}
                 </p>
               )}
               {(r.address || r.suburb) && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 6 }}>
                   <MapPin style={{ width: 11, height: 11, color: T.stone, flexShrink: 0 }} />
-                  <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.ghost }}>
+                  <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: T.ghost }}>
                     {[r.address, r.suburb].filter(Boolean).join(', ')}
                   </span>
                   <a
                     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([r.name, r.address, r.suburb].filter(Boolean).join(', '))}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.terracotta, textDecoration: 'none', marginLeft: 2 }}
+                    style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: T.terracotta, textDecoration: 'none', marginLeft: 2 }}
                   >
                     ↗
                   </a>
@@ -149,7 +149,7 @@ export default async function RestaurantDetailPage({
               {r.tier && <TierBadge tier={r.tier} />}
               <PipRating rating={r.rating} />
               {r.price_level && (
-                <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.ghost }}>
+                <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: T.ghost }}>
                   {r.price_level}
                 </span>
               )}
@@ -167,7 +167,7 @@ export default async function RestaurantDetailPage({
                   href={r.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.terracotta, textDecoration: 'none' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: T.terracotta, textDecoration: 'none' }}
                 >
                   <Globe style={{ width: 11, height: 11 }} />
                   {r.website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '').split('/')[0]}
@@ -178,7 +178,7 @@ export default async function RestaurantDetailPage({
                   href={`https://www.instagram.com/${r.instagram.replace(/^@/, '')}/`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.mist, textDecoration: 'none' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: T.mist, textDecoration: 'none' }}
                 >
                   <Instagram style={{ width: 11, height: 11 }} />
                   @{r.instagram.replace(/^@/, '')}
@@ -189,7 +189,7 @@ export default async function RestaurantDetailPage({
 
           {r.status === 'visited' && (
             <div style={{ marginTop: 12, paddingTop: 12, borderTop: `0.5px solid ${T.border}` }}>
-              <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.mist, letterSpacing: '0.1em', marginBottom: 8 }}>would go again?</p>
+              <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.mist, letterSpacing: '0.1em', marginBottom: 8 }}>would go again?</p>
               <WouldGoAgainToggle restaurantId={r.id} current={r.would_go_again} />
             </div>
           )}

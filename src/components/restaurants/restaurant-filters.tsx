@@ -72,14 +72,14 @@ export function RestaurantFilters({ filters, onChange, suburbs, cuisines, tiers 
             placeholder="search restaurants…"
             style={{
               width:           '100%',
-              height:          40,
+              height:          42,
               backgroundColor: T.linen,
               border:          `0.5px solid ${T.border}`,
               borderRadius:    10,
               paddingLeft:     30,
               paddingRight:    10,
               fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
-              fontSize: 11,
+              fontSize: 12,
               color:           T.espresso,
               letterSpacing:   '0.06em',
               outline:         'none',
@@ -92,8 +92,8 @@ export function RestaurantFilters({ filters, onChange, suburbs, cuisines, tiers 
         <button
           onClick={() => setShowFilters(!showFilters)}
           style={{
-            width:           38,
-            height:          40,
+            width:           40,
+            height:          42,
             display:         'flex',
             alignItems:      'center',
             justifyContent:  'center',
@@ -117,7 +117,7 @@ export function RestaurantFilters({ filters, onChange, suburbs, cuisines, tiers 
               backgroundColor: T.espresso,
               color:           T.parchment,
               fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
-              fontSize: 9,
+              fontSize: 10,
               display:         'flex',
               alignItems:      'center',
               justifyContent:  'center',
@@ -132,7 +132,7 @@ export function RestaurantFilters({ filters, onChange, suburbs, cuisines, tiers 
             display:         'flex',
             alignItems:      'center',
             gap:             4,
-            height:          40,
+            height:          42,
             padding:         '0 10px',
             backgroundColor: T.linen,
             border:          `0.5px solid ${T.border}`,
@@ -142,7 +142,7 @@ export function RestaurantFilters({ filters, onChange, suburbs, cuisines, tiers 
           }}>
             <span style={{
               fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-              fontSize: 10,
+              fontSize: 11,
               color:         T.espresso,
               letterSpacing: '0.06em',
               whiteSpace:    'nowrap',
@@ -180,7 +180,7 @@ export function RestaurantFilters({ filters, onChange, suburbs, cuisines, tiers 
                 alignItems:  'center',
                 gap:         4,
                 fontFamily:  'var(--font-dm-mono), ui-monospace, monospace',
-                fontSize: 10,
+                fontSize: 11,
                 color:       T.terracotta,
                 background:  'none',
                 border:      'none',
@@ -262,7 +262,7 @@ function FilterSection({ label, children }: { label: string; children: React.Rea
     <div>
       <p style={{
         fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-        fontSize: 9,
+        fontSize: 10,
         color:         T.mist,
         letterSpacing: '0.12em',
         textTransform: 'uppercase',
@@ -278,17 +278,17 @@ function FilterChip({ label, active, onClick }: { label: string; active: boolean
     <button
       onClick={onClick}
       style={{
-        padding:         '5px 12px',
+        padding:         '6px 13px',
         borderRadius:    6,
         border:          `0.5px solid ${active ? T.terracotta : T.border}`,
         backgroundColor: active ? T.terracotta : T.linen,
         color:           active ? T.parchment : T.mist,
         fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
-        fontSize: 10,
+        fontSize: 11,
         letterSpacing:   '0.06em',
         cursor:          'pointer',
         whiteSpace:      'nowrap',
-        minHeight:       30,
+        minHeight:       32,
       }}
     >
       {label}

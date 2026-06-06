@@ -224,7 +224,7 @@ export function RestaurantAutocomplete({
             borderRadius:    7,
             padding:         '7px 32px 7px 10px',
             fontFamily:      'var(--font-crimson), Georgia, serif',
-            fontSize: 15,
+            fontSize: 16,
             color:           '#3b2f27',
             outline:         'none',
             boxSizing:       'border-box' as const,
@@ -266,8 +266,8 @@ export function RestaurantAutocomplete({
                 backgroundColor: highlighted === i ? '#e8ddd3' : 'transparent',
               }}
             >
-              <span style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 15, color: '#3b2f27' }}>{p.structured_formatting.main_text}</span>
-              <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: '#a08070', marginTop: 2 }}>{p.structured_formatting.secondary_text}</span>
+              <span style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 16, color: '#3b2f27' }}>{p.structured_formatting.main_text}</span>
+              <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: '#a08070', marginTop: 2 }}>{p.structured_formatting.secondary_text}</span>
             </li>
           ))}
         </ul>

@@ -55,7 +55,7 @@ export function WouldGoAgainToggle({
       />
       <span style={{
         fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-        fontSize: 10,
+        fontSize: 11,
         color:         T.mist,
         letterSpacing: '0.06em',
       }}>want to go again</span>
