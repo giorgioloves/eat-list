@@ -1,4 +1,4 @@
-import type { RestaurantStatus, Tier } from '@/types'
+﻿import type { RestaurantStatus, Tier } from '@/types'
 import { TIER_ACCENT } from '@/types'
 
 export function StatusBadge({ status }: { status: RestaurantStatus }) {
@@ -15,12 +15,12 @@ export function StatusBadge({ status }: { status: RestaurantStatus }) {
     <span style={{
       display:        'inline-flex',
       alignItems:     'center',
-      padding:        '2px 7px',
+      padding:        '3px 8px',
       borderRadius:   8,
       backgroundColor: s.bg,
       color:          s.color,
       fontFamily:     'var(--font-dm-mono), ui-monospace, monospace',
-      fontSize:       7,
+      fontSize: 9,
       fontWeight:     400,
       letterSpacing:  '0.08em',
       whiteSpace:     'nowrap',
@@ -37,15 +37,15 @@ export function TierBadge({ tier }: { tier: Tier }) {
       display:         'inline-flex',
       alignItems:      'center',
       justifyContent:  'center',
-      width:           22,
-      height:          22,
-      borderRadius:    4,
+      width:           24,
+      height:          24,
+      borderRadius:    5,
       border:          `0.5px solid ${accent}`,
       color:           accent,
       backgroundColor: '#ede5d8',
       fontFamily:      'var(--font-crimson), Georgia, serif',
       fontStyle:       'italic',
-      fontSize:        13,
+      fontSize: 15,
       fontWeight:      500,
       lineHeight:      1,
       flexShrink:      0,

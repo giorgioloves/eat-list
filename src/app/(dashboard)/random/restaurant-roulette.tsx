@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -87,10 +87,10 @@ export function RestaurantRoulette({ pool, winner, onComplete }: RestaurantRoule
             transition={{ duration: 0.07, ease: 'easeOut' }}
             style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}
           >
-            <span style={{ fontSize: 44, lineHeight: 1, userSelect: 'none' }}>{emoji}</span>
+            <span style={{ fontSize: 46, lineHeight: 1, userSelect: 'none' }}>{emoji}</span>
             <p style={{
               fontFamily: 'var(--font-crimson), Georgia, serif',
-              fontSize:   20,
+              fontSize: 24,
               fontWeight: 400,
               color:      T.espresso,
               marginTop:  4,
@@ -98,7 +98,7 @@ export function RestaurantRoulette({ pool, winner, onComplete }: RestaurantRoule
             {current.cuisine && (
               <p style={{
                 fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-                fontSize:      9,
+                fontSize: 11,
                 color:         T.mist,
                 letterSpacing: '0.06em',
               }}>{current.cuisine}</p>

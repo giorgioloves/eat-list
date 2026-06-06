@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { StatusBadge } from '@/components/ui/badge'
@@ -42,7 +42,7 @@ export default function DashboardPage() {
         <div>
           <h1 style={{
             fontFamily:  'var(--font-crimson), Georgia, serif',
-            fontSize:    22,
+            fontSize: 26,
             fontWeight:  400,
             color:       T.espresso,
             lineHeight:  1.1,
@@ -50,7 +50,7 @@ export default function DashboardPage() {
           }}>avec</h1>
           <p style={{
             fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-            fontSize:      9,
+            fontSize: 11,
             color:         T.mist,
             letterSpacing: '0.1em',
             marginTop:     4,
@@ -128,14 +128,14 @@ function SectionHeader({ title, href, linkLabel }: { title: string; href: string
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
       <span style={{
         fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-        fontSize:      8,
+        fontSize: 10,
         color:         T.mist,
         letterSpacing: '0.12em',
         textTransform: 'uppercase' as const,
       }}>{title}</span>
       <Link href={href} style={{
         fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-        fontSize:      8,
+        fontSize: 10,
         color:         T.terracotta,
         letterSpacing: '0.08em',
         textDecoration: 'none',
@@ -164,14 +164,14 @@ function MetricCard({
     }}>
       <p style={{
         fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-        fontSize:      8,
+        fontSize: 10,
         color:         T.mist,
         letterSpacing: '0.1em',
         marginBottom:  8,
       }}>{label}</p>
       <p style={{
         fontFamily: 'var(--font-crimson), Georgia, serif',
-        fontSize:   28,
+        fontSize: 32,
         fontWeight: accent ? 400 : 300,
         fontStyle:  italic ? 'italic' : 'normal',
         color:      accent ? T.terracotta : T.espresso,
@@ -180,7 +180,7 @@ function MetricCard({
       }}>{value}</p>
       <p style={{
         fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-        fontSize:      8,
+        fontSize: 10,
         color:         T.ghost,
         letterSpacing: '0.06em',
       }}>{detail}</p>
@@ -207,14 +207,14 @@ function MiniRatingDistribution({ rated }: { rated: Restaurant[] }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
         <span style={{
           fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-          fontSize:      8,
+          fontSize: 10,
           color:         T.mist,
           letterSpacing: '0.1em',
           textTransform: 'uppercase' as const,
         }}>rating distribution</span>
         <span style={{
           fontFamily: 'var(--font-dm-mono), ui-monospace, monospace',
-          fontSize:   8,
+          fontSize: 10,
           color:      T.ghost,
         }}>{rated.length} rated</span>
       </div>
@@ -242,7 +242,7 @@ function MiniRatingDistribution({ rated }: { rated: Restaurant[] }) {
             </div>
             <span style={{
               fontFamily: 'var(--font-dm-mono), ui-monospace, monospace',
-              fontSize:   8,
+              fontSize: 10,
               color:      T.ghost,
               width:      14,
               textAlign:  'right',
@@ -275,7 +275,7 @@ function MiniTopCuisines({ restaurants }: { restaurants: Restaurant[] }) {
       <span style={{
         display:       'block',
         fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-        fontSize:      8,
+        fontSize: 10,
         color:         T.mist,
         letterSpacing: '0.1em',
         textTransform: 'uppercase' as const,
@@ -284,12 +284,12 @@ function MiniTopCuisines({ restaurants }: { restaurants: Restaurant[] }) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {top5.map(([cuisine, count]) => (
           <div key={cuisine} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 11, width: 16, textAlign: 'center', flexShrink: 0 }}>
+            <span style={{ fontSize: 13, width: 16, textAlign: 'center', flexShrink: 0 }}>
               {CUISINE_EMOJI[cuisine] ?? '🍽️'}
             </span>
             <span style={{
               fontFamily: 'var(--font-dm-mono), ui-monospace, monospace',
-              fontSize:   9,
+              fontSize: 11,
               color:      T.espresso,
               width:      80,
               flexShrink: 0,
@@ -308,7 +308,7 @@ function MiniTopCuisines({ restaurants }: { restaurants: Restaurant[] }) {
             </div>
             <span style={{
               fontFamily: 'var(--font-dm-mono), ui-monospace, monospace',
-              fontSize:   8,
+              fontSize: 10,
               color:      T.ghost,
               width:      14,
               textAlign:  'right',
@@ -341,7 +341,7 @@ function MiniVisitHighlights({ restaurants, visited }: { restaurants: Restaurant
       <span style={{
         display:       'block',
         fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-        fontSize:      8,
+        fontSize: 10,
         color:         T.mist,
         letterSpacing: '0.1em',
         textTransform: 'uppercase' as const,
@@ -349,15 +349,15 @@ function MiniVisitHighlights({ restaurants, visited }: { restaurants: Restaurant
       }}>visit highlights</span>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.mist }}>total visits logged</span>
-          <span style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 13, color: T.espresso }}>{totalVisits}</span>
+          <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: T.mist }}>total visits logged</span>
+          <span style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 15, color: T.espresso }}>{totalVisits}</span>
         </div>
         {mostVisited && mostVisited.visit_count > 1 && (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.mist, flexShrink: 0 }}>most visited</span>
+            <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: T.mist, flexShrink: 0 }}>most visited</span>
             <span style={{
               fontFamily: 'var(--font-crimson), Georgia, serif',
-              fontSize:   13,
+              fontSize: 15,
               color:      T.espresso,
               overflow:   'hidden',
               textOverflow: 'ellipsis',
@@ -370,8 +370,8 @@ function MiniVisitHighlights({ restaurants, visited }: { restaurants: Restaurant
           </div>
         )}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.mist }}>still to try</span>
-          <span style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 13, color: T.terracotta, fontStyle: 'italic' }}>{toTryPct}%</span>
+          <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: T.mist }}>still to try</span>
+          <span style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 15, color: T.terracotta, fontStyle: 'italic' }}>{toTryPct}%</span>
         </div>
       </div>
     </div>
@@ -400,7 +400,7 @@ function RecentRow({ restaurant: r }: { restaurant: Restaurant }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' as const }}>
           <span style={{
             fontFamily:   'var(--font-crimson), Georgia, serif',
-            fontSize:     13,
+            fontSize: 15,
             fontWeight:   500,
             color:        T.espresso,
             overflow:     'hidden',
@@ -413,12 +413,12 @@ function RecentRow({ restaurant: r }: { restaurant: Restaurant }) {
           <StatusBadge status={r.status} />
           {r.cuisine && <span style={{
             fontFamily: 'var(--font-dm-mono), ui-monospace, monospace',
-            fontSize:   8,
+            fontSize: 10,
             color:      T.mist,
           }}>{r.cuisine}</span>}
           {r.price_level && <span style={{
             fontFamily: 'var(--font-dm-mono), ui-monospace, monospace',
-            fontSize:   8,
+            fontSize: 10,
             color:      T.ghost,
           }}>{r.price_level}</span>}
         </div>
@@ -440,10 +440,10 @@ function EmptyState() {
       borderRadius:    10,
     }}>
       <UtensilsCrossed style={{ width: 28, height: 28, color: T.stone, margin: '0 auto 12px' }} />
-      <p style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 16, color: T.espresso, marginBottom: 4 }}>
+      <p style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 18, color: T.espresso, marginBottom: 4 }}>
         no restaurants yet
       </p>
-      <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.mist, marginBottom: 16 }}>
+      <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: T.mist, marginBottom: 16 }}>
         add your first restaurant to get started
       </p>
       <Link
@@ -456,7 +456,7 @@ function EmptyState() {
           color:           T.parchment,
           fontFamily:      'var(--font-crimson), Georgia, serif',
           fontStyle:       'italic',
-          fontSize:        14,
+          fontSize: 16,
           padding:         '8px 20px',
           borderRadius:    20,
           textDecoration:  'none',

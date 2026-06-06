@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -28,7 +28,7 @@ const inputStyle: React.CSSProperties = {
   borderRadius:    7,
   padding:         '7px 10px',
   fontFamily:      'var(--font-crimson), Georgia, serif',
-  fontSize:        13,
+  fontSize: 15,
   color:           T.espresso,
   outline:         'none',
   boxSizing:       'border-box',
@@ -211,7 +211,7 @@ export function RestaurantForm({ restaurant }: RestaurantFormProps) {
             border:          '0.5px solid rgba(196,122,122,0.3)',
             borderRadius:    7,
             fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
-            fontSize:        8,
+            fontSize: 10,
             color:           '#c47a7a',
           }}>
             {error}
@@ -229,7 +229,7 @@ export function RestaurantForm({ restaurant }: RestaurantFormProps) {
                 gap:             5,
                 padding:         '8px 14px',
                 fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
-                fontSize:        8,
+                fontSize: 10,
                 color:           '#c47a7a',
                 backgroundColor: 'transparent',
                 border:          '0.5px solid rgba(196,122,122,0.4)',
@@ -248,7 +248,7 @@ export function RestaurantForm({ restaurant }: RestaurantFormProps) {
             style={{
               padding:         '8px 14px',
               fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
-              fontSize:        8,
+              fontSize: 10,
               color:           T.mist,
               backgroundColor: T.linen,
               border:          `0.5px solid ${T.border}`,
@@ -267,7 +267,7 @@ export function RestaurantForm({ restaurant }: RestaurantFormProps) {
               padding:         '8px 0',
               fontFamily:      'var(--font-crimson), Georgia, serif',
               fontStyle:       'italic',
-              fontSize:        16,
+              fontSize: 18,
               color:           T.parchment,
               backgroundColor: loading ? T.stone : T.espresso,
               border:          'none',
@@ -300,7 +300,7 @@ function Field({ label, required, children }: { label: string; required?: boolea
     <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
       <label style={{
         fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-        fontSize:      7,
+        fontSize: 9,
         color:         T.mist,
         letterSpacing: '0.1em',
         textTransform: 'uppercase' as const,

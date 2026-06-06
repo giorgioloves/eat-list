@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { Plus, Trash2, MessageSquare } from 'lucide-react'
@@ -54,11 +54,11 @@ export function NoteLog({ restaurantId, notes }: NoteLogProps) {
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-          <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 7, color: T.mist, letterSpacing: '0.12em', textTransform: 'uppercase' as const }}>
+          <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.mist, letterSpacing: '0.12em', textTransform: 'uppercase' as const }}>
             notes
           </span>
           {notes.length > 0 && (
-            <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 7, color: T.ghost }}>
+            <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.ghost }}>
               {notes.length}
             </span>
           )}
@@ -70,7 +70,7 @@ export function NoteLog({ restaurantId, notes }: NoteLogProps) {
             alignItems:      'center',
             gap:             4,
             fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
-            fontSize:        7,
+            fontSize: 9,
             letterSpacing:   '0.08em',
             color:           T.parchment,
             backgroundColor: T.espresso,
@@ -109,21 +109,21 @@ export function NoteLog({ restaurantId, notes }: NoteLogProps) {
               borderRadius:    6,
               padding:         '8px 10px',
               fontFamily:      'var(--font-crimson), Georgia, serif',
-              fontSize:        13,
+              fontSize: 15,
               color:           T.espresso,
               outline:         'none',
               resize:          'none',
               boxSizing:       'border-box',
             }}
           />
-          {error && <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: '#c47a7a' }}>{error}</p>}
+          {error && <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: '#c47a7a' }}>{error}</p>}
           <div style={{ display: 'flex', gap: 6 }}>
             <button type="button" onClick={() => { setShowForm(false); setContent(''); setError('') }} style={{
-              padding: '6px 12px', fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 7,
+              padding: '6px 12px', fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9,
               color: T.mist, backgroundColor: T.linen, border: `0.5px solid ${T.border}`, borderRadius: 6, cursor: 'pointer',
             }}>cancel</button>
             <button type="submit" disabled={loading || !content.trim()} style={{
-              flex: 1, padding: '6px 0', fontFamily: 'var(--font-crimson), Georgia, serif', fontStyle: 'italic', fontSize: 13,
+              flex: 1, padding: '6px 0', fontFamily: 'var(--font-crimson), Georgia, serif', fontStyle: 'italic', fontSize: 15,
               color: T.parchment, backgroundColor: T.espresso, border: 'none', borderRadius: 6,
               cursor: loading || !content.trim() ? 'not-allowed' : 'pointer', opacity: loading || !content.trim() ? 0.6 : 1,
             }}>
@@ -134,7 +134,7 @@ export function NoteLog({ restaurantId, notes }: NoteLogProps) {
       )}
 
       {notes.length === 0 ? (
-        <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.ghost, padding: '6px 0' }}>no notes yet</p>
+        <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: T.ghost, padding: '6px 0' }}>no notes yet</p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           {notes.map((n) => (
@@ -149,10 +149,10 @@ export function NoteLog({ restaurantId, notes }: NoteLogProps) {
             }}>
               <MessageSquare style={{ width: 11, height: 11, color: T.stone, marginTop: 2, flexShrink: 0 }} />
               <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 13, color: T.espresso, lineHeight: 1.5 }}>
+                <p style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 15, color: T.espresso, lineHeight: 1.5 }}>
                   {n.content}
                 </p>
-                <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 7, color: T.ghost, marginTop: 4 }}>
+                <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.ghost, marginTop: 4 }}>
                   {formatDate(n.created_at)}
                 </p>
               </div>

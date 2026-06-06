@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -31,7 +31,7 @@ export function BottomNav() {
         alignItems:     'center',
         justifyContent: 'space-around',
         padding:        '0 8px',
-        height:         60,
+        height:         64,
       }}>
         {navItems.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(href + '/')
@@ -50,9 +50,9 @@ export function BottomNav() {
               }}
             >
               <div style={{
-                width:           22,
-                height:          22,
-                borderRadius:    6,
+                width:           24,
+                height:          24,
+                borderRadius:    7,
                 backgroundColor: active ? '#3b2f27' : 'transparent',
                 display:         'flex',
                 alignItems:      'center',
@@ -61,14 +61,14 @@ export function BottomNav() {
                 transition:      'background-color 0.12s',
               }}>
                 <Icon style={{
-                  width:  13,
-                  height: 13,
+                  width:  14,
+                  height: 14,
                   color:  active ? '#f5f0e8' : '#b8a898',
                 }} />
               </div>
               <span style={{
                 fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-                fontSize:      7,
+                fontSize: 9,
                 color:         active ? '#3b2f27' : '#b8a898',
                 letterSpacing: '0.08em',
                 lineHeight:    1,

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect } from 'react'
 import { X } from 'lucide-react'
@@ -54,7 +54,7 @@ export function Modal({ open, onClose, title, children, size = 'md' }: ModalProp
       }}>
         {title && (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', borderBottom: `0.5px solid ${T.border}` }}>
-            <h2 style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 16, fontWeight: 400, color: T.espresso, margin: 0 }}>
+            <h2 style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 18, fontWeight: 400, color: T.espresso, margin: 0 }}>
               {title}
             </h2>
             <button
@@ -88,7 +88,7 @@ export function ConfirmModal({
   return (
     <Modal open={open} onClose={onClose} title={title} size="sm">
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.mist, letterSpacing: '0.04em', lineHeight: 1.6 }}>
+        <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: T.mist, letterSpacing: '0.04em', lineHeight: 1.6 }}>
           {message}
         </p>
         <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
@@ -97,7 +97,7 @@ export function ConfirmModal({
             style={{
               padding:         '7px 14px',
               fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
-              fontSize:        8,
+              fontSize: 10,
               color:           T.mist,
               backgroundColor: T.linen,
               border:          `0.5px solid ${T.border}`,

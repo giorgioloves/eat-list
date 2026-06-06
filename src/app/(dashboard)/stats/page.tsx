@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
@@ -84,7 +84,7 @@ function SegmentedControl({ value, onChange }: { value: TimeFilter; onChange: (v
             backgroundColor: value === seg.id ? T.espresso : 'transparent',
             color:           value === seg.id ? T.parchment : T.mist,
             fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
-            fontSize:        8,
+            fontSize: 10,
             letterSpacing:   '0.06em',
             cursor:          'pointer',
             transition:      'all 0.15s',
@@ -114,24 +114,24 @@ function HeroCard({ total, visited, wishlist, visitedPct }: {
         <div style={{ minWidth: 0 }}>
           <p style={{
             fontFamily: 'var(--font-crimson), Georgia, serif',
-            fontSize:   48,
+            fontSize: 50,
             fontWeight: 300,
             color:      T.espresso,
             lineHeight: 1,
           }}>{total}</p>
           <p style={{
             fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-            fontSize:      8,
+            fontSize: 10,
             color:         T.mist,
             letterSpacing: '0.08em',
             marginTop:     6,
           }}>restaurants tracked</p>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10, flexWrap: 'wrap' as const }}>
-            <span style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 14, color: T.sage }}>
+            <span style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 16, color: T.sage }}>
               {visited} visited
             </span>
-            <span style={{ color: T.stone, fontSize: 8 }}>·</span>
-            <span style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 14, color: T.terracotta }}>
+            <span style={{ color: T.stone, fontSize: 10 }}>·</span>
+            <span style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 16, color: T.terracotta }}>
               {wishlist} to try
             </span>
           </div>
@@ -140,10 +140,10 @@ function HeroCard({ total, visited, wishlist, visitedPct }: {
           <ProgressRing pct={visitedPct} />
           <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <div style={{ textAlign: 'center' }}>
-              <p style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 16, fontWeight: 400, color: T.espresso, lineHeight: 1 }}>
+              <p style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 18, fontWeight: 400, color: T.espresso, lineHeight: 1 }}>
                 {visitedPct}%
               </p>
-              <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 6, color: T.mist, marginTop: 1 }}>
+              <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: T.mist, marginTop: 1 }}>
                 visited
               </p>
             </div>
@@ -167,18 +167,18 @@ function MetricCard({ icon, label, value, sub, accent }: {
       padding:         '14px 14px 12px',
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-        <span style={{ fontSize: 13, lineHeight: 1 }}>{icon}</span>
-        <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 7, color: T.mist, letterSpacing: '0.1em', textTransform: 'uppercase' as const }}>{label}</p>
+        <span style={{ fontSize: 15, lineHeight: 1 }}>{icon}</span>
+        <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.mist, letterSpacing: '0.1em', textTransform: 'uppercase' as const }}>{label}</p>
       </div>
       <p style={{
         fontFamily: 'var(--font-crimson), Georgia, serif',
-        fontSize:   24,
+        fontSize: 28,
         fontWeight: 300,
         color:      accent ? T.terracotta : T.espresso,
         fontStyle:  accent ? 'italic' : 'normal',
         lineHeight: 1,
       }}>{value}</p>
-      <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 7, color: T.ghost, marginTop: 5 }}>{sub}</p>
+      <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.ghost, marginTop: 5 }}>{sub}</p>
     </div>
   )
 }
@@ -201,7 +201,7 @@ function RestaurantRankRow({ restaurant: r, rank, isBottom }: {
     >
       <span style={{
         fontFamily: 'var(--font-dm-mono), ui-monospace, monospace',
-        fontSize:   9,
+        fontSize: 11,
         color:      isBottom ? '#c47a7a' : T.terracotta,
         width:      16,
         textAlign:  'center',
@@ -210,7 +210,7 @@ function RestaurantRankRow({ restaurant: r, rank, isBottom }: {
       <div style={{ flex: 1, minWidth: 0 }}>
         <p style={{
           fontFamily:   'var(--font-crimson), Georgia, serif',
-          fontSize:     13,
+          fontSize: 15,
           fontWeight:   400,
           color:        T.espresso,
           overflow:     'hidden',
@@ -219,7 +219,7 @@ function RestaurantRankRow({ restaurant: r, rank, isBottom }: {
         }}>{r.name.replace(/\s*\([^)]+\)\s*$/, '').trim()}</p>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
           {r.cuisine && (
-            <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: T.mist }}>{r.cuisine}</span>
+            <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.mist }}>{r.cuisine}</span>
           )}
           {r.tier && <TierBadge tier={r.tier as Tier} />}
         </div>
@@ -244,7 +244,7 @@ function ChartCard({ title, children }: { title: string; children: React.ReactNo
     }}>
       <p style={{
         fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-        fontSize:      7,
+        fontSize: 9,
         color:         T.mist,
         letterSpacing: '0.12em',
         textTransform: 'uppercase' as const,
@@ -268,7 +268,7 @@ function RankedListCard({ title, restaurants, isBottom }: {
       <div style={{ padding: '14px 16px 10px' }}>
         <p style={{
           fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-          fontSize:      7,
+          fontSize: 9,
           color:         T.mist,
           letterSpacing: '0.12em',
           textTransform: 'uppercase' as const,
@@ -313,8 +313,8 @@ export default function StatsPage() {
   if (restaurants.length === 0) {
     return (
       <div style={{ padding: '24px 16px 112px' }}>
-        <h1 style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 26, fontWeight: 400, color: T.espresso, margin: 0 }}>stats</h1>
-        <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.mist, marginTop: 6 }}>add restaurants to see your stats</p>
+        <h1 style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 30, fontWeight: 400, color: T.espresso, margin: 0 }}>stats</h1>
+        <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: T.mist, marginTop: 6 }}>add restaurants to see your stats</p>
       </div>
     )
   }
@@ -362,8 +362,8 @@ export default function StatsPage() {
 
       {/* Header */}
       <div>
-        <h1 style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 26, fontWeight: 400, color: T.espresso, lineHeight: 1.1, margin: 0 }}>stats</h1>
-        <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.mist, letterSpacing: '0.1em', marginTop: 4 }}>your restaurant journey in numbers</p>
+        <h1 style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 30, fontWeight: 400, color: T.espresso, lineHeight: 1.1, margin: 0 }}>stats</h1>
+        <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: T.mist, letterSpacing: '0.1em', marginTop: 4 }}>your restaurant journey in numbers</p>
       </div>
 
       <SegmentedControl value={timeFilter} onChange={setTimeFilter} />

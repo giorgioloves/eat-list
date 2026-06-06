@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { setWouldGoAgain } from './actions'
@@ -55,7 +55,7 @@ export function WouldGoAgainToggle({
       />
       <span style={{
         fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-        fontSize:      8,
+        fontSize: 10,
         color:         T.mist,
         letterSpacing: '0.06em',
       }}>want to go again</span>

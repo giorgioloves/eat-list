@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+﻿import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import sql from '@/lib/db'
 import { RestaurantForm } from '@/components/restaurants/restaurant-form'
@@ -49,10 +49,10 @@ export default async function EditRestaurantPage({
           <ArrowLeft style={{ width: 14, height: 14 }} />
         </Link>
         <div>
-          <h1 style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 20, fontWeight: 400, color: T.espresso, margin: 0 }}>
+          <h1 style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 24, fontWeight: 400, color: T.espresso, margin: 0 }}>
             edit restaurant
           </h1>
-          <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: T.mist, marginTop: 3, letterSpacing: '0.08em' }}>
+          <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.mist, marginTop: 3, letterSpacing: '0.08em' }}>
             {displayName}
           </p>
         </div>

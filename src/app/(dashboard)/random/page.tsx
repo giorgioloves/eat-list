@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { RandomPicker } from './random-client'
 import { useRestaurants } from '@/contexts/restaurants'
@@ -16,7 +16,7 @@ export default function RandomPage() {
       <div style={{ marginBottom: 20 }}>
         <h1 style={{
           fontFamily: 'var(--font-crimson), Georgia, serif',
-          fontSize:   26,
+          fontSize: 30,
           fontWeight: 400,
           fontStyle:  'italic',
           color:      T.espresso,
@@ -25,7 +25,7 @@ export default function RandomPage() {
         }}>where tonight?</h1>
         <p style={{
           fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-          fontSize:      9,
+          fontSize: 11,
           color:         T.mist,
           letterSpacing: '0.1em',
           marginTop:     4,

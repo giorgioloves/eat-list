@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useRef, useEffect } from 'react'
 import { GoogleMap, useJsApiLoader, OverlayViewF } from '@react-google-maps/api'
@@ -99,8 +99,8 @@ export function MapView({ restaurants }: MapViewProps) {
         justifyContent: 'center', backgroundColor: T.linen, border: `0.5px solid ${T.border}`,
         borderRadius: 10, gap: 8,
       }}>
-        <p style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 15, color: T.espresso }}>No location data yet</p>
-        <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.mist, letterSpacing: '0.06em', textAlign: 'center', maxWidth: 280 }}>
+        <p style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 17, color: T.espresso }}>No location data yet</p>
+        <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: T.mist, letterSpacing: '0.06em', textAlign: 'center', maxWidth: 280 }}>
           restaurants with a suburb and city will be geocoded automatically when you save them
         </p>
       </div>
@@ -110,7 +110,7 @@ export function MapView({ restaurants }: MapViewProps) {
   if (!isLoaded) {
     return (
       <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: T.linen, border: `0.5px solid ${T.border}`, borderRadius: 10 }}>
-        <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.mist, letterSpacing: '0.06em' }}>loading map…</p>
+        <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: T.mist, letterSpacing: '0.06em' }}>loading map…</p>
       </div>
     )
   }
@@ -184,31 +184,31 @@ export function MapView({ restaurants }: MapViewProps) {
                 position:        'absolute',
                 top:             8,
                 right:           8,
-                width:           26,
-                height:          26,
+                width:           28,
+                height:          28,
                 display:         'flex',
                 alignItems:      'center',
                 justifyContent:  'center',
                 backgroundColor: T.linen,
                 border:          `0.5px solid ${T.border}`,
-                borderRadius:    6,
+                borderRadius:    7,
                 cursor:          'pointer',
                 color:           T.mist,
               }}
             >
-              <X style={{ width: 12, height: 12 }} />
+              <X style={{ width: 13, height: 13 }} />
             </button>
 
-            <p style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 16, fontWeight: 400, color: T.espresso, paddingRight: 32, margin: 0, lineHeight: 1.2 }}>
+            <p style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 18, fontWeight: 400, color: T.espresso, paddingRight: 32, margin: 0, lineHeight: 1.2 }}>
               {displayName}
             </p>
             {selected.cuisine && (
-              <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: T.mist, marginTop: 4, letterSpacing: '0.06em' }}>
+              <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.mist, marginTop: 4, letterSpacing: '0.06em' }}>
                 {selected.cuisine}
               </p>
             )}
             {(selected.address || selected.suburb) && (
-              <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: T.ghost, marginTop: 2, letterSpacing: '0.04em' }}>
+              <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.ghost, marginTop: 2, letterSpacing: '0.04em' }}>
                 {[selected.address, selected.suburb].filter(Boolean).join(', ')}
               </p>
             )}
@@ -217,14 +217,14 @@ export function MapView({ restaurants }: MapViewProps) {
               <div style={{ display: 'flex', gap: 8, marginTop: 6, flexWrap: 'wrap' }}>
                 {selected.website && (
                   <a href={selected.website} target="_blank" rel="noopener noreferrer"
-                    style={{ display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: T.terracotta, letterSpacing: '0.04em', textDecoration: 'none' }}>
+                    style={{ display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.terracotta, letterSpacing: '0.04em', textDecoration: 'none' }}>
                     <Globe style={{ width: 10, height: 10, flexShrink: 0 }} />
                     {selected.website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '').slice(0, 28)}
                   </a>
                 )}
                 {selected.instagram && (
                   <a href={`https://www.instagram.com/${selected.instagram.replace(/^@/, '')}/`} target="_blank" rel="noopener noreferrer"
-                    style={{ display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: T.mist, letterSpacing: '0.04em', textDecoration: 'none' }}>
+                    style={{ display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.mist, letterSpacing: '0.04em', textDecoration: 'none' }}>
                     <Instagram style={{ width: 10, height: 10, flexShrink: 0 }} />
                     @{selected.instagram.replace(/^@/, '')}
                   </a>
@@ -237,7 +237,7 @@ export function MapView({ restaurants }: MapViewProps) {
                 <span style={{
                   fontFamily:      'var(--font-crimson), Georgia, serif',
                   fontStyle:       'italic',
-                  fontSize:        13,
+                  fontSize: 15,
                   color:           tierAccent,
                   border:          `0.5px solid ${tierAccent}`,
                   backgroundColor: T.linen,
@@ -254,23 +254,23 @@ export function MapView({ restaurants }: MapViewProps) {
           {/* Visit history */}
           {selected.visit_count > 0 && (visitsLoading || visits.length > 0) && (
             <div style={{ borderTop: `0.5px solid ${T.border}`, flex: 1, overflowY: 'auto' }}>
-              <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 7, color: T.mist, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '10px 14px 6px' }}>
+              <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.mist, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '10px 14px 6px' }}>
                 visits{visits.length > 0 ? ` · ${visits.length}` : ''}
               </p>
               {visitsLoading ? (
-                <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: T.ghost, padding: '0 14px 12px' }}>loading…</p>
+                <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.ghost, padding: '0 14px 12px' }}>loading…</p>
               ) : (
                 <div>
                   {visits.map((v, i) => (
                     <div key={v.id} style={{ padding: '6px 14px', borderTop: i > 0 ? `0.5px solid ${T.border}` : 'none' }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-                        <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: T.mist, letterSpacing: '0.04em' }}>
+                        <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.mist, letterSpacing: '0.04em' }}>
                           {formatDate(v.visited_at)}
                         </span>
                         {v.rating !== null && <PipRating rating={v.rating} size="sm" />}
                       </div>
                       {v.cost !== null && (
-                        <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: T.ghost, letterSpacing: '0.04em' }}>
+                        <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.ghost, letterSpacing: '0.04em' }}>
                           ${Number(v.cost).toFixed(0)}
                         </span>
                       )}
@@ -290,7 +290,7 @@ export function MapView({ restaurants }: MapViewProps) {
                 textAlign:       'center',
                 fontFamily:      'var(--font-crimson), Georgia, serif',
                 fontStyle:       'italic',
-                fontSize:        14,
+                fontSize: 16,
                 color:           T.parchment,
                 backgroundColor: T.espresso,
                 border:          'none',
@@ -311,7 +311,7 @@ export function MapView({ restaurants }: MapViewProps) {
                 rel="noopener noreferrer"
                 style={{
                   fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
-                  fontSize:        8,
+                  fontSize: 10,
                   color:           T.terracotta,
                   backgroundColor: T.linen,
                   border:          `0.5px solid ${T.border}`,

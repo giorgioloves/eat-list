@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { Plus, UtensilsCrossed } from 'lucide-react'
@@ -26,7 +26,7 @@ export default function RestaurantsPage() {
         <div>
           <h1 style={{
             fontFamily: 'var(--font-crimson), Georgia, serif',
-            fontSize:   26,
+            fontSize: 30,
             fontWeight: 400,
             color:      T.espresso,
             lineHeight: 1.1,
@@ -35,7 +35,7 @@ export default function RestaurantsPage() {
           {!loading && (
             <p style={{
               fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-              fontSize:      9,
+              fontSize: 11,
               color:         T.mist,
               letterSpacing: '0.1em',
               marginTop:     4,
@@ -73,10 +73,10 @@ export default function RestaurantsPage() {
           borderRadius:    10,
         }}>
           <UtensilsCrossed style={{ width: 28, height: 28, color: T.stone, margin: '0 auto 12px' }} />
-          <p style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 16, color: T.espresso, marginBottom: 4 }}>
+          <p style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 18, color: T.espresso, marginBottom: 4 }}>
             no restaurants yet
           </p>
-          <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.mist, marginBottom: 16 }}>
+          <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: T.mist, marginBottom: 16 }}>
             add your first restaurant to start building your list
           </p>
           <Link
@@ -89,7 +89,7 @@ export default function RestaurantsPage() {
               color:           T.parchment,
               fontFamily:      'var(--font-crimson), Georgia, serif',
               fontStyle:       'italic',
-              fontSize:        14,
+              fontSize: 16,
               padding:         '8px 20px',
               borderRadius:    20,
               textDecoration:  'none',

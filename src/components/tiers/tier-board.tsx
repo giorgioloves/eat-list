@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import {
@@ -159,7 +159,7 @@ export function TierBoard({ restaurants }: TierBoardProps) {
           <div style={{ marginTop: 16 }}>
             <p style={{
               fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-              fontSize:      7,
+              fontSize: 9,
               color:         T.mist,
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
@@ -207,12 +207,12 @@ function TierRow({
           display:        'flex',
           alignItems:     'center',
           justifyContent: 'center',
-          width:           28,
+          width:           30,
           flexShrink:      0,
         }}>
           <span style={{
             fontFamily: 'var(--font-crimson), Georgia, serif',
-            fontSize:   20,
+            fontSize: 24,
             fontStyle:  'italic',
             fontWeight: 400,
             color:      accent,
@@ -232,7 +232,7 @@ function TierRow({
               border:          `0.5px dashed ${isOver ? accent : T.stone}`,
               borderRadius:    6,
               fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
-              fontSize:        8,
+              fontSize: 10,
               color:           isOver ? accent : T.ghost,
               letterSpacing:   '0.06em',
               transition:      'all 0.12s',
@@ -275,7 +275,7 @@ function SortableCard({ restaurant, isSaving }: { restaurant: Restaurant; isSavi
         display:         'inline-flex',
         alignItems:      'center',
         gap:             4,
-        padding:         '4px 10px',
+        padding:         '5px 12px',
         backgroundColor: T.chipBg,
         border:          `0.5px solid ${T.border}`,
         borderRadius:    6,
@@ -288,7 +288,7 @@ function SortableCard({ restaurant, isSaving }: { restaurant: Restaurant; isSavi
     >
       <span style={{
         fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-        fontSize:      7,
+        fontSize: 9,
         color:         T.chipText,
         letterSpacing: '0.04em',
         pointerEvents: 'none',
@@ -325,7 +325,7 @@ function DragCard({ restaurant }: { restaurant: Restaurant }) {
     }}>
       <span style={{
         fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-        fontSize:      7,
+        fontSize: 9,
         color:         T.chipText,
         letterSpacing: '0.04em',
         whiteSpace:    'nowrap',

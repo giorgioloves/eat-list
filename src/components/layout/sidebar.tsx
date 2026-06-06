@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -26,17 +26,17 @@ export function Sidebar() {
       <div className="p-4" style={{ borderBottom: '0.5px solid #c4b8a8' }}>
         <Link href="/dashboard" className="flex items-center gap-2.5">
           <div style={{
-            width: 28, height: 28,
+            width: 30, height: 30,
             backgroundColor: '#3b2f27',
-            borderRadius: 7,
+            borderRadius: 8,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             flexShrink: 0,
           }}>
-            <UtensilsCrossed style={{ width: 13, height: 13, color: '#f5f0e8' }} />
+            <UtensilsCrossed style={{ width: 14, height: 14, color: '#f5f0e8' }} />
           </div>
           <span style={{
             fontFamily: 'var(--font-crimson), Georgia, serif',
-            fontSize: 18,
+            fontSize: 19,
             color: '#3b2f27',
             fontWeight: 400,
           }}>avec</span>
@@ -61,7 +61,7 @@ export function Sidebar() {
               <Icon className="w-3.5 h-3.5 flex-shrink-0" />
               <span style={{
                 fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-                fontSize:      11,
+                fontSize: 13,
                 letterSpacing: '0.06em',
               }}>
                 {label}

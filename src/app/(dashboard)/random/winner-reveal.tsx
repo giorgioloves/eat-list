@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
@@ -60,7 +60,7 @@ export function WinnerReveal({ restaurant: r, onPickAgain }: WinnerRevealProps) 
           transition={{ delay: 0.05 }}
           style={{
             fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-            fontSize:      7,
+            fontSize: 9,
             letterSpacing: '0.14em',
             textTransform: 'uppercase' as const,
             textAlign:     'center',
@@ -76,7 +76,7 @@ export function WinnerReveal({ restaurant: r, onPickAgain }: WinnerRevealProps) 
           initial={{ scale: 0.4, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.1, type: 'spring', stiffness: 350, damping: 18 }}
-          style={{ textAlign: 'center', fontSize: 52, lineHeight: 1, marginBottom: 14, userSelect: 'none' }}
+          style={{ textAlign: 'center', fontSize: 54, lineHeight: 1, marginBottom: 14, userSelect: 'none' }}
         >
           {emoji}
         </motion.div>
@@ -88,7 +88,7 @@ export function WinnerReveal({ restaurant: r, onPickAgain }: WinnerRevealProps) 
           transition={{ delay: 0.16 }}
           style={{
             fontFamily: 'var(--font-crimson), Georgia, serif',
-            fontSize:   24,
+            fontSize: 28,
             fontWeight: 400,
             color:      T.espresso,
             textAlign:  'center',
@@ -106,7 +106,7 @@ export function WinnerReveal({ restaurant: r, onPickAgain }: WinnerRevealProps) 
             transition={{ delay: 0.21 }}
             style={{
               fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-              fontSize:      9,
+              fontSize: 11,
               color:         T.mist,
               letterSpacing: '0.06em',
               textAlign:     'center',
@@ -136,13 +136,13 @@ export function WinnerReveal({ restaurant: r, onPickAgain }: WinnerRevealProps) 
           style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 18, flexWrap: 'wrap' as const }}
         >
           {(r.address || r.suburb) && (
-            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: T.mist }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.mist }}>
               <MapPin style={{ width: 10, height: 10 }} />
               {[r.address, r.suburb].filter(Boolean).join(', ')}
             </span>
           )}
           {r.visit_count > 1 && (
-            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 8, color: T.ghost }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.ghost }}>
               <RotateCcw style={{ width: 10, height: 10 }} />
               {r.visit_count} visits
             </span>
@@ -162,7 +162,7 @@ export function WinnerReveal({ restaurant: r, onPickAgain }: WinnerRevealProps) 
               flex:            1,
               textAlign:       'center',
               fontFamily:      'var(--font-crimson), Georgia, serif',
-              fontSize:        13,
+              fontSize: 15,
               color:           T.espresso,
               padding:         '9px 0',
               backgroundColor: T.parchment,
@@ -185,7 +185,7 @@ export function WinnerReveal({ restaurant: r, onPickAgain }: WinnerRevealProps) 
                 alignItems:      'center',
                 gap:             5,
                 fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
-                fontSize:        8,
+                fontSize: 10,
                 color:           T.mist,
                 padding:         '9px 12px',
                 backgroundColor: T.parchment,
@@ -205,7 +205,7 @@ export function WinnerReveal({ restaurant: r, onPickAgain }: WinnerRevealProps) 
               alignItems:      'center',
               gap:             5,
               fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
-              fontSize:        8,
+              fontSize: 10,
               color:           T.mist,
               padding:         '9px 12px',
               backgroundColor: T.parchment,

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { TierBoardDynamic } from './tier-board-dynamic'
 import { useRestaurants } from '@/contexts/restaurants'
@@ -20,7 +20,7 @@ export default function TiersPage() {
       <div style={{ marginBottom: 20 }}>
         <h1 style={{
           fontFamily: 'var(--font-crimson), Georgia, serif',
-          fontSize:   26,
+          fontSize: 30,
           fontWeight: 400,
           color:      T.espresso,
           lineHeight: 1.1,
@@ -28,7 +28,7 @@ export default function TiersPage() {
         }}>tier list</h1>
         <p style={{
           fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-          fontSize:      9,
+          fontSize: 11,
           color:         T.mist,
           letterSpacing: '0.1em',
           marginTop:     4,
@@ -43,7 +43,7 @@ export default function TiersPage() {
           border:          `0.5px solid ${T.border}`,
           borderRadius:    10,
           fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
-          fontSize:        9,
+          fontSize: 11,
           color:           T.mist,
           letterSpacing:   '0.08em',
         }}>
