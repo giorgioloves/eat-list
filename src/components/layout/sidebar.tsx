@@ -39,7 +39,7 @@ export function Sidebar() {
             fontSize: 20,
             color: '#3b2f27',
             fontWeight: 400,
-          }}>avec</span>
+          }}>ate together</span>
         </Link>
       </div>
 

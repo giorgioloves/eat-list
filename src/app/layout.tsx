@@ -16,12 +16,15 @@ const dmMono = DM_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'avec',
+  title: 'ate together',
   description: 'Your personal restaurant list.',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'avec',
+    title: 'ate together',
+  },
+  icons: {
+    apple: '/apple-touch-icon.png',
   },
 }
 

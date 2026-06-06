@@ -47,7 +47,7 @@ export default function DashboardPage() {
             color:       T.espresso,
             lineHeight:  1.1,
             margin:      0,
-          }}>avec</h1>
+          }}>ate together</h1>
           <p style={{
             fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
             fontSize: 12,
