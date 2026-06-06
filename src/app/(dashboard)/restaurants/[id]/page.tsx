@@ -30,12 +30,22 @@ export default async function RestaurantDetailPage({
   const [restaurant] = await sql`SELECT * FROM restaurants WHERE id = ${id}`
   if (!restaurant) notFound()
 
-  const r = restaurant as unknown as Restaurant
+  const raw = restaurant as any
+  const r: Restaurant = {
+    ...raw,
+    rating: raw.rating !== null ? parseFloat(raw.rating) : null,
+  }
 
-  const [visits, notes] = await Promise.all([
+  const [rawVisits, notes] = await Promise.all([
     sql`SELECT * FROM restaurant_visits WHERE restaurant_id = ${id} ORDER BY visited_at DESC NULLS LAST`,
     sql`SELECT * FROM restaurant_notes WHERE restaurant_id = ${id} ORDER BY created_at DESC`,
   ])
+
+  const visits = (rawVisits as any[]).map(v => ({
+    ...v,
+    rating: v.rating !== null ? parseFloat(v.rating) : null,
+    cost:   v.cost   !== null ? parseFloat(v.cost)   : null,
+  }))
 
   const displayName = r.name.replace(/\s*\([^)]+\)\s*$/, '').trim()
 
