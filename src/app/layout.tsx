@@ -18,6 +18,11 @@ const dmMono = DM_Mono({
 export const metadata: Metadata = {
   title: 'avec',
   description: 'Your personal restaurant list.',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'avec',
+  },
 }
 
 export const viewport: Viewport = {
