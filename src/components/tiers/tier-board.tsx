@@ -21,7 +21,7 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { updateTier } from '@/app/(dashboard)/tiers/actions'
-import { TIERS, TIER_ACCENT } from '@/types'
+import { TIERS, TIER_ACCENT, TIER_BLOCK_BG, TIER_CHIP_BG, TIER_CHIP_TEXT } from '@/types'
 import type { Restaurant, Tier } from '@/types'
 
 const T = {
@@ -191,19 +191,23 @@ function TierRow({
   isUntiered?: boolean
   editing?: boolean
 }) {
-  const accent = isUntiered ? T.stone : TIER_ACCENT[tier as Tier]
+  const t = tier as Tier
+  const accent   = isUntiered ? T.stone : TIER_ACCENT[t]
+  const blockBg  = isUntiered ? T.parchment : TIER_BLOCK_BG[t]
+  const chipBg   = isUntiered ? T.chipBg   : TIER_CHIP_BG[t]
+  const chipText = isUntiered ? T.chipText  : TIER_CHIP_TEXT[t]
   const { setNodeRef, isOver } = useDroppable({ id: tier })
 
   return (
     <div style={{
       display:         'flex',
       gap:             10,
-      backgroundColor: T.parchment,
+      backgroundColor: blockBg,
       borderRadius:    isUntiered ? 10 : '0 10px 10px 0',
       borderLeft:      isUntiered ? `0.5px solid ${T.border}` : `2.5px solid ${accent}`,
-      borderTop:       `0.5px solid ${T.border}`,
-      borderRight:     `0.5px solid ${T.border}`,
-      borderBottom:    `0.5px solid ${T.border}`,
+      borderTop:       `0.5px solid ${accent}22`,
+      borderRight:     `0.5px solid ${accent}22`,
+      borderBottom:    `0.5px solid ${accent}22`,
       padding:         '10px 12px',
       transition:      'border-color 0.12s',
       outline:         isOver ? `1px solid ${accent}` : 'none',
@@ -235,11 +239,11 @@ function TierRow({
               display:         'flex',
               alignItems:      'center',
               justifyContent:  'center',
-              border:          `0.5px dashed ${isOver ? accent : T.stone}`,
+              border:          `0.5px dashed ${isOver ? accent : accent + '55'}`,
               borderRadius:    6,
               fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
               fontSize: 11,
-              color:           isOver ? accent : T.ghost,
+              color:           isOver ? accent : accent + '88',
               letterSpacing:   '0.06em',
               transition:      'all 0.12s',
             }}>
@@ -253,6 +257,9 @@ function TierRow({
                   restaurant={r}
                   isSaving={savingId === r.id}
                   editing={editing}
+                  chipBg={chipBg}
+                  chipText={chipText}
+                  accent={accent}
                 />
               ))}
             </div>
@@ -264,10 +271,21 @@ function TierRow({
 }
 
 // Used in tier rows — has dnd-kit sortable hooks
-function SortableCard({ restaurant, isSaving, editing }: { restaurant: Restaurant; isSaving?: boolean; editing?: boolean }) {
+function SortableCard({ restaurant, isSaving, editing, chipBg, chipText, accent }: {
+  restaurant: Restaurant
+  isSaving?: boolean
+  editing?: boolean
+  chipBg?: string
+  chipText?: string
+  accent?: string
+}) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: restaurant.id,
   })
+
+  const bg   = chipBg   ?? T.chipBg
+  const text = chipText ?? T.chipText
+  const border = accent ? accent + '55' : T.border
 
   const displayName = restaurant.name.replace(/\s*\([^)]+\)\s*$/, '').trim()
 
@@ -283,8 +301,8 @@ function SortableCard({ restaurant, isSaving, editing }: { restaurant: Restauran
         alignItems:      'center',
         gap:             4,
         padding:         '5px 12px',
-        backgroundColor: T.chipBg,
-        border:          `0.5px solid ${T.border}`,
+        backgroundColor: bg,
+        border:          `0.5px solid ${border}`,
         borderRadius:    6,
         cursor:          editing ? 'grab' : 'default',
         userSelect:      'none',
@@ -295,14 +313,14 @@ function SortableCard({ restaurant, isSaving, editing }: { restaurant: Restauran
       <span style={{
         fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
         fontSize: 10,
-        color:         T.chipText,
+        color:         text,
         letterSpacing: '0.04em',
         pointerEvents: 'none',
         whiteSpace:    'nowrap',
       }}>{displayName}</span>
 
       {isSaving && (
-        <svg style={{ width: 10, height: 10, color: '#c4927a', flexShrink: 0, animation: 'spin 1s linear infinite' }} fill="none" viewBox="0 0 24 24">
+        <svg style={{ width: 10, height: 10, color: accent ?? '#c4927a', flexShrink: 0, animation: 'spin 1s linear infinite' }} fill="none" viewBox="0 0 24 24">
           <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
           <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
         </svg>
@@ -314,6 +332,10 @@ function SortableCard({ restaurant, isSaving, editing }: { restaurant: Restauran
 // Used in DragOverlay — no dnd-kit hooks, pure display
 function DragCard({ restaurant }: { restaurant: Restaurant }) {
   const displayName = restaurant.name.replace(/\s*\([^)]+\)\s*$/, '').trim()
+  const tier    = restaurant.tier as Tier | null
+  const chipBg  = tier ? TIER_CHIP_BG[tier]   : T.chipBg
+  const chipText = tier ? TIER_CHIP_TEXT[tier] : T.chipText
+  const accent  = tier ? TIER_ACCENT[tier]     : T.mist
 
   return (
     <div style={{
@@ -321,8 +343,8 @@ function DragCard({ restaurant }: { restaurant: Restaurant }) {
       alignItems:      'center',
       gap:             4,
       padding:         '4px 10px',
-      backgroundColor: T.parchment,
-      border:          `0.5px solid #c4927a`,
+      backgroundColor: chipBg,
+      border:          `0.5px solid ${accent}`,
       borderRadius:    6,
       cursor:          'grabbing',
       userSelect:      'none',
@@ -332,7 +354,7 @@ function DragCard({ restaurant }: { restaurant: Restaurant }) {
       <span style={{
         fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
         fontSize: 10,
-        color:         T.chipText,
+        color:         chipText,
         letterSpacing: '0.04em',
         whiteSpace:    'nowrap',
       }}>{displayName}</span>

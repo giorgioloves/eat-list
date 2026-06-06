@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { GoogleMap, useJsApiLoader, OverlayViewF } from '@react-google-maps/api'
 import Link from 'next/link'
 import { Instagram, Globe, X } from 'lucide-react'
-import { CUISINE_EMOJI, TIER_ACCENT } from '@/types'
+import { CUISINE_EMOJI, TIER_ACCENT, TIER_CHIP_BG } from '@/types'
 import { PipRating } from '@/components/ui/pip-rating'
 import { formatDate } from '@/lib/utils'
 import type { Restaurant, RestaurantVisit, Tier } from '@/types'
@@ -116,7 +116,8 @@ export function MapView({ restaurants }: MapViewProps) {
   }
 
   const displayName = selected ? selected.name.replace(/\s*\([^)]+\)\s*$/, '').trim() : ''
-  const tierAccent  = selected?.tier ? TIER_ACCENT[selected.tier as Tier] : null
+  const tierAccent  = selected?.tier ? TIER_ACCENT[selected.tier as Tier]   : null
+  const tierChipBg  = selected?.tier ? TIER_CHIP_BG[selected.tier as Tier]  : null
 
   return (
     <div style={{ position: 'relative', height: '100%', borderRadius: 10, overflow: 'hidden', border: `0.5px solid ${T.border}` }}>
@@ -240,7 +241,7 @@ export function MapView({ restaurants }: MapViewProps) {
                   fontSize: 16,
                   color:           tierAccent,
                   border:          `0.5px solid ${tierAccent}`,
-                  backgroundColor: T.linen,
+                  backgroundColor: tierChipBg ?? T.linen,
                   padding:         '1px 7px',
                   borderRadius:    5,
                 }}>

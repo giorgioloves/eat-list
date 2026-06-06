@@ -72,36 +72,44 @@ export const STATUS_DOT_COLORS: Record<RestaurantStatus, string> = {
   visited:     '#8a9e8a',
 }
 
-// Tier accent colours for avec design
 export const TIER_ACCENT: Record<Tier, string> = {
-  S: '#c4927a',
-  A: '#8a9e8a',
-  B: '#7090a8',
-  C: '#b8a898',
-  D: '#a08070',
-  E: '#c4b8a8',
-  F: '#a08070',
+  S: '#b06055',
+  A: '#a07838',
+  B: '#888030',
+  C: '#508848',
+  D: '#407888',
+  E: '#584888',
+  F: '#884870',
 }
 
-// Legacy — kept for components not yet restyled
-export const TIER_COLORS: Record<Tier, string> = {
-  S: 'text-[#c4927a] border-[#c4927a] bg-[#f9f0eb]',
-  A: 'text-[#8a9e8a] border-[#8a9e8a] bg-[#eff4ef]',
-  B: 'text-[#7090a8] border-[#7090a8] bg-[#edf2f6]',
-  C: 'text-[#b8a898] border-[#b8a898] bg-linen',
-  D: 'text-[#a08070] border-[#a08070] bg-linen',
-  E: 'text-[#c4b8a8] border-[#c4b8a8] bg-linen',
-  F: 'text-[#a08070] border-[#a08070] bg-linen',
+export const TIER_BLOCK_BG: Record<Tier, string> = {
+  S: '#f7e8e4',
+  A: '#f7f0de',
+  B: '#f5f4d8',
+  C: '#e4f2e0',
+  D: '#daeef4',
+  E: '#e4e0f4',
+  F: '#f2dced',
 }
 
-export const TIER_BG_COLORS: Record<Tier, string> = {
-  S: 'bg-parchment border-stone',
-  A: 'bg-parchment border-stone',
-  B: 'bg-parchment border-stone',
-  C: 'bg-parchment border-stone',
-  D: 'bg-parchment border-stone',
-  E: 'bg-parchment border-stone',
-  F: 'bg-parchment border-stone',
+export const TIER_CHIP_BG: Record<Tier, string> = {
+  S: '#eeddd8',
+  A: '#eee4c8',
+  B: '#ececc0',
+  C: '#d0e8ca',
+  D: '#c0e0ea',
+  E: '#d4ceec',
+  F: '#e6c8de',
+}
+
+export const TIER_CHIP_TEXT: Record<Tier, string> = {
+  S: '#8a4840',
+  A: '#806028',
+  B: '#686818',
+  C: '#387030',
+  D: '#285868',
+  E: '#403070',
+  F: '#683058',
 }
 
 export const CUISINE_EMOJI: Record<string, string> = {

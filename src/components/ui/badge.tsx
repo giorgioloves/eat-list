@@ -1,5 +1,5 @@
 ﻿import type { RestaurantStatus, Tier } from '@/types'
-import { TIER_ACCENT } from '@/types'
+import { TIER_ACCENT, TIER_CHIP_BG } from '@/types'
 
 export function StatusBadge({ status }: { status: RestaurantStatus }) {
   const styles = {
@@ -32,6 +32,7 @@ export function StatusBadge({ status }: { status: RestaurantStatus }) {
 
 export function TierBadge({ tier }: { tier: Tier }) {
   const accent = TIER_ACCENT[tier]
+  const bg     = TIER_CHIP_BG[tier]
   return (
     <span style={{
       display:         'inline-flex',
@@ -42,7 +43,7 @@ export function TierBadge({ tier }: { tier: Tier }) {
       borderRadius:    6,
       border:          `0.5px solid ${accent}`,
       color:           accent,
-      backgroundColor: '#ede5d8',
+      backgroundColor: bg,
       fontFamily:      'var(--font-crimson), Georgia, serif',
       fontStyle:       'italic',
       fontSize: 16,
