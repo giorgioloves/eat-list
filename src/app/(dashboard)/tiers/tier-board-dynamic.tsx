@@ -8,6 +8,6 @@ const TierBoard = dynamic(
   { ssr: false }
 )
 
-export function TierBoardDynamic({ restaurants }: { restaurants: Restaurant[] }) {
-  return <TierBoard restaurants={restaurants} />
+export function TierBoardDynamic({ restaurants, editing }: { restaurants: Restaurant[]; editing: boolean }) {
+  return <TierBoard restaurants={restaurants} editing={editing} />
 }

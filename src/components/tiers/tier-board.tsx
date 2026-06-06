@@ -38,6 +38,7 @@ const T = {
 
 interface TierBoardProps {
   restaurants: Restaurant[]
+  editing?: boolean
 }
 
 type TierGroup = { [key: string]: Restaurant[] }
@@ -55,10 +56,11 @@ function groupByTier(restaurants: Restaurant[]): TierGroup {
   return groups
 }
 
-export function TierBoard({ restaurants }: TierBoardProps) {
+export function TierBoard({ restaurants, editing = false }: TierBoardProps) {
   const [groups, setGroups] = useState<TierGroup>(() => groupByTier(restaurants))
 
   useEffect(() => {
+    if (!editing) return
     const el = document.body
     const prev = el.style.userSelect
     el.style.userSelect = 'none';
@@ -67,15 +69,17 @@ export function TierBoard({ restaurants }: TierBoardProps) {
       el.style.userSelect = prev;
       (el.style as any).webkitUserSelect = prev
     }
-  }, [])
+  }, [editing])
 
   const [activeId, setActiveId]   = useState<string | null>(null)
   const [saving, setSaving]       = useState<string | null>(null)
 
-  const sensors = useSensors(
+  const activeSensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(TouchSensor, { activationConstraint: { distance: 1 } })
   )
+  const noSensors = useSensors()
+  const sensors = editing ? activeSensors : noSensors
 
   function findContainerOf(id: string): string | null {
     for (const [tier, items] of Object.entries(groups)) {
@@ -152,6 +156,7 @@ export function TierBoard({ restaurants }: TierBoardProps) {
             tier={tier}
             items={groups[tier] || []}
             savingId={saving}
+            editing={editing}
           />
         ))}
 
@@ -165,7 +170,7 @@ export function TierBoard({ restaurants }: TierBoardProps) {
               textTransform: 'uppercase',
               marginBottom:  8,
             }}>untiered</p>
-            <TierRow tier="untiered" items={groups['untiered'] || []} savingId={saving} isUntiered />
+            <TierRow tier="untiered" items={groups['untiered'] || []} savingId={saving} isUntiered editing={editing} />
           </div>
         )}
       </div>
@@ -178,12 +183,13 @@ export function TierBoard({ restaurants }: TierBoardProps) {
 }
 
 function TierRow({
-  tier, items, savingId, isUntiered,
+  tier, items, savingId, isUntiered, editing,
 }: {
   tier: string
   items: Restaurant[]
   savingId: string | null
   isUntiered?: boolean
+  editing?: boolean
 }) {
   const accent = isUntiered ? T.stone : TIER_ACCENT[tier as Tier]
   const { setNodeRef, isOver } = useDroppable({ id: tier })
@@ -246,6 +252,7 @@ function TierRow({
                   key={r.id}
                   restaurant={r}
                   isSaving={savingId === r.id}
+                  editing={editing}
                 />
               ))}
             </div>
@@ -257,7 +264,7 @@ function TierRow({
 }
 
 // Used in tier rows — has dnd-kit sortable hooks
-function SortableCard({ restaurant, isSaving }: { restaurant: Restaurant; isSaving?: boolean }) {
+function SortableCard({ restaurant, isSaving, editing }: { restaurant: Restaurant; isSaving?: boolean; editing?: boolean }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: restaurant.id,
   })
@@ -279,12 +286,11 @@ function SortableCard({ restaurant, isSaving }: { restaurant: Restaurant; isSavi
         backgroundColor: T.chipBg,
         border:          `0.5px solid ${T.border}`,
         borderRadius:    6,
-        cursor:          'grab',
+        cursor:          editing ? 'grab' : 'default',
         userSelect:      'none',
-        touchAction:     'none',
+        touchAction:     editing ? 'none' : 'auto',
       }}
-      {...attributes}
-      {...listeners}
+      {...(editing ? { ...attributes, ...listeners } : {})}
     >
       <span style={{
         fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
