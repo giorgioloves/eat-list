@@ -121,7 +121,7 @@ export function VisitLog({ restaurantId, visits }: VisitLogProps) {
           flexDirection:   'column',
           gap:             10,
         }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div>
               <label style={{ display: 'block', fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.mist, letterSpacing: '0.1em', marginBottom: 5 }}>date</label>
               <input type="date" value={date} onChange={(e) => setDate(e.target.value)} style={inputStyle} />
