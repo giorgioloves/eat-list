@@ -232,7 +232,15 @@ function MiniTopCuisines({ restaurants }: { restaurants: Restaurant[] }) {
         marginBottom:    8,
         whiteSpace:      'nowrap' as const,
       }}>top cuisines</span>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div style={{
+        backgroundColor: T.linen,
+        border:          `0.5px solid ${T.border}`,
+        borderRadius:    8,
+        padding:         '8px 10px',
+        display:         'flex',
+        flexDirection:   'column',
+        gap:             8,
+      }}>
         {top5.map(([cuisine, count]) => (
           <div key={cuisine} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ fontSize: 14, width: 16, textAlign: 'center', flexShrink: 0 }}>
