@@ -89,7 +89,7 @@ export default function DashboardPage() {
 
       {/* Recent — 2×2 grid */}
       {restaurants.length > 0 && (
-        <div style={{ marginBottom: 20 }}>
+        <div>
           <SectionHeader title="recent" href="/stats" linkLabel="view all" />
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             <RecentColumn label="recently visited" items={recentVisited} type="visited" />
@@ -218,20 +218,19 @@ function MiniTopCuisines({ restaurants }: { restaurants: Restaurant[] }) {
   const max = top5[0][1]
 
   return (
-    <div style={{
-      backgroundColor: T.linen,
-      border:          `0.5px solid ${T.border}`,
-      borderRadius:    10,
-      padding:         14,
-    }}>
+    <div style={{ minWidth: 0 }}>
       <span style={{
-        display:       'block',
-        fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-        fontSize: 11,
-        color:         T.mist,
-        letterSpacing: '0.1em',
-        textTransform: 'uppercase' as const,
-        marginBottom:  10,
+        display:         'inline-flex',
+        alignItems:      'center',
+        padding:         '3px 8px',
+        borderRadius:    6,
+        backgroundColor: '#d8e8f0',
+        color:           '#1e4f68',
+        fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
+        fontSize: 10,
+        letterSpacing:   '0.06em',
+        marginBottom:    8,
+        whiteSpace:      'nowrap' as const,
       }}>top cuisines</span>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {top5.map(([cuisine, count]) => (
