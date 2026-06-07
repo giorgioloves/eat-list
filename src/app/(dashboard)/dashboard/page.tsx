@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { Plus, UtensilsCrossed } from 'lucide-react'
 import { useRestaurants } from '@/contexts/restaurants'
-import { formatDate } from '@/lib/utils'
 import { CUISINE_EMOJI } from '@/types'
 import type { Restaurant } from '@/types'
 
@@ -29,10 +28,10 @@ export default function DashboardPage() {
   const visitedPct    = restaurants.length > 0 ? Math.round((visited.length / restaurants.length) * 100) : 0
   const recentVisited = [...visited]
     .sort((a, b) => (b.last_visit_date ?? '').localeCompare(a.last_visit_date ?? ''))
-    .slice(0, 4)
+    .slice(0, 5)
   const recentAdded   = [...restaurants]
     .sort((a, b) => b.created_at.localeCompare(a.created_at))
-    .slice(0, 4)
+    .slice(0, 5)
 
   return (
     <div style={{ padding: '24px 16px 112px', maxWidth: 440, margin: '0 auto' }}>
@@ -406,38 +405,47 @@ function MiniVisitHighlights({ restaurants, visited }: { restaurants: Restaurant
 
 // ─── Recent Columns ───────────────────────────────────────────────────────────
 
+const COLUMN_BADGE: Record<'visited' | 'added', { bg: string; color: string }> = {
+  visited: { bg: '#ddeedd', color: '#2a5a2a' },
+  added:   { bg: '#e8e0f0', color: '#4a2a7a' },
+}
+
 function RecentColumn({ label, items, type }: {
   label: string
   items: Restaurant[]
   type: 'visited' | 'added'
 }) {
+  const badge = COLUMN_BADGE[type]
   return (
-    <div>
-      <p style={{
-        fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+    <div style={{ minWidth: 0 }}>
+      <span style={{
+        display:         'inline-flex',
+        alignItems:      'center',
+        padding:         '3px 8px',
+        borderRadius:    6,
+        backgroundColor: badge.bg,
+        color:           badge.color,
+        fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
         fontSize: 10,
-        color:         T.ghost,
-        letterSpacing: '0.08em',
-        marginBottom:  8,
-      }}>{label}</p>
+        letterSpacing:   '0.06em',
+        marginBottom:    8,
+        whiteSpace:      'nowrap' as const,
+      }}>{label}</span>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         {items.length === 0 ? (
           <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.ghost, fontStyle: 'italic' }}>
             none yet
           </p>
         ) : items.map((r) => (
-          <MiniRestaurantCard key={r.id} restaurant={r} type={type} />
+          <MiniRestaurantCard key={r.id} restaurant={r} />
         ))}
       </div>
     </div>
   )
 }
 
-function MiniRestaurantCard({ restaurant: r, type }: { restaurant: Restaurant; type: 'visited' | 'added' }) {
+function MiniRestaurantCard({ restaurant: r }: { restaurant: Restaurant }) {
   const displayName = r.name.replace(/\s*\([^)]+\)\s*$/, '').trim()
-  const sub = type === 'visited'
-    ? (r.last_visit_date ? formatDate(r.last_visit_date) : null)
-    : (r.cuisine ?? null)
 
   return (
     <Link
@@ -449,6 +457,8 @@ function MiniRestaurantCard({ restaurant: r, type }: { restaurant: Restaurant; t
         border:          `0.5px solid ${T.border}`,
         borderRadius:    8,
         textDecoration:  'none',
+        minWidth:        0,
+        overflow:        'hidden',
       }}
     >
       <p style={{
@@ -461,7 +471,7 @@ function MiniRestaurantCard({ restaurant: r, type }: { restaurant: Restaurant; t
         whiteSpace:   'nowrap',
         lineHeight:   1.2,
       }}>{displayName}</p>
-      {sub && (
+      {r.cuisine && (
         <p style={{
           fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
           fontSize: 10,
@@ -471,7 +481,7 @@ function MiniRestaurantCard({ restaurant: r, type }: { restaurant: Restaurant; t
           overflow:      'hidden',
           textOverflow:  'ellipsis',
           whiteSpace:    'nowrap',
-        }}>{sub}</p>
+        }}>{r.cuisine}</p>
       )}
     </Link>
   )
