@@ -170,6 +170,7 @@ export function RestaurantForm({ restaurant }: RestaurantFormProps) {
               <select
                 value={form.cuisine}
                 onChange={(e) => set('cuisine', e.target.value)}
+                tabIndex={-1}
                 style={{ position: 'absolute', inset: 0, width: '100%', opacity: 0, cursor: 'pointer' }}
               >
                 <option value="">select cuisine</option>
