@@ -1,12 +1,9 @@
 ﻿'use client'
 
 import Link from 'next/link'
-import { StatusBadge } from '@/components/ui/badge'
-import { PipRating } from '@/components/ui/pip-rating'
-import {
-  Plus, UtensilsCrossed, ChevronRight,
-} from 'lucide-react'
+import { Plus, UtensilsCrossed } from 'lucide-react'
 import { useRestaurants } from '@/contexts/restaurants'
+import { formatDate } from '@/lib/utils'
 import { CUISINE_EMOJI } from '@/types'
 import type { Restaurant } from '@/types'
 
@@ -26,11 +23,16 @@ const T = {
 export default function DashboardPage() {
   const { restaurants } = useRestaurants()
 
-  const visited     = restaurants.filter((r) => r.status === 'visited')
-  const wishlist    = restaurants.filter((r) => r.status === 'want_to_try')
-  const rated       = restaurants.filter((r) => r.rating !== null)
-  const visitedPct  = restaurants.length > 0 ? Math.round((visited.length / restaurants.length) * 100) : 0
-  const recent      = restaurants.slice(0, 4)
+  const visited       = restaurants.filter((r) => r.status === 'visited')
+  const wishlist      = restaurants.filter((r) => r.status === 'want_to_try')
+  const rated         = restaurants.filter((r) => r.rating !== null)
+  const visitedPct    = restaurants.length > 0 ? Math.round((visited.length / restaurants.length) * 100) : 0
+  const recentVisited = [...visited]
+    .sort((a, b) => (b.last_visit_date ?? '').localeCompare(a.last_visit_date ?? ''))
+    .slice(0, 4)
+  const recentAdded   = [...restaurants]
+    .sort((a, b) => b.created_at.localeCompare(a.created_at))
+    .slice(0, 4)
 
   return (
     <div style={{ padding: '24px 16px 112px', maxWidth: 440, margin: '0 auto' }}>
@@ -83,6 +85,17 @@ export default function DashboardPage() {
         />
       </Link>
 
+      {/* Recent — two columns */}
+      {restaurants.length > 0 && (
+        <div style={{ marginBottom: 20 }}>
+          <SectionHeader title="recent" href="/stats" linkLabel="view all" />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            <RecentColumn label="recently visited" items={recentVisited} type="visited" />
+            <RecentColumn label="recently added"   items={recentAdded}   type="added" />
+          </div>
+        </div>
+      )}
+
       {/* Stats preview */}
       {restaurants.length > 0 && (
         <div style={{ marginBottom: 20 }}>
@@ -95,19 +108,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Recent Activity */}
-      <div>
-        <SectionHeader title="recent" href="/restaurants" linkLabel="view all" />
-        {recent.length === 0 ? (
-          <EmptyState />
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {recent.map((r) => (
-              <RecentRow key={r.id} restaurant={r} />
-            ))}
-          </div>
-        )}
-      </div>
+      {restaurants.length === 0 && <EmptyState />}
 
     </div>
   )
@@ -403,52 +404,75 @@ function MiniVisitHighlights({ restaurants, visited }: { restaurants: Restaurant
   )
 }
 
-// ─── Recent Row ───────────────────────────────────────────────────────────────
+// ─── Recent Columns ───────────────────────────────────────────────────────────
 
-function RecentRow({ restaurant: r }: { restaurant: Restaurant }) {
+function RecentColumn({ label, items, type }: {
+  label: string
+  items: Restaurant[]
+  type: 'visited' | 'added'
+}) {
+  return (
+    <div>
+      <p style={{
+        fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+        fontSize: 10,
+        color:         T.ghost,
+        letterSpacing: '0.08em',
+        marginBottom:  8,
+      }}>{label}</p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {items.length === 0 ? (
+          <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.ghost, fontStyle: 'italic' }}>
+            none yet
+          </p>
+        ) : items.map((r) => (
+          <MiniRestaurantCard key={r.id} restaurant={r} type={type} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function MiniRestaurantCard({ restaurant: r, type }: { restaurant: Restaurant; type: 'visited' | 'added' }) {
   const displayName = r.name.replace(/\s*\([^)]+\)\s*$/, '').trim()
+  const sub = type === 'visited'
+    ? (r.last_visit_date ? formatDate(r.last_visit_date) : null)
+    : (r.cuisine ?? null)
+
   return (
     <Link
       href={`/restaurants/${r.id}`}
       style={{
-        display:         'flex',
-        alignItems:      'center',
-        gap:             10,
-        padding:         '10px 12px',
+        display:         'block',
+        padding:         '8px 10px',
         backgroundColor: T.linen,
         border:          `0.5px solid ${T.border}`,
-        borderRadius:    10,
+        borderRadius:    8,
         textDecoration:  'none',
       }}
     >
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' as const }}>
-          <span style={{
-            fontFamily:   'var(--font-crimson), Georgia, serif',
-            fontSize: 16,
-            fontWeight:   500,
-            color:        T.espresso,
-            overflow:     'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace:   'nowrap',
-          }}>{displayName}</span>
-          {r.rating !== null && <PipRating rating={r.rating} size="sm" />}
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4, flexWrap: 'wrap' as const }}>
-          <StatusBadge status={r.status} />
-          {r.cuisine && <span style={{
-            fontFamily: 'var(--font-dm-mono), ui-monospace, monospace',
-            fontSize: 11,
-            color:      T.mist,
-          }}>{r.cuisine}</span>}
-          {r.price_level && <span style={{
-            fontFamily: 'var(--font-dm-mono), ui-monospace, monospace',
-            fontSize: 11,
-            color:      T.ghost,
-          }}>{r.price_level}</span>}
-        </div>
-      </div>
-      <ChevronRight style={{ width: 14, height: 14, color: T.stone, flexShrink: 0 }} />
+      <p style={{
+        fontFamily:   'var(--font-crimson), Georgia, serif',
+        fontSize: 15,
+        fontWeight:   400,
+        color:        T.espresso,
+        overflow:     'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace:   'nowrap',
+        lineHeight:   1.2,
+      }}>{displayName}</p>
+      {sub && (
+        <p style={{
+          fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+          fontSize: 10,
+          color:         T.ghost,
+          letterSpacing: '0.04em',
+          marginTop:     3,
+          overflow:      'hidden',
+          textOverflow:  'ellipsis',
+          whiteSpace:    'nowrap',
+        }}>{sub}</p>
+      )}
     </Link>
   )
 }
