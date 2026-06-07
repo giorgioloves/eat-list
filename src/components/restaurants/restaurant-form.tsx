@@ -54,7 +54,7 @@ interface FormData {
 
 export function RestaurantForm({ restaurant }: RestaurantFormProps) {
   const router = useRouter()
-  const { refresh } = useRestaurants()
+  const { refresh, restaurants } = useRestaurants()
 
   const [form, setForm] = useState<FormData>({
     name:       restaurant?.name || '',
@@ -74,13 +74,13 @@ export function RestaurantForm({ restaurant }: RestaurantFormProps) {
   const [error, setError]                 = useState('')
   const [showDelete, setShowDelete]       = useState(false)
   const [deleteLoading, setDeleteLoading] = useState(false)
+  const [showDuplicate, setShowDuplicate] = useState(false)
 
   function set(field: keyof FormData, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }))
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
+  async function doSave() {
     setError('')
     setLoading(true)
 
@@ -117,6 +117,26 @@ export function RestaurantForm({ restaurant }: RestaurantFormProps) {
       await refresh()
       router.push('/restaurants')
     }
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+
+    if (!restaurant) {
+      const nameLower = form.name.trim().toLowerCase()
+      const addrLower = form.address.trim().toLowerCase()
+      const isDuplicate = restaurants.some((r) => {
+        const nameMatch = r.name.toLowerCase() === nameLower
+        const addrMatch = addrLower !== '' && r.address?.toLowerCase() === addrLower
+        return nameMatch || addrMatch
+      })
+      if (isDuplicate) {
+        setShowDuplicate(true)
+        return
+      }
+    }
+
+    await doSave()
   }
 
   async function handleDelete() {
@@ -292,6 +312,81 @@ export function RestaurantForm({ restaurant }: RestaurantFormProps) {
         danger
         loading={deleteLoading}
       />
+
+      {showDuplicate && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+          <div
+            style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(59,47,39,0.5)' }}
+            onClick={() => setShowDuplicate(false)}
+          />
+          <div style={{
+            position:        'relative',
+            backgroundColor: T.parchment,
+            border:          `0.5px solid ${T.border}`,
+            borderRadius:    10,
+            width:           '100%',
+            maxWidth:        340,
+            padding:         '22px 20px 18px',
+          }}>
+            <p style={{
+              fontFamily: 'var(--font-crimson), Georgia, serif',
+              fontStyle:  'italic',
+              fontSize: 20,
+              color:      T.espresso,
+              lineHeight: 1.3,
+              margin:     0,
+            }}>
+              it looks like you&apos;ve added this before, goose
+            </p>
+            <p style={{
+              fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+              fontSize: 12,
+              color:         T.mist,
+              letterSpacing: '0.06em',
+              marginTop:     10,
+              marginBottom:  18,
+            }}>
+              continue to add?
+            </p>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                onClick={() => setShowDuplicate(false)}
+                style={{
+                  flex:            1,
+                  padding:         '9px 0',
+                  fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
+                  fontSize: 12,
+                  color:           T.mist,
+                  backgroundColor: T.linen,
+                  border:          `0.5px solid ${T.border}`,
+                  borderRadius:    8,
+                  cursor:          'pointer',
+                  letterSpacing:   '0.06em',
+                }}
+              >
+                no
+              </button>
+              <button
+                onClick={() => { setShowDuplicate(false); doSave() }}
+                style={{
+                  flex:            1,
+                  padding:         '9px 0',
+                  fontFamily:      'var(--font-crimson), Georgia, serif',
+                  fontStyle:       'italic',
+                  fontSize: 18,
+                  color:           T.parchment,
+                  backgroundColor: T.espresso,
+                  border:          'none',
+                  borderRadius:    8,
+                  cursor:          'pointer',
+                }}
+              >
+                yes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   )
 }
