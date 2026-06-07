@@ -31,8 +31,9 @@ export default function DashboardPage() {
   const recentAdded   = [...restaurants]
     .sort((a, b) => b.created_at.localeCompare(a.created_at))
     .slice(0, 5)
-  const wantToTry     = [...wishlist]
-    .sort((a, b) => b.created_at.localeCompare(a.created_at))
+  const wantToGoAgain = restaurants
+    .filter((r) => r.status === 'visited' && (r.would_go_again === 'definitely' || r.would_go_again === 'maybe'))
+    .sort((a, b) => (b.last_visit_date ?? '').localeCompare(a.last_visit_date ?? ''))
     .slice(0, 5)
 
   return (
@@ -93,7 +94,7 @@ export default function DashboardPage() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             <RecentColumn label="recently visited" items={recentVisited} type="visited" />
             <RecentColumn label="recently added"   items={recentAdded}   type="added" />
-            <RecentColumn label="want to go to"    items={wantToTry}     type="want_to_go" />
+            <RecentColumn label="want to go to again" items={wantToGoAgain} type="want_to_go" />
             <MiniTopCuisines restaurants={restaurants} />
           </div>
         </div>
