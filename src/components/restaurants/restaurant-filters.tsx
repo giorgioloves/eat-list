@@ -45,8 +45,7 @@ export function RestaurantFilters({ filters, onChange, suburbs, cuisines, tiers 
   const activeCount =
     filters.status.length +
     filters.cuisine.length +
-    filters.suburb.length +
-    filters.tier.length
+    filters.suburb.length
 
   function clearFacets() {
     onChange({ ...filters, status: [], cuisine: [], suburb: [], tier: [] })
@@ -207,52 +206,72 @@ export function RestaurantFilters({ filters, onChange, suburbs, cuisines, tiers 
             </div>
           </FilterSection>
 
-          {tiers.length > 0 && (
-            <FilterSection label="tier">
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                {tiers.map(t => (
-                  <FilterChip
-                    key={t}
-                    label={t}
-                    active={filters.tier.includes(t)}
-                    onClick={() => onChange({ ...filters, tier: toggle(filters.tier, t) })}
-                  />
-                ))}
-              </div>
-            </FilterSection>
-          )}
-
           {suburbs.length > 0 && (
             <FilterSection label="suburb">
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                {suburbs.map(s => (
-                  <FilterChip
-                    key={s}
-                    label={s}
-                    active={filters.suburb.includes(s)}
-                    onClick={() => onChange({ ...filters, suburb: toggle(filters.suburb, s) })}
-                  />
-                ))}
-              </div>
+              <DropdownFilter
+                value={filters.suburb[0] ?? ''}
+                options={suburbs}
+                placeholder="all suburbs"
+                onChange={val => onChange({ ...filters, suburb: val ? [val] : [] })}
+              />
             </FilterSection>
           )}
 
           {cuisines.length > 0 && (
             <FilterSection label="cuisine">
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, maxHeight: 96, overflowY: 'auto' }}>
-                {cuisines.map(c => (
-                  <FilterChip
-                    key={c}
-                    label={c}
-                    active={filters.cuisine.includes(c)}
-                    onClick={() => onChange({ ...filters, cuisine: toggle(filters.cuisine, c) })}
-                  />
-                ))}
-              </div>
+              <DropdownFilter
+                value={filters.cuisine[0] ?? ''}
+                options={cuisines}
+                placeholder="all cuisines"
+                onChange={val => onChange({ ...filters, cuisine: val ? [val] : [] })}
+              />
             </FilterSection>
           )}
         </div>
       )}
+    </div>
+  )
+}
+
+function DropdownFilter({ value, options, placeholder, onChange }: {
+  value: string
+  options: string[]
+  placeholder: string
+  onChange: (val: string) => void
+}) {
+  const active = !!value
+  return (
+    <div style={{ position: 'relative' }}>
+      <div style={{
+        display:         'flex',
+        alignItems:      'center',
+        justifyContent:  'space-between',
+        height:          36,
+        padding:         '0 10px',
+        backgroundColor: active ? T.terracotta : T.parchment,
+        border:          `0.5px solid ${active ? T.terracotta : T.border}`,
+        borderRadius:    8,
+        pointerEvents:   'none',
+      }}>
+        <span style={{
+          fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+          fontSize: 11,
+          color:         active ? T.parchment : T.mist,
+          letterSpacing: '0.06em',
+          overflow:      'hidden',
+          textOverflow:  'ellipsis',
+          whiteSpace:    'nowrap',
+        }}>{value || placeholder}</span>
+        <ChevronDown style={{ width: 10, height: 10, color: active ? T.parchment : T.mist, flexShrink: 0, marginLeft: 6 }} />
+      </div>
+      <select
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        style={{ position: 'absolute', inset: 0, width: '100%', opacity: 0, cursor: 'pointer' }}
+      >
+        <option value="">{placeholder}</option>
+        {options.map(o => <option key={o} value={o}>{o}</option>)}
+      </select>
     </div>
   )
 }

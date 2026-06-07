@@ -306,14 +306,27 @@ function RecentColumn({ label, items, type }: {
             none yet
           </p>
         ) : items.map((r) => (
-          <MiniRestaurantCard key={r.id} restaurant={r} />
+          <MiniRestaurantCard
+            key={r.id}
+            restaurant={r}
+            date={
+              type === 'visited' ? fmtDay(r.last_visit_date) :
+              type === 'added'   ? fmtDay(r.created_at)      : null
+            }
+          />
         ))}
       </div>
     </div>
   )
 }
 
-function MiniRestaurantCard({ restaurant: r }: { restaurant: Restaurant }) {
+function fmtDay(dateStr: string | null | undefined): string | null {
+  if (!dateStr) return null
+  const [, m, d] = dateStr.slice(0, 10).split('-')
+  return `${parseInt(d)}/${parseInt(m)}`
+}
+
+function MiniRestaurantCard({ restaurant: r, date }: { restaurant: Restaurant; date?: string | null }) {
   const displayName = r.name.replace(/\s*\([^)]+\)\s*$/, '').trim()
 
   return (
@@ -330,16 +343,29 @@ function MiniRestaurantCard({ restaurant: r }: { restaurant: Restaurant }) {
         overflow:        'hidden',
       }}
     >
-      <p style={{
-        fontFamily:   'var(--font-crimson), Georgia, serif',
-        fontSize: 15,
-        fontWeight:   400,
-        color:        T.espresso,
-        overflow:     'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace:   'nowrap',
-        lineHeight:   1.2,
-      }}>{displayName}</p>
+      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 4 }}>
+        <p style={{
+          fontFamily:   'var(--font-crimson), Georgia, serif',
+          fontSize: 15,
+          fontWeight:   400,
+          color:        T.espresso,
+          overflow:     'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace:   'nowrap',
+          lineHeight:   1.2,
+          flex:         1,
+          minWidth:     0,
+        }}>{displayName}</p>
+        {date && (
+          <span style={{
+            fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+            fontSize: 9,
+            color:         T.ghost,
+            letterSpacing: '0.02em',
+            flexShrink:    0,
+          }}>{date}</span>
+        )}
+      </div>
       {r.cuisine && (
         <p style={{
           fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
