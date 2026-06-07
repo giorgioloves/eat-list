@@ -215,26 +215,6 @@ export default function RestaurantListClient({ restaurants }: { restaurants: Res
         </div>
       )}
 
-      {/* Clear all */}
-      {hasActiveFilters && (
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <button
-            onClick={clearAll}
-            style={{
-              fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-              fontSize: 11,
-              color:         T.terracotta,
-              letterSpacing: '0.08em',
-              background:    'none',
-              border:        'none',
-              cursor:        'pointer',
-              padding:       0,
-            }}
-          >
-            clear all
-          </button>
-        </div>
-      )}
 
       {/* Cards */}
       {filtered.length === 0 ? (
