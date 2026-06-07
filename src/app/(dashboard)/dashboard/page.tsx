@@ -212,7 +212,7 @@ function MiniTopCuisines({ restaurants }: { restaurants: Restaurant[] }) {
   for (const r of restaurants) {
     if (r.cuisine) counts[r.cuisine] = (counts[r.cuisine] || 0) + 1
   }
-  const top5 = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 5)
+  const top5 = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 9)
   if (top5.length === 0) return null
   const max = top5[0][1]
 
