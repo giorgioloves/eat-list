@@ -26,13 +26,11 @@ const T = {
 export default function DashboardPage() {
   const { restaurants } = useRestaurants()
 
-  const visited   = restaurants.filter((r) => r.status === 'visited')
-  const wishlist  = restaurants.filter((r) => r.status === 'want_to_try')
-  const rated     = restaurants.filter((r) => r.rating !== null)
-  const avgRating = rated.length > 0
-    ? (rated.reduce((sum, r) => sum + (r.rating ?? 0), 0) / rated.length).toFixed(1)
-    : null
-  const recent    = restaurants.slice(0, 4)
+  const visited     = restaurants.filter((r) => r.status === 'visited')
+  const wishlist    = restaurants.filter((r) => r.status === 'want_to_try')
+  const rated       = restaurants.filter((r) => r.rating !== null)
+  const visitedPct  = restaurants.length > 0 ? Math.round((visited.length / restaurants.length) * 100) : 0
+  const recent      = restaurants.slice(0, 4)
 
   return (
     <div style={{ padding: '24px 16px 112px', maxWidth: 440, margin: '0 auto' }}>
@@ -75,21 +73,15 @@ export default function DashboardPage() {
         </Link>
       </div>
 
-      {/* 2×2 metric grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 20 }}>
-        <Link href="/stats" style={{ textDecoration: 'none' }}>
-          <MetricCard label="total" value={restaurants.length} detail="restaurants" />
-        </Link>
-        <Link href="/stats" style={{ textDecoration: 'none' }}>
-          <MetricCard label="visited" value={visited.length} detail="restaurants" accent />
-        </Link>
-        <Link href="/stats" style={{ textDecoration: 'none' }}>
-          <MetricCard label="want to try" value={wishlist.length} detail="restaurants" />
-        </Link>
-        <Link href="/stats" style={{ textDecoration: 'none' }}>
-          <MetricCard label="avg rating" value={avgRating ?? '—'} detail="out of 5" accent italic />
-        </Link>
-      </div>
+      {/* Hero summary card */}
+      <Link href="/stats" style={{ textDecoration: 'none', display: 'block', marginBottom: 20 }}>
+        <HeroCard
+          total={restaurants.length}
+          visited={visited.length}
+          wishlist={wishlist.length}
+          visitedPct={visitedPct}
+        />
+      </Link>
 
       {/* Stats preview */}
       {restaurants.length > 0 && (
@@ -144,46 +136,79 @@ function SectionHeader({ title, href, linkLabel }: { title: string; href: string
   )
 }
 
-// ─── Metric Card ──────────────────────────────────────────────────────────────
+// ─── Progress Ring ────────────────────────────────────────────────────────────
 
-function MetricCard({
-  label, value, detail, accent, italic,
-}: {
-  label: string
-  value: number | string
-  detail: string
-  accent?: boolean
-  italic?: boolean
+function ProgressRing({ pct, size = 80, stroke = 6 }: { pct: number; size?: number; stroke?: number }) {
+  const r    = (size - stroke) / 2
+  const circ = 2 * Math.PI * r
+  const offset = circ - (Math.min(pct, 100) / 100) * circ
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ transform: 'rotate(-90deg)' }}>
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={T.stone} strokeWidth={stroke} />
+      <circle
+        cx={size / 2} cy={size / 2} r={r}
+        fill="none" stroke={T.sage} strokeWidth={stroke}
+        strokeLinecap="round"
+        strokeDasharray={circ}
+        strokeDashoffset={offset}
+        style={{ transition: 'stroke-dashoffset 0.6s ease' }}
+      />
+    </svg>
+  )
+}
+
+// ─── Hero Card ────────────────────────────────────────────────────────────────
+
+function HeroCard({ total, visited, wishlist, visitedPct }: {
+  total: number; visited: number; wishlist: number; visitedPct: number
 }) {
   return (
     <div style={{
       backgroundColor: T.linen,
       border:          `0.5px solid ${T.border}`,
       borderRadius:    10,
-      padding:         '14px 14px 12px',
+      padding:         '18px 18px 14px',
     }}>
-      <p style={{
-        fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-        fontSize: 11,
-        color:         T.mist,
-        letterSpacing: '0.1em',
-        marginBottom:  8,
-      }}>{label}</p>
-      <p style={{
-        fontFamily: 'var(--font-crimson), Georgia, serif',
-        fontSize: 34,
-        fontWeight: accent ? 400 : 300,
-        fontStyle:  italic ? 'italic' : 'normal',
-        color:      accent ? T.terracotta : T.espresso,
-        lineHeight:  1,
-        marginBottom: 4,
-      }}>{value}</p>
-      <p style={{
-        fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-        fontSize: 11,
-        color:         T.ghost,
-        letterSpacing: '0.06em',
-      }}>{detail}</p>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+        <div style={{ minWidth: 0 }}>
+          <p style={{
+            fontFamily: 'var(--font-crimson), Georgia, serif',
+            fontSize: 52,
+            fontWeight: 300,
+            color:      T.espresso,
+            lineHeight: 1,
+          }}>{total}</p>
+          <p style={{
+            fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+            fontSize: 11,
+            color:         T.mist,
+            letterSpacing: '0.08em',
+            marginTop:     6,
+          }}>restaurants tracked</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10, flexWrap: 'wrap' as const }}>
+            <span style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 17, color: T.sage }}>
+              {visited} visited
+            </span>
+            <span style={{ color: T.stone, fontSize: 11 }}>·</span>
+            <span style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 17, color: T.terracotta }}>
+              {wishlist} to try
+            </span>
+          </div>
+        </div>
+        <div style={{ position: 'relative', flexShrink: 0 }}>
+          <ProgressRing pct={visitedPct} />
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ textAlign: 'center' }}>
+              <p style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 19, fontWeight: 400, color: T.espresso, lineHeight: 1 }}>
+                {visitedPct}%
+              </p>
+              <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 9, color: T.mist, marginTop: 1 }}>
+                visited
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
