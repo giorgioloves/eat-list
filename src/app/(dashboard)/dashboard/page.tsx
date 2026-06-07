@@ -24,12 +24,14 @@ export default function DashboardPage() {
 
   const visited       = restaurants.filter((r) => r.status === 'visited')
   const wishlist      = restaurants.filter((r) => r.status === 'want_to_try')
-  const rated         = restaurants.filter((r) => r.rating !== null)
   const visitedPct    = restaurants.length > 0 ? Math.round((visited.length / restaurants.length) * 100) : 0
   const recentVisited = [...visited]
     .sort((a, b) => (b.last_visit_date ?? '').localeCompare(a.last_visit_date ?? ''))
     .slice(0, 5)
   const recentAdded   = [...restaurants]
+    .sort((a, b) => b.created_at.localeCompare(a.created_at))
+    .slice(0, 5)
+  const wantToTry     = [...wishlist]
     .sort((a, b) => b.created_at.localeCompare(a.created_at))
     .slice(0, 5)
 
@@ -84,25 +86,15 @@ export default function DashboardPage() {
         />
       </Link>
 
-      {/* Recent — two columns */}
+      {/* Recent — 2×2 grid */}
       {restaurants.length > 0 && (
         <div style={{ marginBottom: 20 }}>
           <SectionHeader title="recent" href="/stats" linkLabel="view all" />
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             <RecentColumn label="recently visited" items={recentVisited} type="visited" />
             <RecentColumn label="recently added"   items={recentAdded}   type="added" />
-          </div>
-        </div>
-      )}
-
-      {/* Stats preview */}
-      {restaurants.length > 0 && (
-        <div style={{ marginBottom: 20 }}>
-          <SectionHeader title="stats" href="/stats" linkLabel="view full" />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {rated.length > 0 && <MiniRatingDistribution rated={rated} />}
+            <RecentColumn label="want to go to"    items={wantToTry}     type="want_to_go" />
             <MiniTopCuisines restaurants={restaurants} />
-            {visited.length > 0 && <MiniVisitHighlights restaurants={restaurants} visited={visited} />}
           </div>
         </div>
       )}
@@ -213,72 +205,6 @@ function HeroCard({ total, visited, wishlist, visitedPct }: {
   )
 }
 
-// ─── Mini Rating Distribution ─────────────────────────────────────────────────
-
-function MiniRatingDistribution({ rated }: { rated: Restaurant[] }) {
-  const buckets = [5, 4, 3, 2, 1].map((n) => ({
-    stars: n,
-    count: rated.filter((r) => Math.round(r.rating ?? 0) === n).length,
-  }))
-  const max = Math.max(...buckets.map((b) => b.count), 1)
-
-  return (
-    <div style={{
-      backgroundColor: T.linen,
-      border:          `0.5px solid ${T.border}`,
-      borderRadius:    10,
-      padding:         14,
-    }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-        <span style={{
-          fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-          fontSize: 11,
-          color:         T.mist,
-          letterSpacing: '0.1em',
-          textTransform: 'uppercase' as const,
-        }}>rating distribution</span>
-        <span style={{
-          fontFamily: 'var(--font-dm-mono), ui-monospace, monospace',
-          fontSize: 11,
-          color:      T.ghost,
-        }}>{rated.length} rated</span>
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
-        {buckets.map(({ stars, count }) => (
-          <div key={stars} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ display: 'flex', gap: 2, width: 50, flexShrink: 0 }}>
-              {Array.from({ length: 5 }, (_, i) => (
-                <div key={i} style={{
-                  width:           6,
-                  height:          6,
-                  borderRadius:    '50%',
-                  backgroundColor: i < stars ? T.terracotta : T.stone,
-                }} />
-              ))}
-            </div>
-            <div style={{ flex: 1, height: 4, backgroundColor: T.stone, borderRadius: 2, overflow: 'hidden' }}>
-              <div style={{
-                height:          '100%',
-                backgroundColor: T.terracotta,
-                borderRadius:    2,
-                width:           count > 0 ? `${(count / max) * 100}%` : '0%',
-                transition:      'width 0.5s',
-              }} />
-            </div>
-            <span style={{
-              fontFamily: 'var(--font-dm-mono), ui-monospace, monospace',
-              fontSize: 11,
-              color:      T.ghost,
-              width:      14,
-              textAlign:  'right',
-            }}>{count}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
 // ─── Mini Top Cuisines ────────────────────────────────────────────────────────
 
 function MiniTopCuisines({ restaurants }: { restaurants: Restaurant[] }) {
@@ -345,75 +271,18 @@ function MiniTopCuisines({ restaurants }: { restaurants: Restaurant[] }) {
   )
 }
 
-// ─── Mini Visit Highlights ────────────────────────────────────────────────────
-
-function MiniVisitHighlights({ restaurants, visited }: { restaurants: Restaurant[]; visited: Restaurant[] }) {
-  const totalVisits = restaurants.reduce((sum, r) => sum + r.visit_count, 0)
-  const mostVisited = visited.length > 0
-    ? visited.reduce((best, r) => r.visit_count > best.visit_count ? r : best)
-    : null
-  const toTryPct = restaurants.length > 0
-    ? Math.round(((restaurants.length - visited.length) / restaurants.length) * 100)
-    : 0
-
-  return (
-    <div style={{
-      backgroundColor: T.linen,
-      border:          `0.5px solid ${T.border}`,
-      borderRadius:    10,
-      padding:         14,
-    }}>
-      <span style={{
-        display:       'block',
-        fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-        fontSize: 11,
-        color:         T.mist,
-        letterSpacing: '0.1em',
-        textTransform: 'uppercase' as const,
-        marginBottom:  10,
-      }}>visit highlights</span>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 12, color: T.mist }}>total visits logged</span>
-          <span style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 16, color: T.espresso }}>{totalVisits}</span>
-        </div>
-        {mostVisited && mostVisited.visit_count > 1 && (
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 12, color: T.mist, flexShrink: 0 }}>most visited</span>
-            <span style={{
-              fontFamily: 'var(--font-crimson), Georgia, serif',
-              fontSize: 16,
-              color:      T.espresso,
-              overflow:   'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              textAlign:  'right',
-            }}>
-              {mostVisited.name.replace(/\s*\([^)]+\)\s*$/, '').trim()}{' '}
-              <span style={{ color: T.ghost, fontStyle: 'normal' }}>×{mostVisited.visit_count}</span>
-            </span>
-          </div>
-        )}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 12, color: T.mist }}>still to try</span>
-          <span style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 16, color: T.terracotta, fontStyle: 'italic' }}>{toTryPct}%</span>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 // ─── Recent Columns ───────────────────────────────────────────────────────────
 
-const COLUMN_BADGE: Record<'visited' | 'added', { bg: string; color: string }> = {
-  visited: { bg: '#ddeedd', color: '#2a5a2a' },
-  added:   { bg: '#e8e0f0', color: '#4a2a7a' },
+const COLUMN_BADGE: Record<'visited' | 'added' | 'want_to_go', { bg: string; color: string }> = {
+  visited:     { bg: '#ddeedd', color: '#2a5a2a' },
+  added:       { bg: '#e8e0f0', color: '#4a2a7a' },
+  want_to_go:  { bg: '#fce8d8', color: '#7a3820' },
 }
 
 function RecentColumn({ label, items, type }: {
   label: string
   items: Restaurant[]
-  type: 'visited' | 'added'
+  type: 'visited' | 'added' | 'want_to_go'
 }) {
   const badge = COLUMN_BADGE[type]
   return (
