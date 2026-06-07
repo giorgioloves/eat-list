@@ -32,17 +32,6 @@ export default function RestaurantsPage() {
             lineHeight: 1.1,
             margin:     0,
           }}>restaurants</h1>
-          {!loading && (
-            <p style={{
-              fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-              fontSize: 12,
-              color:         T.mist,
-              letterSpacing: '0.1em',
-              marginTop:     4,
-            }}>
-              {restaurants.length} {restaurants.length === 1 ? 'place' : 'places'}
-            </p>
-          )}
         </div>
         <Link
           href="/restaurants/add"

@@ -162,6 +162,18 @@ export default function RestaurantListClient({ restaurants }: { restaurants: Res
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
 
+      <p style={{
+        fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
+        fontSize: 12,
+        color:         T.mist,
+        letterSpacing: '0.1em',
+        marginBottom:  8,
+      }}>
+        {filtered.length === restaurants.length
+          ? `${restaurants.length} ${restaurants.length === 1 ? 'place' : 'places'}`
+          : `${filtered.length} of ${restaurants.length}`}
+      </p>
+
       <RestaurantFilters
         filters={filters}
         onChange={setFilters}
@@ -203,19 +215,9 @@ export default function RestaurantListClient({ restaurants }: { restaurants: Res
         </div>
       )}
 
-      {/* Result count + clear */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{
-          fontFamily:    'var(--font-dm-mono), ui-monospace, monospace',
-          fontSize: 11,
-          color:         T.ghost,
-          letterSpacing: '0.06em',
-        }}>
-          {filtered.length === restaurants.length
-            ? `${restaurants.length} restaurants`
-            : `${filtered.length} of ${restaurants.length}`}
-        </span>
-        {hasActiveFilters && (
+      {/* Clear all */}
+      {hasActiveFilters && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <button
             onClick={clearAll}
             style={{
@@ -231,8 +233,8 @@ export default function RestaurantListClient({ restaurants }: { restaurants: Res
           >
             clear all
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Cards */}
       {filtered.length === 0 ? (
