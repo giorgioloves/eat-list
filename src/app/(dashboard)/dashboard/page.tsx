@@ -90,7 +90,7 @@ export default function DashboardPage() {
       {/* Recent — 2×2 grid */}
       {restaurants.length > 0 && (
         <div>
-          <SectionHeader title="recent" href="/stats" linkLabel="view all" />
+          <SectionHeader title="recent" href="/stats" linkLabel="stats" />
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             <RecentColumn label="recently visited" items={recentVisited} type="visited" />
             <RecentColumn label="recently added"   items={recentAdded}   type="added" />
