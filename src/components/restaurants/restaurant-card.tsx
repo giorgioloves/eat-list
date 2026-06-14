@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
@@ -34,7 +34,7 @@ export function RestaurantCard({ restaurant: r }: { restaurant: Restaurant }) {
         overflow:        'hidden',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '12px 12px 12px 14px' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 9, padding: '9px 9px 9px 11px' }}>
 
         {/* Cuisine emoji */}
         <div style={{
@@ -49,16 +49,16 @@ export function RestaurantCard({ restaurant: r }: { restaurant: Restaurant }) {
           flexShrink:      0,
           fontSize: 20,
           lineHeight:      1,
-          marginTop:       2,
+          marginTop:       1,
         }}>
           {emoji}
         </div>
 
         {/* Main content */}
-        <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
 
           {/* Name + status */}
-          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 3 }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
             <span style={{
               fontFamily:   'var(--font-crimson), Georgia, serif',
               fontSize: 17,
@@ -78,34 +78,34 @@ export function RestaurantCard({ restaurant: r }: { restaurant: Restaurant }) {
               fontSize: 11,
               color:        T.mist,
               letterSpacing: '0.06em',
-              marginBottom: 4,
               overflow:     'hidden',
               textOverflow: 'ellipsis',
               whiteSpace:   'nowrap',
             }}>{r.cuisine}</p>
           )}
 
-          {/* Location + price */}
-          {(r.suburb || r.address || r.price_level) && (
-            <p style={{
-              fontFamily:   'var(--font-dm-mono), ui-monospace, monospace',
-              fontSize: 11,
-              color:        T.ghost,
-              letterSpacing: '0.06em',
-              marginBottom: 6,
-              overflow:     'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace:   'nowrap',
-            }}>
-              {[r.suburb ?? r.address, r.price_level].filter(Boolean).join(' · ')}
-            </p>
+          {/* Suburb · rating (visited) or just suburb (want-to-try) */}
+          {r.suburb && (
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
+              <span style={{
+                fontFamily:   'var(--font-dm-mono), ui-monospace, monospace',
+                fontSize: 11,
+                color:        T.ghost,
+                letterSpacing: '0.06em',
+              }}>{r.suburb}</span>
+              {r.status === 'visited' && r.rating !== null && (
+                <>
+                  <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: T.ghost }}>·</span>
+                  <ScoreRating rating={r.rating} size="sm" />
+                </>
+              )}
+            </div>
           )}
 
-          {/* Footer chips */}
-          {(r.rating !== null || r.tier) && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' as const }}>
-              {r.rating !== null && <ScoreRating rating={r.rating} size="sm" />}
-              {r.tier && <TierBadge tier={r.tier as Tier} />}
+          {/* Tier badge */}
+          {r.tier && (
+            <div style={{ marginTop: 1 }}>
+              <TierBadge tier={r.tier as Tier} />
             </div>
           )}
         </div>

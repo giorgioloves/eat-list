@@ -148,11 +148,6 @@ export default async function RestaurantDetailPage({
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, flexShrink: 0 }}>
               {r.tier && <TierBadge tier={r.tier} />}
               <ScoreRating rating={r.rating} />
-              {r.price_level && (
-                <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: T.ghost }}>
-                  {r.price_level}
-                </span>
-              )}
             </div>
           </div>
 

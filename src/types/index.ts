@@ -20,7 +20,6 @@ export interface Restaurant {
   would_go_again: WouldGoAgain | null
   tier: Tier | null
   rating: number | null
-  price_level: '$' | '$$' | '$$$' | '$$$$' | null
   website: string | null
   instagram: string | null
   tags: string[]

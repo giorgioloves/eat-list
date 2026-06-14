@@ -229,7 +229,7 @@ export default function RestaurantListClient({ restaurants }: { restaurants: Res
           no restaurants match your filters
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           {filtered.map(r => (
             <RestaurantCard key={r.id} restaurant={r} />
           ))}

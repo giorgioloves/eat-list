@@ -13,7 +13,6 @@ export interface PlaceResult {
   lat: number | null
   lng: number | null
   cuisine: string | null
-  priceLevel: string | null
   website: string | null
   instagram: string | null
 }
@@ -170,7 +169,6 @@ export function RestaurantAutocomplete({
           lat,
           lng,
           cuisine,
-          priceLevel: result.priceLevel ?? null,
           website,
           instagram: null,
         })

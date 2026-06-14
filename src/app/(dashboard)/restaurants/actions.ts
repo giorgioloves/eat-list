@@ -12,7 +12,6 @@ interface RestaurantInput {
   state: string | null
   latitude: number | null
   longitude: number | null
-  price_level: string | null
   website: string | null
   instagram: string | null
 }
@@ -20,10 +19,10 @@ interface RestaurantInput {
 export async function addRestaurant(data: RestaurantInput): Promise<{ id?: string; error?: string }> {
   const [row] = await sql`
     INSERT INTO restaurants
-      (name, cuisine, address, suburb, city, state, latitude, longitude, price_level, website, instagram, status, tags)
+      (name, cuisine, address, suburb, city, state, latitude, longitude, website, instagram, status, tags)
     VALUES
       (${data.name}, ${data.cuisine}, ${data.address}, ${data.suburb}, ${data.city}, ${data.state},
-       ${data.latitude}, ${data.longitude}, ${data.price_level}, ${data.website}, ${data.instagram},
+       ${data.latitude}, ${data.longitude}, ${data.website}, ${data.instagram},
        'want_to_try', ARRAY[]::text[])
     RETURNING id
   `
@@ -35,17 +34,16 @@ export async function addRestaurant(data: RestaurantInput): Promise<{ id?: strin
 export async function updateRestaurant(id: string, data: RestaurantInput): Promise<{ success?: boolean; error?: string }> {
   await sql`
     UPDATE restaurants SET
-      name        = ${data.name},
-      cuisine     = ${data.cuisine},
-      address     = ${data.address},
-      suburb      = ${data.suburb},
-      city        = ${data.city},
-      state       = ${data.state},
-      latitude    = ${data.latitude},
-      longitude   = ${data.longitude},
-      price_level = ${data.price_level},
-      website     = ${data.website},
-      instagram   = ${data.instagram}
+      name      = ${data.name},
+      cuisine   = ${data.cuisine},
+      address   = ${data.address},
+      suburb    = ${data.suburb},
+      city      = ${data.city},
+      state     = ${data.state},
+      latitude  = ${data.latitude},
+      longitude = ${data.longitude},
+      website   = ${data.website},
+      instagram = ${data.instagram}
     WHERE id = ${id}
   `
   revalidatePath('/restaurants')
