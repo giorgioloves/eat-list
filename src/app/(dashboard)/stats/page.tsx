@@ -26,10 +26,10 @@ type TimeFilter = 'all' | 'year' | 'month'
 const TIER_SCORE: Record<string, number> = { S: 7, A: 6, B: 5, C: 4, D: 3, E: 2, F: 1 }
 
 function topScore(r: Restaurant) {
-  return (r.rating ?? 0) * 0.2 + (TIER_SCORE[r.tier ?? ''] ?? 0) * 2 + Math.pow(r.visit_count, 1.5) * 0.6
+  return (r.rating ?? 0) * 2 + (TIER_SCORE[r.tier ?? ''] ?? 0) * 2 + Math.pow(r.visit_count, 1.5) * 0.6
 }
 function bottomScore(r: Restaurant) {
-  return (100 - (r.rating ?? 100)) * 0.2 + (r.tier ? (8 - TIER_SCORE[r.tier]) * 2 : 0)
+  return (10 - (r.rating ?? 10)) * 2 + (r.tier ? (8 - TIER_SCORE[r.tier]) * 2 : 0)
 }
 
 // ─── Progress Ring ────────────────────────────────────────────────────────────
@@ -351,15 +351,15 @@ export default function StatsPage() {
     .map(([name, value]) => ({ name, value }))
 
   const ratingBuckets = [
-    { label: '0–20',  min: 0,  max: 20  },
-    { label: '21–40', min: 21, max: 40  },
-    { label: '41–60', min: 41, max: 60  },
-    { label: '61–80', min: 61, max: 80  },
-    { label: '81–100',min: 81, max: 100 },
+    { label: '0–2',  min: 0,  max: 2  },
+    { label: '2–4',  min: 2,  max: 4  },
+    { label: '4–6',  min: 4,  max: 6  },
+    { label: '6–8',  min: 6,  max: 8  },
+    { label: '8–10', min: 8,  max: 10 },
   ].map(({ label, min, max }) => ({
     label,
     count: rated.filter(r => {
-      const v = Math.round(r.rating ?? 0)
+      const v = r.rating ?? 0
       return v >= min && v <= max
     }).length,
   }))
@@ -386,7 +386,7 @@ export default function StatsPage() {
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
         <MetricCard icon="🍽️" label="total visits" value={totalVisits} sub={`across ${filtered.length} place${filtered.length !== 1 ? 's' : ''}`} />
-        <MetricCard icon="⭐" label="avg rating" value={avgRating !== null ? `${Math.round(avgRating)}` : '—'} sub={rated.length > 0 ? `${rated.length} rated` : 'none rated yet'} accent />
+        <MetricCard icon="⭐" label="avg rating" value={avgRating !== null ? avgRating.toFixed(1) : '—'} sub={rated.length > 0 ? `${rated.length} rated` : 'none rated yet'} accent />
         <MetricCard icon="💰" label="total spend" value={spendEntries.length > 0 ? `$${fmt(totalSpend)}` : '—'} sub={spendEntries.length > 0 ? `${spendEntries.length} visit${spendEntries.length !== 1 ? 's' : ''} logged` : 'no spend logged'} />
         <MetricCard icon="📊" label="avg spend" value={avgSpend !== null ? `$${fmt(avgSpend)}` : '—'} sub="per visit" />
       </div>

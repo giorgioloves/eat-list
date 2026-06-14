@@ -25,7 +25,7 @@ export function ScoreRating({ rating, size = 'md' }: ScoreRatingProps) {
       color:      T.terracotta,
       lineHeight: 1,
     }}>
-      {Math.round(rating)}
+      {rating.toFixed(1)}
     </span>
   )
 }
@@ -40,7 +40,7 @@ export function ScoreSelector({ value, onChange }: ScoreSelectorProps) {
     return (
       <button
         type="button"
-        onClick={() => onChange(50)}
+        onClick={() => onChange(5)}
         style={{
           display:         'inline-flex',
           alignItems:      'center',
@@ -66,10 +66,10 @@ export function ScoreSelector({ value, onChange }: ScoreSelectorProps) {
         <input
           type="range"
           min={0}
-          max={100}
-          step={1}
+          max={10}
+          step={0.1}
           value={value}
-          onChange={(e) => onChange(parseInt(e.target.value))}
+          onChange={(e) => onChange(parseFloat(e.target.value))}
           style={{ flex: 1, accentColor: T.terracotta, cursor: 'pointer', height: 4 }}
         />
         <span style={{
@@ -77,11 +77,11 @@ export function ScoreSelector({ value, onChange }: ScoreSelectorProps) {
           fontStyle:  'italic',
           fontSize:   22,
           color:      T.terracotta,
-          minWidth:   32,
+          minWidth:   36,
           textAlign:  'right',
           lineHeight: 1,
         }}>
-          {value}
+          {value.toFixed(1)}
         </span>
       </div>
       <button
