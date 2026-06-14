@@ -111,7 +111,7 @@ export const RestaurantCard = memo(function RestaurantCard({ restaurant: r }: { 
   const displayName = r.name.replace(/\s*\([^)]+\)\s*$/, '').trim()
 
   return (
-    <Link href={`/restaurants/${r.id}`} prefetch={false} style={S.link}>
+    <Link href={`/restaurants/${r.id}`} style={S.link}>
       <div style={S.row}>
 
         <div style={S.emojiBox}>{emoji}</div>
