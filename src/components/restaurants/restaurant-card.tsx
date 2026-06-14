@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
 import { StatusBadge, TierBadge } from '@/components/ui/badge'
@@ -18,13 +19,14 @@ const T = {
   border:     '#c4b8a8',
 }
 
-export function RestaurantCard({ restaurant: r }: { restaurant: Restaurant }) {
+export const RestaurantCard = memo(function RestaurantCard({ restaurant: r }: { restaurant: Restaurant }) {
   const emoji       = CUISINE_EMOJI[r.cuisine ?? ''] ?? '🍽️'
   const displayName = r.name.replace(/\s*\([^)]+\)\s*$/, '').trim()
 
   return (
     <Link
       href={`/restaurants/${r.id}`}
+      prefetch={false}
       style={{
         display:         'block',
         backgroundColor: T.linen,
@@ -114,4 +116,4 @@ export function RestaurantCard({ restaurant: r }: { restaurant: Restaurant }) {
       </div>
     </Link>
   )
-}
+})
