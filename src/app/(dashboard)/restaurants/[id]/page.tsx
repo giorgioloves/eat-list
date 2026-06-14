@@ -1,4 +1,5 @@
-﻿import { notFound } from 'next/navigation'
+import { Suspense } from 'react'
+import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import sql from '@/lib/db'
 import { StatusBadge, TierBadge } from '@/components/ui/badge'
@@ -20,6 +21,38 @@ const T = {
   border:     '#c4b8a8',
 }
 
+async function VisitsSection({ restaurantId }: { restaurantId: string }) {
+  const rawVisits = await sql`
+    SELECT * FROM restaurant_visits
+    WHERE restaurant_id = ${restaurantId}
+    ORDER BY visited_at DESC NULLS LAST`
+  const visits = (rawVisits as any[]).map(v => ({
+    ...v,
+    rating: v.rating !== null ? parseFloat(v.rating) : null,
+    cost:   v.cost   !== null ? parseFloat(v.cost)   : null,
+  }))
+  return <VisitLog restaurantId={restaurantId} visits={visits as unknown as RestaurantVisit[]} />
+}
+
+async function NotesSection({ restaurantId }: { restaurantId: string }) {
+  const notes = await sql`
+    SELECT * FROM restaurant_notes
+    WHERE restaurant_id = ${restaurantId}
+    ORDER BY created_at DESC`
+  return <NoteLog restaurantId={restaurantId} notes={notes as unknown as RestaurantNote[]} />
+}
+
+function SectionSkeleton() {
+  return (
+    <div style={{
+      backgroundColor: T.linen,
+      border:          `0.5px solid ${T.border}`,
+      borderRadius:    10,
+      height:          72,
+    }} />
+  )
+}
+
 export default async function RestaurantDetailPage({
   params,
 }: {
@@ -35,17 +68,6 @@ export default async function RestaurantDetailPage({
     ...raw,
     rating: raw.rating !== null ? parseFloat(raw.rating) : null,
   }
-
-  const [rawVisits, notes] = await Promise.all([
-    sql`SELECT * FROM restaurant_visits WHERE restaurant_id = ${id} ORDER BY visited_at DESC NULLS LAST`,
-    sql`SELECT * FROM restaurant_notes WHERE restaurant_id = ${id} ORDER BY created_at DESC`,
-  ])
-
-  const visits = (rawVisits as any[]).map(v => ({
-    ...v,
-    rating: v.rating !== null ? parseFloat(v.rating) : null,
-    cost:   v.cost   !== null ? parseFloat(v.cost)   : null,
-  }))
 
   const displayName = r.name.replace(/\s*\([^)]+\)\s*$/, '').trim()
 
@@ -190,8 +212,13 @@ export default async function RestaurantDetailPage({
           )}
         </div>
 
-        <VisitLog restaurantId={r.id} visits={visits as unknown as RestaurantVisit[]} />
-        <NoteLog  restaurantId={r.id} notes={notes  as unknown as RestaurantNote[]} />
+        <Suspense fallback={<SectionSkeleton />}>
+          <VisitsSection restaurantId={r.id} />
+        </Suspense>
+
+        <Suspense fallback={<SectionSkeleton />}>
+          <NotesSection restaurantId={r.id} />
+        </Suspense>
 
       </div>
     </div>
