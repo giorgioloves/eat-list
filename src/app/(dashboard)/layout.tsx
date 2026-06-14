@@ -8,7 +8,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const rows = await sql`SELECT * FROM restaurants ORDER BY created_at DESC`
   const initialRestaurants: Restaurant[] = rows.map((r: any) => ({
     ...r,
-    rating: r.rating !== null ? parseFloat(r.rating as string) : null,
+    rating:     r.rating     !== null ? parseFloat(r.rating as string)          : null,
+    created_at: r.created_at instanceof Date ? r.created_at.toISOString() : r.created_at,
+    updated_at: r.updated_at instanceof Date ? r.updated_at.toISOString() : r.updated_at,
   }))
 
   return (
