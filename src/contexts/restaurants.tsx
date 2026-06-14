@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import { createContext, useContext, useState, useCallback } from 'react'
 import type { Restaurant } from '@/types'
 
 interface RestaurantContextType {
@@ -11,15 +11,22 @@ interface RestaurantContextType {
 
 const RestaurantContext = createContext<RestaurantContextType>({
   restaurants: [],
-  loading: true,
+  loading: false,
   refresh: async () => {},
 })
 
-export function RestaurantProvider({ children }: { children: React.ReactNode }) {
-  const [restaurants, setRestaurants] = useState<Restaurant[]>([])
-  const [loading, setLoading] = useState(true)
+export function RestaurantProvider({
+  children,
+  initialRestaurants = [],
+}: {
+  children: React.ReactNode
+  initialRestaurants?: Restaurant[]
+}) {
+  const [restaurants, setRestaurants] = useState<Restaurant[]>(initialRestaurants)
+  const [loading, setLoading] = useState(false)
 
   const refresh = useCallback(async () => {
+    setLoading(true)
     try {
       const res = await fetch('/api/restaurants')
       const data = await res.json()
@@ -28,8 +35,6 @@ export function RestaurantProvider({ children }: { children: React.ReactNode }) 
       setLoading(false)
     }
   }, [])
-
-  useEffect(() => { refresh() }, [refresh])
 
   return (
     <RestaurantContext.Provider value={{ restaurants, loading, refresh }}>
