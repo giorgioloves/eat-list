@@ -2,9 +2,14 @@ import { NextResponse } from 'next/server'
 import sql from '@/lib/db'
 
 // One-time migration: converts 1–5 pip ratings to 0–100 scale.
-// Guard (rating <= 5) makes it safe to call multiple times.
+// Drops the old 1–5 check constraint, migrates data, adds new 0–100 constraint.
 export async function POST() {
   try {
+    // Drop old check constraints (ignore error if already gone)
+    await sql`ALTER TABLE restaurant_visits  DROP CONSTRAINT IF EXISTS restaurant_visits_rating_check`
+    await sql`ALTER TABLE restaurants        DROP CONSTRAINT IF EXISTS restaurants_rating_check`
+
+    // Migrate: multiply only values still in 1–5 range (safe to call twice)
     const visits = await sql`
       UPDATE restaurant_visits
       SET rating = rating * 20
@@ -17,6 +22,11 @@ export async function POST() {
       WHERE rating IS NOT NULL AND rating <= 5
       RETURNING id
     `
+
+    // Add new constraints for 0–100 range
+    await sql`ALTER TABLE restaurant_visits ADD CONSTRAINT restaurant_visits_rating_check  CHECK (rating >= 0 AND rating <= 100)`
+    await sql`ALTER TABLE restaurants       ADD CONSTRAINT restaurants_rating_check        CHECK (rating >= 0 AND rating <= 100)`
+
     return NextResponse.json({
       ok: true,
       visits_updated: visits.length,
