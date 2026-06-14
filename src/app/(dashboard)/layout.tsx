@@ -1,10 +1,11 @@
+import { Suspense } from 'react'
 import sql from '@/lib/db'
 import { RestaurantProvider } from '@/contexts/restaurants'
 import { Sidebar } from '@/components/layout/sidebar'
 import { BottomNav } from '@/components/layout/bottom-nav'
 import type { Restaurant } from '@/types'
 
-export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+async function DataProvider({ children }: { children: React.ReactNode }) {
   const rows = await sql`SELECT * FROM restaurants ORDER BY created_at DESC`
   const initialRestaurants: Restaurant[] = rows.map((r: any) => ({
     ...r,
@@ -12,17 +13,22 @@ export default async function DashboardLayout({ children }: { children: React.Re
     created_at: r.created_at instanceof Date ? r.created_at.toISOString() : r.created_at,
     updated_at: r.updated_at instanceof Date ? r.updated_at.toISOString() : r.updated_at,
   }))
+  return (
+    <RestaurantProvider initialRestaurants={initialRestaurants}>
+      <main className="lg:pl-52">
+        <div className="min-h-screen pb-20 lg:pb-0">{children}</div>
+      </main>
+    </RestaurantProvider>
+  )
+}
 
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-parchment">
       <Sidebar />
-      <RestaurantProvider initialRestaurants={initialRestaurants}>
-        <main className="lg:pl-52">
-          <div className="min-h-screen pb-20 lg:pb-0">
-            {children}
-          </div>
-        </main>
-      </RestaurantProvider>
+      <Suspense fallback={null}>
+        <DataProvider>{children}</DataProvider>
+      </Suspense>
       <BottomNav />
     </div>
   )
