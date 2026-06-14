@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { ExternalLink, MapPin, RotateCcw, Shuffle } from 'lucide-react'
 import { TierBadge } from '@/components/ui/badge'
-import { PipRating } from '@/components/ui/pip-rating'
+import { ScoreRating } from '@/components/ui/pip-rating'
 import { GoldSparkles } from './gold-sparkles'
 import { CUISINE_EMOJI } from '@/types'
 import type { Restaurant, Tier } from '@/types'
@@ -125,7 +125,7 @@ export function WinnerReveal({ restaurant: r, onPickAgain }: WinnerRevealProps) 
           style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 10, flexWrap: 'wrap' as const }}
         >
           {r.tier && <TierBadge tier={r.tier as Tier} />}
-          <PipRating rating={r.rating} />
+          <ScoreRating rating={r.rating} />
         </motion.div>
 
         {/* Location + visits */}

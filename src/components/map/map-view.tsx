@@ -5,7 +5,7 @@ import { GoogleMap, useJsApiLoader, OverlayViewF } from '@react-google-maps/api'
 import Link from 'next/link'
 import { Instagram, Globe, X } from 'lucide-react'
 import { CUISINE_EMOJI, TIER_ACCENT, TIER_CHIP_BG } from '@/types'
-import { PipRating } from '@/components/ui/pip-rating'
+import { ScoreRating } from '@/components/ui/pip-rating'
 import { formatDate } from '@/lib/utils'
 import type { Restaurant, RestaurantVisit, Tier } from '@/types'
 
@@ -248,7 +248,7 @@ export function MapView({ restaurants }: MapViewProps) {
                   {selected.tier}
                 </span>
               )}
-              <PipRating rating={selected.rating} />
+              <ScoreRating rating={selected.rating} />
             </div>
           </div>
 
@@ -268,7 +268,7 @@ export function MapView({ restaurants }: MapViewProps) {
                         <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: T.mist, letterSpacing: '0.04em' }}>
                           {formatDate(v.visited_at)}
                         </span>
-                        {v.rating !== null && <PipRating rating={v.rating} size="sm" />}
+                        {v.rating !== null && <ScoreRating rating={v.rating} size="sm" />}
                       </div>
                       {v.cost !== null && (
                         <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: T.ghost, letterSpacing: '0.04em' }}>

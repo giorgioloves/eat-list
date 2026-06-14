@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
 import { StatusBadge, TierBadge } from '@/components/ui/badge'
-import { PipRating } from '@/components/ui/pip-rating'
+import { ScoreRating } from '@/components/ui/pip-rating'
 import { CUISINE_EMOJI } from '@/types'
 import type { Restaurant, Tier } from '@/types'
 
@@ -104,7 +104,7 @@ export function RestaurantCard({ restaurant: r }: { restaurant: Restaurant }) {
           {/* Footer chips */}
           {(r.rating !== null || r.tier) && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' as const }}>
-              {r.rating !== null && <PipRating rating={r.rating} size="sm" />}
+              {r.rating !== null && <ScoreRating rating={r.rating} size="sm" />}
               {r.tier && <TierBadge tier={r.tier as Tier} />}
             </div>
           )}

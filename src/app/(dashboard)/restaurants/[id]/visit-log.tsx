@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Plus, Trash2, Pencil } from 'lucide-react'
 import { logVisit, deleteVisit, updateVisit, rateVisit } from './actions'
 import { formatDate } from '@/lib/utils'
-import { PipRating, PipSelector } from '@/components/ui/pip-rating'
+import { ScoreRating, ScoreSelector } from '@/components/ui/pip-rating'
 import type { RestaurantVisit } from '@/types'
 
 const T = {
@@ -136,7 +136,7 @@ export function VisitLog({ restaurantId, visits }: VisitLogProps) {
           </div>
           <div>
             <label style={{ display: 'block', fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.mist, letterSpacing: '0.1em', marginBottom: 8 }}>rating</label>
-            <PipSelector value={myRating} onChange={setMyRating} />
+            <ScoreSelector value={myRating} onChange={setMyRating} />
           </div>
           {error && <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: '#c47a7a' }}>{error}</p>}
           <div style={{ display: 'flex', gap: 6 }}>
@@ -213,7 +213,7 @@ export function VisitLog({ restaurantId, visits }: VisitLogProps) {
                           onClick={() => setRatingVisitId(v.id)}
                           style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
                         >
-                          <PipRating rating={v.rating} size="sm" />
+                          <ScoreRating rating={v.rating} size="sm" />
                           <Pencil style={{ width: 10, height: 10, color: T.stone }} />
                         </button>
                       ) : (
@@ -303,7 +303,7 @@ function InlineRater({ visitId, restaurantId, initialRating, onDone }: {
     <div style={{ marginTop: 6, display: 'flex', flexDirection: 'column', gap: 6 }}>
       {error && <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: '#c47a7a' }}>{error}</p>}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' as const }}>
-        <PipSelector value={rating} onChange={setRating} />
+        <ScoreSelector value={rating} onChange={setRating} />
         <div style={{ display: 'flex', gap: 5 }}>
           <button onClick={handleSave} disabled={saving || rating === null} style={{ ...btnBase, backgroundColor: T.espresso, color: T.parchment, opacity: saving || rating === null ? 0.5 : 1 }}>
             {saving ? '…' : 'save'}

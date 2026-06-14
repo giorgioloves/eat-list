@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
 import { TierBadge } from '@/components/ui/badge'
-import { PipRating } from '@/components/ui/pip-rating'
+import { ScoreRating } from '@/components/ui/pip-rating'
 import { RatingDistributionChart, CuisineBarList } from './stats-charts'
 import { useRestaurants } from '@/contexts/restaurants'
 import type { Restaurant, Tier } from '@/types'
@@ -26,10 +26,10 @@ type TimeFilter = 'all' | 'year' | 'month'
 const TIER_SCORE: Record<string, number> = { S: 7, A: 6, B: 5, C: 4, D: 3, E: 2, F: 1 }
 
 function topScore(r: Restaurant) {
-  return (r.rating ?? 0) * 4 + (TIER_SCORE[r.tier ?? ''] ?? 0) * 2 + Math.pow(r.visit_count, 1.5) * 0.6
+  return (r.rating ?? 0) * 0.2 + (TIER_SCORE[r.tier ?? ''] ?? 0) * 2 + Math.pow(r.visit_count, 1.5) * 0.6
 }
 function bottomScore(r: Restaurant) {
-  return (5 - (r.rating ?? 5)) * 4 + (r.tier ? (8 - TIER_SCORE[r.tier]) * 2 : 0)
+  return (100 - (r.rating ?? 100)) * 0.2 + (r.tier ? (8 - TIER_SCORE[r.tier]) * 2 : 0)
 }
 
 // ─── Progress Ring ────────────────────────────────────────────────────────────
@@ -225,7 +225,7 @@ function RestaurantRankRow({ restaurant: r, rank, isBottom }: {
         </div>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-        {r.rating !== null && <PipRating rating={r.rating} size="sm" />}
+        {r.rating !== null && <ScoreRating rating={r.rating} size="sm" />}
         <ChevronRight style={{ width: 12, height: 12, color: T.stone }} />
       </div>
     </Link>
@@ -350,9 +350,18 @@ export default function StatsPage() {
     .slice(0, 8)
     .map(([name, value]) => ({ name, value }))
 
-  const ratingBuckets = [1, 2, 3, 4, 5].map(n => ({
-    label: String(n),
-    count: rated.filter(r => r.rating === n).length,
+  const ratingBuckets = [
+    { label: '0–20',  min: 0,  max: 20  },
+    { label: '21–40', min: 21, max: 40  },
+    { label: '41–60', min: 41, max: 60  },
+    { label: '61–80', min: 61, max: 80  },
+    { label: '81–100',min: 81, max: 100 },
+  ].map(({ label, min, max }) => ({
+    label,
+    count: rated.filter(r => {
+      const v = Math.round(r.rating ?? 0)
+      return v >= min && v <= max
+    }).length,
   }))
 
   const fmt = (n: number) => n.toLocaleString('en-AU', { maximumFractionDigits: 0 })
@@ -377,7 +386,7 @@ export default function StatsPage() {
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
         <MetricCard icon="🍽️" label="total visits" value={totalVisits} sub={`across ${filtered.length} place${filtered.length !== 1 ? 's' : ''}`} />
-        <MetricCard icon="⭐" label="avg rating" value={avgRating !== null ? `${avgRating.toFixed(1)}/5` : '—'} sub={rated.length > 0 ? `${rated.length} rated` : 'none rated yet'} accent />
+        <MetricCard icon="⭐" label="avg rating" value={avgRating !== null ? `${Math.round(avgRating)}` : '—'} sub={rated.length > 0 ? `${rated.length} rated` : 'none rated yet'} accent />
         <MetricCard icon="💰" label="total spend" value={spendEntries.length > 0 ? `$${fmt(totalSpend)}` : '—'} sub={spendEntries.length > 0 ? `${spendEntries.length} visit${spendEntries.length !== 1 ? 's' : ''} logged` : 'no spend logged'} />
         <MetricCard icon="📊" label="avg spend" value={avgSpend !== null ? `$${fmt(avgSpend)}` : '—'} sub="per visit" />
       </div>

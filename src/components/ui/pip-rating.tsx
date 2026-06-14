@@ -1,87 +1,110 @@
-﻿'use client'
+'use client'
 
-import { cn } from '@/lib/utils'
+const T = {
+  terracotta: '#c4927a',
+  stone:      '#c4b8a8',
+  mist:       '#a08070',
+  ghost:      '#b8a898',
+  espresso:   '#3b2f27',
+  linen:      '#ede5d8',
+  border:     '#c4b8a8',
+}
 
-const MAX = 5
-
-interface PipRatingProps {
+interface ScoreRatingProps {
   rating: number | null
   size?: 'sm' | 'md'
-  className?: string
 }
 
-export function PipRating({ rating, size = 'md', className }: PipRatingProps) {
+export function ScoreRating({ rating, size = 'md' }: ScoreRatingProps) {
   if (rating === null || rating === undefined) return null
-
-  const filled = Math.round(rating)
-  const dim = size === 'sm' ? 8 : 12
-
   return (
-    <div className={cn('flex items-center gap-1', className)}>
-      {Array.from({ length: MAX }, (_, i) => (
-        <div
-          key={i}
-          style={{
-            width:        dim,
-            height:       dim,
-            borderRadius: '50%',
-            flexShrink:   0,
-            backgroundColor: i < filled ? '#c4927a' : '#d4c8b8',
-            transition:   'background-color 0.15s',
-          }}
-        />
-      ))}
-    </div>
+    <span style={{
+      fontFamily: 'var(--font-crimson), Georgia, serif',
+      fontStyle:  'italic',
+      fontSize:   size === 'sm' ? 14 : 20,
+      color:      T.terracotta,
+      lineHeight: 1,
+    }}>
+      {Math.round(rating)}
+    </span>
   )
 }
 
-interface PipSelectorProps {
+interface ScoreSelectorProps {
   value: number | null
   onChange: (v: number | null) => void
-  className?: string
 }
 
-export function PipSelector({ value, onChange, className }: PipSelectorProps) {
+export function ScoreSelector({ value, onChange }: ScoreSelectorProps) {
+  if (value === null) {
+    return (
+      <button
+        type="button"
+        onClick={() => onChange(50)}
+        style={{
+          display:         'inline-flex',
+          alignItems:      'center',
+          padding:         '5px 12px',
+          fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
+          fontSize:        11,
+          color:           T.mist,
+          backgroundColor: T.linen,
+          border:          `0.5px solid ${T.border}`,
+          borderRadius:    6,
+          cursor:          'pointer',
+          letterSpacing:   '0.06em',
+        }}
+      >
+        add score
+      </button>
+    )
+  }
+
   return (
-    <div className={cn('flex items-center gap-2', className)}>
-      {Array.from({ length: MAX }, (_, i) => {
-        const pip    = i + 1
-        const filled = value !== null && pip <= value
-        return (
-          <button
-            key={i}
-            type="button"
-            onClick={() => onChange(value === pip ? null : pip)}
-            style={{
-              width:           32,
-              height:          32,
-              borderRadius:    '50%',
-              border:          filled ? '2px solid #c4927a' : '1.5px solid #c4b8a8',
-              backgroundColor: filled ? '#c4927a' : 'transparent',
-              cursor:          'pointer',
-              transition:      'all 0.12s',
-            }}
-            aria-label={`${pip} pip${pip !== 1 ? 's' : ''}`}
-          />
-        )
-      })}
-      {value !== null && (
-        <button
-          type="button"
-          onClick={() => onChange(null)}
-          style={{
-            fontFamily:  'var(--font-dm-mono), ui-monospace, monospace',
-            fontSize: 13,
-            color:       '#a08070',
-            background:  'none',
-            border:      'none',
-            cursor:      'pointer',
-            marginLeft:  4,
-          }}
-        >
-          clear
-        </button>
-      )}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <input
+          type="range"
+          min={0}
+          max={100}
+          step={1}
+          value={value}
+          onChange={(e) => onChange(parseInt(e.target.value))}
+          style={{ flex: 1, accentColor: T.terracotta, cursor: 'pointer', height: 4 }}
+        />
+        <span style={{
+          fontFamily: 'var(--font-crimson), Georgia, serif',
+          fontStyle:  'italic',
+          fontSize:   22,
+          color:      T.terracotta,
+          minWidth:   32,
+          textAlign:  'right',
+          lineHeight: 1,
+        }}>
+          {value}
+        </span>
+      </div>
+      <button
+        type="button"
+        onClick={() => onChange(null)}
+        style={{
+          alignSelf:    'flex-start',
+          fontFamily:   'var(--font-dm-mono), ui-monospace, monospace',
+          fontSize:     11,
+          color:        T.mist,
+          background:   'none',
+          border:       'none',
+          cursor:       'pointer',
+          padding:      0,
+          letterSpacing: '0.06em',
+        }}
+      >
+        clear
+      </button>
     </div>
   )
 }
+
+// Backward-compat aliases so any missed import site still compiles
+export const PipRating   = ScoreRating
+export const PipSelector = ScoreSelector

@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import sql from '@/lib/db'
 import { StatusBadge, TierBadge } from '@/components/ui/badge'
-import { PipRating } from '@/components/ui/pip-rating'
+import { ScoreRating } from '@/components/ui/pip-rating'
 import { ArrowLeft, Pencil, MapPin, Globe, Instagram } from 'lucide-react'
 import { VisitLog } from './visit-log'
 import { NoteLog } from './note-log'
@@ -147,7 +147,7 @@ export default async function RestaurantDetailPage({
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, flexShrink: 0 }}>
               {r.tier && <TierBadge tier={r.tier} />}
-              <PipRating rating={r.rating} />
+              <ScoreRating rating={r.rating} />
               {r.price_level && (
                 <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: T.ghost }}>
                   {r.price_level}
