@@ -1,6 +1,6 @@
 ﻿'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
 import { TierBadge } from '@/components/ui/badge'
@@ -290,7 +290,6 @@ function RankedListCard({ title, restaurants, isBottom }: {
 export default function StatsPage() {
   const { restaurants } = useRestaurants()
   const [timeFilter, setTimeFilter] = useState<TimeFilter>('all')
-  const [visitSpends, setVisitSpends] = useState<{ cost: number | null }[]>([])
 
   const filtered = useMemo(() => {
     if (timeFilter === 'all') return restaurants
@@ -301,14 +300,6 @@ export default function StatsPage() {
       return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth()
     })
   }, [restaurants, timeFilter])
-
-  useEffect(() => {
-    if (filtered.length === 0) { setVisitSpends([]); return }
-    const ids = filtered.map(r => r.id).join(',')
-    fetch(`/api/visits?ids=${ids}`)
-      .then(res => res.json())
-      .then(data => setVisitSpends(data ?? []))
-  }, [filtered])
 
   if (restaurants.length === 0) {
     return (
@@ -328,10 +319,6 @@ export default function StatsPage() {
   const avgRating   = rated.length > 0
     ? rated.reduce((sum, r) => sum + (r.rating ?? 0), 0) / rated.length
     : null
-
-  const spendEntries = visitSpends.filter(v => v.cost !== null)
-  const totalSpend   = spendEntries.reduce((sum, v) => sum + (v.cost ?? 0), 0)
-  const avgSpend     = spendEntries.length > 0 ? totalSpend / spendEntries.length : null
 
   const top5 = [...visited]
     .filter(r => r.rating !== null || r.tier !== null || r.visit_count > 0)
@@ -364,8 +351,6 @@ export default function StatsPage() {
     }).length,
   }))
 
-  const fmt = (n: number) => n.toLocaleString('en-AU', { maximumFractionDigits: 0 })
-
   return (
     <div style={{ padding: '24px 16px 112px', maxWidth: 440, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 12 }}>
 
@@ -387,8 +372,6 @@ export default function StatsPage() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
         <MetricCard icon="🍽️" label="total visits" value={totalVisits} sub={`across ${filtered.length} place${filtered.length !== 1 ? 's' : ''}`} />
         <MetricCard icon="⭐" label="avg rating" value={avgRating !== null ? avgRating.toFixed(1) : '—'} sub={rated.length > 0 ? `${rated.length} rated` : 'none rated yet'} accent />
-        <MetricCard icon="💰" label="total spend" value={spendEntries.length > 0 ? `$${fmt(totalSpend)}` : '—'} sub={spendEntries.length > 0 ? `${spendEntries.length} visit${spendEntries.length !== 1 ? 's' : ''} logged` : 'no spend logged'} />
-        <MetricCard icon="📊" label="avg spend" value={avgSpend !== null ? `$${fmt(avgSpend)}` : '—'} sub="per visit" />
       </div>
 
       {rated.length > 0 && (

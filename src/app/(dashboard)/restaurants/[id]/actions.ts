@@ -33,14 +33,13 @@ type ActionResult = { success?: true; error?: string }
 export async function logVisit(
   restaurantId: string,
   visitedAt: string | null,
-  cost: number | null,
   rating: number | null
 ): Promise<ActionResult> {
   try {
     await sql.begin(async (tx) => {
       await tx`
-        INSERT INTO restaurant_visits (restaurant_id, visited_at, rating, cost)
-        VALUES (${restaurantId}, ${visitedAt}, ${rating}, ${cost})
+        INSERT INTO restaurant_visits (restaurant_id, visited_at, rating)
+        VALUES (${restaurantId}, ${visitedAt}, ${rating})
       `
       await recalcRestaurant(tx, restaurantId)
     })
@@ -90,15 +89,11 @@ export async function deleteNote(noteId: string, restaurantId: string): Promise<
 export async function updateVisit(
   visitId: string,
   restaurantId: string,
-  visitedAt: string | null,
-  cost: number | null
+  visitedAt: string | null
 ): Promise<ActionResult> {
   try {
     await sql.begin(async (tx) => {
-      await tx`
-        UPDATE restaurant_visits SET visited_at = ${visitedAt}, cost = ${cost}
-        WHERE id = ${visitId}
-      `
+      await tx`UPDATE restaurant_visits SET visited_at = ${visitedAt} WHERE id = ${visitId}`
       await recalcRestaurant(tx, restaurantId)
     })
     revalidatePath(`/restaurants/${restaurantId}`)

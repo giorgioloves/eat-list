@@ -43,7 +43,6 @@ CREATE TABLE restaurant_visits (
   visited_at    TEXT,
   notes         TEXT,
   rating        NUMERIC(3,1) CHECK (rating >= 1 AND rating <= 5),
-  cost          NUMERIC(8,2),
   created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 

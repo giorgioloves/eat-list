@@ -18,7 +18,6 @@ async function VisitsSection({ restaurantId }: { restaurantId: string }) {
   const visits = (rawVisits as any[]).map(v => ({
     ...v,
     rating: v.rating !== null ? parseFloat(v.rating) : null,
-    cost:   v.cost   !== null ? parseFloat(v.cost)   : null,
   }))
   return <VisitLog restaurantId={restaurantId} visits={visits as unknown as RestaurantVisit[]} />
 }

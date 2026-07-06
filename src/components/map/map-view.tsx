@@ -270,11 +270,6 @@ export function MapView({ restaurants }: MapViewProps) {
                         </span>
                         {v.rating !== null && <ScoreRating rating={v.rating} size="sm" />}
                       </div>
-                      {v.cost !== null && (
-                        <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: T.ghost, letterSpacing: '0.04em' }}>
-                          ${Number(v.cost).toFixed(0)}
-                        </span>
-                      )}
                     </div>
                   ))}
                 </div>

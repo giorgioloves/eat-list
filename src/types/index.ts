@@ -42,7 +42,6 @@ export interface RestaurantVisit {
   visited_at: string | null
   notes: string | null
   rating: number | null
-  cost: number | null
   created_at: string
 }
 

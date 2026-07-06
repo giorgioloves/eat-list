@@ -44,7 +44,6 @@ export function VisitLog({ restaurantId, visits }: VisitLogProps) {
 
   const [showForm, setShowForm]       = useState(false)
   const [date, setDate]               = useState('')
-  const [cost, setCost]               = useState('')
   const [myRating, setMyRating]       = useState<number | null>(null)
   const [loading, setLoading]         = useState(false)
   const [deletingId, setDeletingId]   = useState<string | null>(null)
@@ -56,7 +55,6 @@ export function VisitLog({ restaurantId, visits }: VisitLogProps) {
     setShowForm(false)
     setError('')
     setDate('')
-    setCost('')
     setMyRating(null)
   }
 
@@ -64,7 +62,7 @@ export function VisitLog({ restaurantId, visits }: VisitLogProps) {
     e.preventDefault()
     setError('')
     setLoading(true)
-    const result = await logVisit(restaurantId, date || null, cost ? parseFloat(cost) : null, myRating)
+    const result = await logVisit(restaurantId, date || null, myRating)
     if (result.error) {
       setError(result.error)
     } else {
@@ -134,18 +132,9 @@ export function VisitLog({ restaurantId, visits }: VisitLogProps) {
           flexDirection:   'column',
           gap:             10,
         }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <div>
-              <label style={{ display: 'block', fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.mist, letterSpacing: '0.1em', marginBottom: 5 }}>date</label>
-              <input type="date" value={date} onChange={(e) => setDate(e.target.value)} style={inputStyle} />
-            </div>
-            <div>
-              <label style={{ display: 'block', fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.mist, letterSpacing: '0.1em', marginBottom: 5 }}>spent</label>
-              <div style={{ position: 'relative' }}>
-                <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: T.mist, fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 16 }}>$</span>
-                <input type="number" min="0" step="0.50" value={cost} onChange={(e) => setCost(e.target.value)} placeholder="0.00" style={{ ...inputStyle, paddingLeft: 22 }} />
-              </div>
-            </div>
+          <div>
+            <label style={{ display: 'block', fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.mist, letterSpacing: '0.1em', marginBottom: 5 }}>date</label>
+            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} style={inputStyle} />
           </div>
           <div>
             <label style={{ display: 'block', fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.mist, letterSpacing: '0.1em', marginBottom: 8 }}>rating</label>
@@ -207,11 +196,6 @@ export function VisitLog({ restaurantId, visits }: VisitLogProps) {
                       <span style={{ fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 16, color: T.espresso }}>
                         {formatDate(v.visited_at)}
                       </span>
-                      {v.cost !== null && (
-                        <span style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: T.mist }}>
-                          ${v.cost.toFixed(2)}
-                        </span>
-                      )}
                     </div>
                     <div style={{ marginTop: 6 }}>
                       {ratingVisitId === v.id ? (
@@ -341,14 +325,13 @@ function EditVisitRow({ visit, restaurantId, onDone }: {
   onDone: () => void
 }) {
   const [date, setDate]     = useState(visit.visited_at ?? '')
-  const [cost, setCost]     = useState(visit.cost != null ? String(visit.cost) : '')
   const [saving, setSaving] = useState(false)
   const [error, setError]   = useState('')
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault()
     setSaving(true)
-    const result = await updateVisit(visit.id, restaurantId, date || null, cost ? parseFloat(cost) : null)
+    const result = await updateVisit(visit.id, restaurantId, date || null)
     if (result.error) { setError(result.error); setSaving(false) } else { onDone() }
   }
 
@@ -362,18 +345,9 @@ function EditVisitRow({ visit, restaurantId, onDone }: {
       flexDirection:   'column',
       gap:             8,
     }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-        <div>
-          <label style={{ display: 'block', fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.mist, letterSpacing: '0.1em', marginBottom: 4 }}>date</label>
-          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} style={inputStyle} />
-        </div>
-        <div>
-          <label style={{ display: 'block', fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.mist, letterSpacing: '0.1em', marginBottom: 4 }}>spent</label>
-          <div style={{ position: 'relative' }}>
-            <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: T.mist, fontFamily: 'var(--font-crimson), Georgia, serif', fontSize: 16 }}>$</span>
-            <input type="number" min="0" step="0.50" value={cost} onChange={(e) => setCost(e.target.value)} placeholder="0.00" style={{ ...inputStyle, paddingLeft: 22 }} />
-          </div>
-        </div>
+      <div>
+        <label style={{ display: 'block', fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.mist, letterSpacing: '0.1em', marginBottom: 4 }}>date</label>
+        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} style={inputStyle} />
       </div>
       {error && <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 11, color: '#c47a7a' }}>{error}</p>}
       <div style={{ display: 'flex', gap: 6 }}>
