@@ -25,6 +25,8 @@ export function BottomNav() {
       backgroundColor: '#f5f0e8',
       borderTop:       '0.5px solid #c4b8a8',
       paddingBottom:   'env(safe-area-inset-bottom)',
+      transform:       'translateZ(0)',
+      WebkitTransform: 'translateZ(0)',
     }}>
       <div style={{
         display:        'flex',
