@@ -26,6 +26,14 @@ A shared restaurant tracker for two people. Track, rate, tier-rank, and discover
 
 ---
 
+## Recent Changes (2026-07-06)
+
+- **Removed cost/price tracking** — the per-visit cost field is gone from the log/edit visit forms, visit history, map popups, and the stats page's spend cards. The `cost` column was dropped from `restaurant_visits`.
+- **Dashboard recent sections now expand** — "recently visited," "recently added," and "want to go to again" were capped at 5 items; each now has a show more/less toggle to reveal the full list.
+- **Fixed a data-consistency bug** — logging/deleting a visit recalculated the restaurant's aggregate fields (status, visit count, dates, rating) via a separate read then write, so two visit changes landing close together could lose an update and leave a restaurant's status/counts stuck out of date. This is now a single atomic statement per change.
+
+---
+
 ## Quick Start
 
 ### 1. Clone & install
