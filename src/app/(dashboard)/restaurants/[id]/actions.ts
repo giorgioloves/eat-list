@@ -2,29 +2,29 @@
 
 import sql from '@/lib/db'
 import { revalidatePath } from 'next/cache'
+import type { TransactionSql } from 'postgres'
 
-function avgRounded(nums: number[]): number | null {
-  if (nums.length === 0) return null
-  return Math.round((nums.reduce((a, b) => a + b, 0) / nums.length) * 10) / 10
-}
-
-async function recalcRestaurant(restaurantId: string) {
-  const visits = await sql`
-    SELECT visited_at, rating FROM restaurant_visits
-    WHERE restaurant_id = ${restaurantId}
-    ORDER BY visited_at ASC NULLS LAST
-  `
-  const ratings = visits.map((v) => v.rating).filter((x): x is number => x !== null)
-  const datedVisits = visits.filter((v) => v.visited_at)
-
-  await sql`
-    UPDATE restaurants SET
-      visit_count       = ${visits.length},
-      first_visit_date  = ${datedVisits[0]?.visited_at ?? null},
-      last_visit_date   = ${datedVisits[datedVisits.length - 1]?.visited_at ?? null},
-      rating            = ${avgRounded(ratings)},
-      status            = ${visits.length > 0 ? 'visited' : 'want_to_try'}
-    WHERE id = ${restaurantId}
+// Runs the visit aggregation and the row update as one statement so a
+// concurrent insert/delete on the same restaurant can't be lost between
+// a separate read and write (previously a two-step SELECT then UPDATE).
+async function recalcRestaurant(tx: TransactionSql<{}>, restaurantId: string) {
+  await tx`
+    UPDATE restaurants r SET
+      visit_count       = sub.cnt,
+      first_visit_date  = sub.first_date,
+      last_visit_date   = sub.last_date,
+      rating            = sub.avg_rating,
+      status            = CASE WHEN sub.cnt > 0 THEN 'visited' ELSE 'want_to_try' END
+    FROM (
+      SELECT
+        COUNT(*)                                    AS cnt,
+        MIN(visited_at) FILTER (WHERE visited_at IS NOT NULL) AS first_date,
+        MAX(visited_at) FILTER (WHERE visited_at IS NOT NULL) AS last_date,
+        ROUND(AVG(rating) FILTER (WHERE rating IS NOT NULL), 1) AS avg_rating
+      FROM restaurant_visits
+      WHERE restaurant_id = ${restaurantId}
+    ) sub
+    WHERE r.id = ${restaurantId}
   `
 }
 
@@ -37,11 +37,13 @@ export async function logVisit(
   rating: number | null
 ): Promise<ActionResult> {
   try {
-    await sql`
-      INSERT INTO restaurant_visits (restaurant_id, visited_at, rating, cost)
-      VALUES (${restaurantId}, ${visitedAt}, ${rating}, ${cost})
-    `
-    await recalcRestaurant(restaurantId)
+    await sql.begin(async (tx) => {
+      await tx`
+        INSERT INTO restaurant_visits (restaurant_id, visited_at, rating, cost)
+        VALUES (${restaurantId}, ${visitedAt}, ${rating}, ${cost})
+      `
+      await recalcRestaurant(tx, restaurantId)
+    })
     revalidatePath(`/restaurants/${restaurantId}`)
     return { success: true }
   } catch (e) {
@@ -51,10 +53,10 @@ export async function logVisit(
 
 export async function rateVisit(visitId: string, restaurantId: string, rating: number | null): Promise<ActionResult> {
   try {
-    await sql`UPDATE restaurant_visits SET rating = ${rating} WHERE id = ${visitId}`
-    const visits = await sql`SELECT rating FROM restaurant_visits WHERE restaurant_id = ${restaurantId}`
-    const ratings = visits.map((v) => v.rating).filter((x): x is number => x !== null)
-    await sql`UPDATE restaurants SET rating = ${avgRounded(ratings)} WHERE id = ${restaurantId}`
+    await sql.begin(async (tx) => {
+      await tx`UPDATE restaurant_visits SET rating = ${rating} WHERE id = ${visitId}`
+      await recalcRestaurant(tx, restaurantId)
+    })
     revalidatePath(`/restaurants/${restaurantId}`)
     return { success: true }
   } catch (e) {
@@ -92,22 +94,13 @@ export async function updateVisit(
   cost: number | null
 ): Promise<ActionResult> {
   try {
-    await sql`
-      UPDATE restaurant_visits SET visited_at = ${visitedAt}, cost = ${cost}
-      WHERE id = ${visitId}
-    `
-    const visits = await sql`
-      SELECT visited_at FROM restaurant_visits
-      WHERE restaurant_id = ${restaurantId}
-      ORDER BY visited_at ASC NULLS LAST
-    `
-    const datedVisits = visits.filter((v) => v.visited_at)
-    await sql`
-      UPDATE restaurants SET
-        first_visit_date = ${datedVisits[0]?.visited_at ?? null},
-        last_visit_date  = ${datedVisits[datedVisits.length - 1]?.visited_at ?? null}
-      WHERE id = ${restaurantId}
-    `
+    await sql.begin(async (tx) => {
+      await tx`
+        UPDATE restaurant_visits SET visited_at = ${visitedAt}, cost = ${cost}
+        WHERE id = ${visitId}
+      `
+      await recalcRestaurant(tx, restaurantId)
+    })
     revalidatePath(`/restaurants/${restaurantId}`)
     return { success: true }
   } catch (e) {
@@ -130,8 +123,10 @@ export async function setWouldGoAgain(
 
 export async function deleteVisit(visitId: string, restaurantId: string): Promise<ActionResult> {
   try {
-    await sql`DELETE FROM restaurant_visits WHERE id = ${visitId}`
-    await recalcRestaurant(restaurantId)
+    await sql.begin(async (tx) => {
+      await tx`DELETE FROM restaurant_visits WHERE id = ${visitId}`
+      await recalcRestaurant(tx, restaurantId)
+    })
     revalidatePath(`/restaurants/${restaurantId}`)
     return { success: true }
   } catch (e) {
