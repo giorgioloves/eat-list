@@ -1,10 +1,12 @@
 ﻿'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Plus, Trash2, Pencil } from 'lucide-react'
 import { logVisit, deleteVisit, updateVisit, rateVisit } from './actions'
 import { formatDate } from '@/lib/utils'
 import { ScoreRating, ScoreSelector } from '@/components/ui/pip-rating'
+import { useRestaurants } from '@/contexts/restaurants'
 import type { RestaurantVisit } from '@/types'
 
 const T = {
@@ -37,6 +39,9 @@ const inputStyle: React.CSSProperties = {
 }
 
 export function VisitLog({ restaurantId, visits }: VisitLogProps) {
+  const router = useRouter()
+  const { refresh: refreshRestaurants } = useRestaurants()
+
   const [showForm, setShowForm]       = useState(false)
   const [date, setDate]               = useState('')
   const [cost, setCost]               = useState('')
@@ -60,13 +65,21 @@ export function VisitLog({ restaurantId, visits }: VisitLogProps) {
     setError('')
     setLoading(true)
     const result = await logVisit(restaurantId, date || null, cost ? parseFloat(cost) : null, myRating)
-    if (result.error) { setError(result.error) } else { resetForm() }
+    if (result.error) {
+      setError(result.error)
+    } else {
+      resetForm()
+      router.refresh()
+      refreshRestaurants()
+    }
     setLoading(false)
   }
 
   async function handleDelete(visitId: string) {
     setDeletingId(visitId)
     await deleteVisit(visitId, restaurantId)
+    router.refresh()
+    refreshRestaurants()
     setDeletingId(null)
   }
 
