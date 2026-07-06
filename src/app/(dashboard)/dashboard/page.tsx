@@ -1,5 +1,6 @@
 ﻿'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { Plus, UtensilsCrossed } from 'lucide-react'
 import { useRestaurants } from '@/contexts/restaurants'
@@ -27,14 +28,11 @@ export default function DashboardPage() {
   const visitedPct    = restaurants.length > 0 ? Math.round((visited.length / restaurants.length) * 100) : 0
   const recentVisited = [...visited]
     .sort((a, b) => (b.last_visit_date ?? '').localeCompare(a.last_visit_date ?? ''))
-    .slice(0, 5)
   const recentAdded   = [...restaurants]
     .sort((a, b) => b.created_at.localeCompare(a.created_at))
-    .slice(0, 5)
   const wantToGoAgain = restaurants
     .filter((r) => r.status === 'visited' && (r.would_go_again === 'definitely' || r.would_go_again === 'maybe'))
     .sort((a, b) => (b.last_visit_date ?? '').localeCompare(a.last_visit_date ?? ''))
-    .slice(0, 5)
 
   return (
     <div style={{ padding: '24px 16px 112px', maxWidth: 440, margin: '0 auto' }}>
@@ -287,12 +285,18 @@ const COLUMN_BADGE: Record<'visited' | 'added' | 'want_to_go', { bg: string; col
   want_to_go:  { bg: '#fce8d8', color: '#7a3820' },
 }
 
+const COLUMN_PAGE_SIZE = 5
+
 function RecentColumn({ label, items, type }: {
   label: string
   items: Restaurant[]
   type: 'visited' | 'added' | 'want_to_go'
 }) {
+  const [expanded, setExpanded] = useState(false)
   const badge = COLUMN_BADGE[type]
+  const visibleItems = expanded ? items : items.slice(0, COLUMN_PAGE_SIZE)
+  const hiddenCount = items.length - COLUMN_PAGE_SIZE
+
   return (
     <div style={{ minWidth: 0 }}>
       <span style={{
@@ -313,7 +317,7 @@ function RecentColumn({ label, items, type }: {
           <p style={{ fontFamily: 'var(--font-dm-mono), ui-monospace, monospace', fontSize: 10, color: T.ghost, fontStyle: 'italic' }}>
             none yet
           </p>
-        ) : items.map((r) => (
+        ) : visibleItems.map((r) => (
           <MiniRestaurantCard
             key={r.id}
             restaurant={r}
@@ -323,6 +327,24 @@ function RecentColumn({ label, items, type }: {
             }
           />
         ))}
+        {hiddenCount > 0 && (
+          <button
+            onClick={() => setExpanded((v) => !v)}
+            style={{
+              fontFamily:      'var(--font-dm-mono), ui-monospace, monospace',
+              fontSize: 10,
+              letterSpacing:   '0.06em',
+              color:           T.terracotta,
+              background:      'none',
+              border:          'none',
+              padding:         '2px 0',
+              textAlign:       'left' as const,
+              cursor:          'pointer',
+            }}
+          >
+            {expanded ? 'show less' : `+${hiddenCount} more`}
+          </button>
+        )}
       </div>
     </div>
   )
